@@ -12,7 +12,6 @@ Sunphase is a powerful and flexible Dart library for extracting and parsing date
 *   **Multi-language Support:** Supports English, Japanese, and Chinese (More to come).
 *   **Timezone Support:** Specify a timezone for date parsing.
 *   **Range Mode:** Extract date ranges (e.g., "next week" will return a list of dates for the next week).
-*   **Extensible:** Easily add new languages, parsers, and refiners.
 
 ## Usage
 ```dart
