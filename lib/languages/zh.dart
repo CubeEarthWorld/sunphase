@@ -148,12 +148,9 @@ class ChineseDateParser implements Parser {
     // ------------------------------
     // 追加: 「単独の '6日' or '6号'」 => 最も近い「X月6日」
     // ------------------------------
-    // 例: 今日が2/8 で "6号" -> 来月3/6
-    //     今日が2/5 で "6日" -> 当月2/6
+    // \b (\d{1,2})(日|号)\b のようなシンプルなパターン
     final RegExp singleDayPattern = RegExp(r'\b(\d{1,2})(日|号)\b');
     for (final match in singleDayPattern.allMatches(text)) {
-      // ここでは "月" などの情報が前後になければ「次に来る日付」と解釈する
-      // (厳密に月が書かれていないことを確認するなら否定先読みを追加してもOK)
       int day = int.parse(match.group(1)!);
 
       DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
@@ -179,9 +176,9 @@ class ChineseDateParser implements Parser {
     return results;
   }
 
-  // ---------------------------------------
+  // ------------------------------
   // ユーティリティ
-  // ---------------------------------------
+  // ------------------------------
   int _weekdayFromString(String weekday) {
     if (weekday.contains("一")) return DateTime.monday;
     if (weekday.contains("二")) return DateTime.tuesday;

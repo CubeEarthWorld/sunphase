@@ -153,19 +153,18 @@ class JapaneseDateParser implements Parser {
     // ------------------------------
     // 追加: 「○日」(「月」が書かれていない) => 今月または来月の最も近いその日
     // ------------------------------
-    // (?!月) を付与すれば「3月5日」などに含まれる「5日」を誤ってマッチしにくくできるが、
-    // シンプルに「(\d{1,2})日\b」で拾っても良い。
-    final RegExp singleDayPattern = RegExp(r'(?<!月)(\d{1,2})日\b');
-    // ↑ "(?<!月)" は否定の先読み(直前が「月」でない)
-
+    // ※ lookbehind を使わず、シンプルに (\d{1,2})日\b にマッチさせる。
+    //   ただし「3月5日」などに使う別のパターンが既に上でマッチ済みなので競合は起きにくい。
+    final RegExp singleDayPattern = RegExp(r'\b(\d{1,2})日\b');
     for (final match in singleDayPattern.allMatches(text)) {
       int day = int.parse(match.group(1)!);
 
+      // 今の年月日から
       DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       DateTime candidate = DateTime(current.year, current.month, day);
 
       if (current.day > day) {
-        // 既にその日を過ぎていれば来月
+        // もう過ぎている => 来月
         int nextMonth = current.month + 1;
         int nextYear = current.year;
         if (nextMonth > 12) {
@@ -185,9 +184,9 @@ class JapaneseDateParser implements Parser {
     return results;
   }
 
-  // ---------------------------------------
+  // ------------------------------
   // ユーティリティ
-  // ---------------------------------------
+  // ------------------------------
   int _weekdayFromString(String weekday) {
     if (weekday.contains("月")) return DateTime.monday;
     if (weekday.contains("火")) return DateTime.tuesday;
