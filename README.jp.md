@@ -1,66 +1,69 @@
----
-
-#### README_zh.md
-
-```markdown
 # Sunphase
 
-Sunphase 是一个用于 Dart/Flutter 的自然语言日期解析包。它支持解析包括英语、日语和中文在内的多种语言的日期表达，从文本中轻松提取日期信息。使用 Sunphase，您可以轻松将用户输入的文本中的日期提取出来，并在应用中进行处理。
+[![License: CC0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](http://creativecommons.org/publicdomain/zero/1.0/)
 
-## 功能
+[README.md](README.md) | [README.zh.md](README.zh.md)
 
-- 解析自然语言日期表达，例如 "today"、"tomorrow"、"yesterday"、"next week"、"last month"、"Monday"、"January 1, 2025" 等。
-- 支持多种语言：英语、日语、中文。
-- 可自定义的解析和细化流程。
-- 提供单一日期模式和日期范围模式。
-- 架构具有高扩展性，便于添加新的解析器和细化器。
+Sunphaseは、自然言語のテキストから日付を抽出して解析するための、強力で柔軟なDartライブラリです。複数の言語、タイムゾーンをサポートし、日付範囲を抽出するための範囲モードを提供します。
 
-## 入门指南
+## 特徴
 
-### 前提条件
-
-- 已安装 Dart 或 Flutter SDK。
-- 具备 Dart/Flutter 的基本知识。
-
-### 安装
-
-在 `pubspec.yaml` 文件中添加以下依赖：
-
-```yaml
-dependencies:
-sunphase: ^1.0.0
-```
-
-然后运行以下命令：
-
-```bash
-dart pub get
-# 或
-flutter pub get
-```
+*   **自然言語解析:** "明日"、"来週"、"先月"などの文字列から日付を抽出します。
+*   **多言語サポート:** 英語、日本語、中国語をサポートします（追加予定）。
+*   **タイムゾーンサポート:** 日付解析のタイムゾーンを指定できます。
+*   **範囲モード:** 日付範囲を抽出します（例えば、"来週"は来週の日付のリストを返します）。
+*   **拡張可能:** 新しい言語、パーサー、リファイナーを簡単に追加できます。
 
 ## 使用方法
-
-导入包并调用 `parse` 函数：
 
 ```dart
 import 'package:sunphase/sunphase.dart';
 
 void main() {
-final text = "next week, Monday and January 1, 2025";
-// 如果不指定语言，默认会使用所有支持的语言（英语、日语、中文）进行解析。
-final results = parse(text, language: 'en', rangeMode: true);
-for (var result in results) {
-print(result);
-}
+
+  // 日付を解析
+  List<ParsingResult> resultsEn = parse('今日');
+  print(resultsEn);
+
+  // 英語で日付を解析
+  List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
+  print(resultsEn);
+
+  // 日本語で日付を解析
+  List<ParsingResult> resultsJa = parse('明日', language: 'ja');
+  print(resultsJa);
+
+  // 特定の基準日で日付を解析
+  List<ParsingResult> resultsRef = parse('来週', referenceDate: DateTime(2024, 1, 1));
+  print(resultsRef);
+
+  // 範囲モードで日付を解析
+  List<ParsingResult> resultsRange = parse('来週', language: 'ja', rangeMode: true);
+  print(resultsRange);
+
+  // 特定のタイムゾーンで日付を解析。タイムゾーンは、UTCからの分単位オフセットを表す文字列として指定する必要があります。例：UTC+9の場合は "540"。
+  List<ParsingResult> resultsTimezone = parse('明日', language: 'ja', timezone: '540');
+  print(resultsTimezone);
 }
 ```
 
-## 其他信息
+## インストール
 
-有关如何扩展 Sunphase，添加新的解析器或细化器，请参阅源码中的文档。如果您有任何问题或建议，请在项目仓库中提交 issue。
+`pubspec.yaml`に`sunphase`を追加します。
 
-## 许可证
-
-本项目采用 CC0 1.0 Universal 许可证发布。
+```yaml
+dependencies:
+  sunphase:
+    git:
+      url: https://github.com/CubeEarthWorld/sunphase.git
 ```
+
+その後、`pub get`を実行します。
+
+## ライセンス
+
+このプロジェクトはCC0ライセンスの下でライセンスされています - 詳細は[LICENSE](LICENSE)ファイルを参照してください。
+
+## 連絡先
+
+開発者: [cubeearthworld](https://x.com/cubeearthworld)

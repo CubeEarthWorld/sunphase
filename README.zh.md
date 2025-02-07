@@ -1,66 +1,68 @@
-
-
-#### README_ja.md
-
-```markdown
 # Sunphase
 
-Sunphase は、Dart/Flutter 向けの自然言語日付解析パッケージです。英語、日本語、中国語など複数の言語に対応しており、テキストから日付情報を簡単に抽出できます。Sunphase を利用することで、ユーザー入力のテキストから日付を抽出し、アプリケーション内で扱うことが可能です。
+[![License: CC0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](http://creativecommons.org/publicdomain/zero/1.0/)
 
-## 機能
+[README.md](README.md) | [README.jp.md](README.jp.md)
 
-- 「今日」「明日」「昨日」「来週」「先月」「月曜日」「2025年1月1日」などの自然言語による日付表現を解析
-- 対応言語：英語、日本語、中国語
-- パーサーおよびリファイナーのパイプラインをカスタマイズ可能
-- 単一日付モードとレンジ（日付範囲）モードの両方に対応
-- 新しいパーサーやリファイナーを容易に追加できる拡張性の高い設計
+Sunphase 是一个强大而灵活的 Dart 库，用于从自然语言文本中提取和解析日期。它支持多种语言、时区，并提供用于提取日期范围的范围模式。
 
-## はじめに
+## 功能特点
 
-### 前提条件
+*   **自然语言解析：** 从“明天”、“下周”、“上个月”等字符串中提取日期。
+*   **多语言支持：** 支持英语、日语和中文（更多语言即将添加）。
+*   **时区支持：** 指定日期解析的时区。
+*   **范围模式：** 提取日期范围（例如，“下周”将返回下周的日期列表）。
+*   **可扩展：** 轻松添加新的语言、解析器和优化器。
 
-- Flutter または Dart SDK がインストールされていること
-- Dart/Flutter の基本的な知識
-
-### インストール
-
-`pubspec.yaml` に以下の依存関係を追加してください:
-
-```yaml
-dependencies:
-  sunphase: ^1.0.0
-```
-
-その後、以下のコマンドを実行してください:
-
-```bash
-dart pub get
-# または
-flutter pub get
-```
-
-## 使い方
-
-パッケージをインポートして、`parse` 関数を利用します:
+## 用法
 
 ```dart
 import 'package:sunphase/sunphase.dart';
 
 void main() {
-  final text = "来週 月曜日 および 2025年1月1日";
-  // 言語を指定しない場合は、デフォルトで全対応言語（英語、日本語、中国語）で解析します。
-  final results = parse(text, language: 'ja', rangeMode: true);
-  for (var result in results) {
-    print(result);
-  }
+    // 解析日期
+  List<ParsingResult> resultsEn = parse('今天');
+  print(resultsEn);
+
+  // 解析英文日期
+  List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
+  print(resultsEn);
+
+  // 解析中文日期
+  List<ParsingResult> resultsZh = parse('明天', language: 'zh');
+  print(resultsZh);
+
+  // 使用特定参考日期解析日期
+  List<ParsingResult> resultsRef = parse('下周', referenceDate: DateTime(2024, 1, 1));
+  print(resultsRef);
+
+  // 使用范围模式解析日期
+  List<ParsingResult> resultsRange = parse('下周', language: 'zh', rangeMode: true);
+  print(resultsRange);
+
+  // 使用特定时区解析日期(UTC)。时区应以字符串形式提供，表示与 UTC 的分钟偏移量，例如，Asia/Shanghai 为 "480"。
+  List<ParsingResult> resultsTimezone = parse('明天', language: 'zh', timezone: '480');
+  print(resultsTimezone);
 }
 ```
 
-## 追加情報
+## 安装
 
-Sunphase のパーサーやリファイナーの拡張方法については、ソースコード内のドキュメントを参照してください。問題や提案がある場合は、プロジェクトのリポジトリで issue を登録してください。
+将 `sunphase` 添加到您的 `pubspec.yaml`：
 
-## ライセンス
-
-本プロジェクトは CC0 1.0 Universal ライセンスの下で公開されています。
+```yaml
+dependencies:
+  sunphase:
+    git:
+      url: https://github.com/CubeEarthWorld/sunphase.git
 ```
+
+然后，运行 `pub get`。
+
+## 许可证
+
+本项目根据 CC0 许可证授权 - 有关详细信息，请参阅 [LICENSE](LICENSE) 文件。
+
+## 联系方式
+
+开发者： [cubeearthworld](https://x.com/cubeearthworld)
