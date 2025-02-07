@@ -21,7 +21,7 @@ class JapaneseDateParser implements Parser {
     List<ParsingResult> results = [];
 
     // ------------------------------
-    // 既存: 相対表現 (今日, 明日, 明後日, 明々後日, 昨日)
+    // 相対表現 (今日, 明日, 明後日, 明々後日, 昨日)
     // ------------------------------
     final RegExp relativeDayPattern =
     RegExp(r'(今日(?!曜日)|明日(?!曜日)|明後日(?!曜日)|明々後日(?!曜日)|昨日(?!曜日))');
@@ -53,7 +53,7 @@ class JapaneseDateParser implements Parser {
     }
 
     // ------------------------------
-    // 既存: 曜日の表現 (来週 月曜日, 先週 火曜日, 今週 水曜日, 水曜, etc.)
+    // 曜日の表現 (来週 月曜日, 先週 火曜日, etc.)
     // ------------------------------
     final RegExp weekdayPattern = RegExp(
         r'(来週|先週|今週)?\s*((?:月曜日|月曜|火曜日|火曜|水曜日|水曜|木曜日|木曜|金曜日|金曜|土曜日|土曜|日曜日|日曜))');
@@ -70,7 +70,7 @@ class JapaneseDateParser implements Parser {
     }
 
     // ------------------------------
-    // 既存: 絶対日付 (2025年1月1日, 1月1日)
+    // 絶対日付 (YYYY年M月D日, 例: 2025年1月1日, 1月1日)
     // ------------------------------
     final RegExp absoluteDatePattern = RegExp(r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日');
     for (final match in absoluteDatePattern.allMatches(text)) {
@@ -87,7 +87,7 @@ class JapaneseDateParser implements Parser {
     }
 
     // ------------------------------
-    // 既存: 相対期間 (来週, 先週, 今週, 来月, 先月, 今月, 来年, 去年, 今年)
+    // 相対期間 (来週, 先週, 今週, 来月, 先月, 今月, 来年, 去年, 今年)
     // ------------------------------
     final RegExp relativePeriodPattern =
     RegExp(r'(来週|先週|今週|来月|先月|今月|来年|去年|今年)');
@@ -102,9 +102,8 @@ class JapaneseDateParser implements Parser {
     }
 
     // ------------------------------
-    // 追加: 「X日前」「X日後」「X週間前」「X週間後」「Xヶ月前」「Xヶ月後」などのパターン
+    // 「X日前」「X日後」「X週間前」「X週間後」「Xヶ月前」「Xヶ月後」
     // ------------------------------
-    // 例: "3日前" -> 現在から3日引く, "4日後" -> 現在から4日足す, "4週間後" -> 28日足す, など
     final RegExp relativeDayNumPattern = RegExp(r'(\d+)日(前|後)');
     for (final match in relativeDayNumPattern.allMatches(text)) {
       int num = int.parse(match.group(1)!);
@@ -125,7 +124,6 @@ class JapaneseDateParser implements Parser {
       int num = int.parse(match.group(1)!);
       String direction = match.group(2)!;
       bool isFuture = (direction == '後');
-      // 1週間 = 7日換算
       int daysToMove = num * 7;
       DateTime date = isFuture
           ? referenceDate.add(Duration(days: daysToMove))
@@ -137,7 +135,6 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // "ヶ月"の表現 (「ヵ月」や「か月」などバリエーション対応するなら複数パターンでもOK)
     final RegExp relativeMonthPattern = RegExp(r'(\d+)ヶ月(前|後)');
     for (final match in relativeMonthPattern.allMatches(text)) {
       int num = int.parse(match.group(1)!);
@@ -153,12 +150,44 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
+    // ------------------------------
+    // 追加: 「○日」(「月」が書かれていない) => 今月または来月の最も近いその日
+    // ------------------------------
+    // (?!月) を付与すれば「3月5日」などに含まれる「5日」を誤ってマッチしにくくできるが、
+    // シンプルに「(\d{1,2})日\b」で拾っても良い。
+    final RegExp singleDayPattern = RegExp(r'(?<!月)(\d{1,2})日\b');
+    // ↑ "(?<!月)" は否定の先読み(直前が「月」でない)
+
+    for (final match in singleDayPattern.allMatches(text)) {
+      int day = int.parse(match.group(1)!);
+
+      DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
+      DateTime candidate = DateTime(current.year, current.month, day);
+
+      if (current.day > day) {
+        // 既にその日を過ぎていれば来月
+        int nextMonth = current.month + 1;
+        int nextYear = current.year;
+        if (nextMonth > 12) {
+          nextMonth -= 12;
+          nextYear += 1;
+        }
+        candidate = DateTime(nextYear, nextMonth, day);
+      }
+
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: candidate),
+      ));
+    }
+
     return results;
   }
 
-  // ------------------------------
-  // ユーティリティ: 曜日表現 -> int
-  // ------------------------------
+  // ---------------------------------------
+  // ユーティリティ
+  // ---------------------------------------
   int _weekdayFromString(String weekday) {
     if (weekday.contains("月")) return DateTime.monday;
     if (weekday.contains("火")) return DateTime.tuesday;
@@ -167,13 +196,9 @@ class JapaneseDateParser implements Parser {
     if (weekday.contains("金")) return DateTime.friday;
     if (weekday.contains("土")) return DateTime.saturday;
     if (weekday.contains("日")) return DateTime.sunday;
-    // 分からなければデフォルト月曜日
     return DateTime.monday;
   }
 
-  // ------------------------------
-  // ユーティリティ: 修飾子なしの場合 -> 将来の曜日
-  // ------------------------------
   DateTime _getDateForWeekday(DateTime reference, int targetWeekday, String modifier) {
     DateTime current = DateTime(reference.year, reference.month, reference.day);
     int diff = targetWeekday - current.weekday;
@@ -194,9 +219,6 @@ class JapaneseDateParser implements Parser {
     return current.add(Duration(days: diff));
   }
 
-  // ------------------------------
-  // ユーティリティ: (来週, 先週, 来月, 先月, 来年, 去年, 今週, 今月, 今年)
-  // ------------------------------
   DateTime _getRelativePeriodDate(DateTime reference, String period) {
     if (period == '来週') {
       return reference.add(const Duration(days: 7));
@@ -224,8 +246,6 @@ class JapaneseDateParser implements Parser {
 class JapaneseRefiner implements Refiner {
   @override
   List<ParsingResult> refine(List<ParsingResult> results, DateTime referenceDate) {
-    // 必要に応じた重複排除や結果補正の処理
-    // ここではそのまま返す
     return results;
   }
 }

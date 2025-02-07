@@ -21,7 +21,7 @@ class EnglishDateParser implements Parser {
     List<ParsingResult> results = [];
 
     // ------------------------------
-    // 既存: 相対的な単語 (today, tomorrow, yesterday)
+    // 相対的な単語 (today, tomorrow, yesterday)
     // ------------------------------
     final RegExp relativeDayPattern =
     RegExp(r'\b(today|tomorrow|yesterday)\b', caseSensitive: false);
@@ -37,7 +37,6 @@ class EnglishDateParser implements Parser {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
             .subtract(const Duration(days: 1));
       } else {
-        // 万が一ここに来ても参照日付を返す
         date = referenceDate;
       }
       results.add(ParsingResult(
@@ -48,7 +47,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 既存: Weekdays ("next Monday", "last Tuesday", "this Friday" 等)
+    // Weekdays ("next Monday", "last Tuesday", "this Friday", etc.)
     // ------------------------------
     final RegExp weekdayPattern = RegExp(
       r'\b(?:(next|last|this)\s+)?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b',
@@ -67,7 +66,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 既存: 絶対日付の表現 (月名+日付, YYYY-MM-DD, M/D/YYYY)
+    // 絶対日付の表現 (月名+日付, YYYY-MM-DD, M/D/YYYY)
     // ------------------------------
     final RegExp absoluteDatePattern = RegExp(
       r'\b(?:([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})|(\d{4})-(\d{2})-(\d{2})|(\d{1,2})/(\d{1,2})/(\d{4}))\b',
@@ -106,7 +105,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 追加: "17 August 2013" のように「日 月 年」の順番
+    // "17 August 2013" のように日→月→年
     // ------------------------------
     final RegExp dayMonthYearPattern = RegExp(
       r'\b(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\b',
@@ -127,7 +126,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 追加: 相対期間 "next week", "last month", "this year" (既存のもの)
+    // 相対期間 "next week", "last month", "this year" など
     // ------------------------------
     final RegExp relativePeriodPattern =
     RegExp(r'\b(?:(next|last|this)\s+)(week|month|year)\b', caseSensitive: false);
@@ -143,7 +142,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 追加: "5 days ago", "2 weeks ago", "3 months from now", etc.
+    // "5 days ago", "2 weeks from now", etc.
     // ------------------------------
     final RegExp relativeNumberPattern = RegExp(
       r'\b(\d+)\s+(day|week|month|year)s?\s+(ago|from\s+now)\b',
@@ -162,30 +161,58 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 追加: 標準的な日付文字列のパース (Sat Aug 17 2013 18:40:39 GMT+0900 (JST) 等)
-    //       もしくは ISO8601 (2014-11-30T08:15:30-05:30 等)
+    // 標準的な日付文字列 (Sat Aug 17 2013 18:40:39 GMT+0900 (JST) 等)
+    // あるいは ISO8601 (2014-11-30T08:15:30-05:30)
     // ------------------------------
-    // テキスト全体がそうとは限らないので、単純に全体マッチを試みる
-    // 一部に含まれるケースはここでは対応せず。必要なら別途工夫が必要。
     try {
-      // trimしてパースできるか試す
       final parsedDate = DateTime.parse(text.trim());
-      // 成功すれば結果に追加
       results.add(ParsingResult(
         index: 0,
         text: text,
         component: ParsedComponent(date: parsedDate),
       ));
-    } catch (e) {
-      // パースできなければ無視（エラー処理は省略）
+    } catch (_) {
+      // パースできなければ無視
+    }
+
+    // ------------------------------
+    // 追加: 「単独の"6th"等」を「今月/来月の最も近い日付」として扱う
+    //       (ex: "6th" -> if today is the 7th => next month 6th,
+    //                   else => this month 6th)
+    // ------------------------------
+    final RegExp singleDayPattern = RegExp(r'\b(\d{1,2})(?:st|nd|rd|th)\b',
+        caseSensitive: false);
+    for (final match in singleDayPattern.allMatches(text)) {
+      int day = int.parse(match.group(1)!);
+      DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
+
+      // 今月の day
+      DateTime candidate = DateTime(current.year, current.month, day);
+
+      // すでにその日が過ぎていれば 来月
+      if (current.day > day) {
+        int nextMonth = current.month + 1;
+        int nextYear = current.year;
+        if (nextMonth > 12) {
+          nextMonth -= 12;
+          nextYear += 1;
+        }
+        candidate = DateTime(nextYear, nextMonth, day);
+      }
+
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: candidate),
+      ));
     }
 
     return results;
   }
 
-  // ------------------------------
-  // ユーティリティ: 曜日文字列 -> int
-  // ------------------------------
+  // ---------------------------------------
+  // ユーティリティ
+  // ---------------------------------------
   int _weekdayFromString(String weekday) {
     switch (weekday.toLowerCase()) {
       case 'monday':
@@ -203,14 +230,10 @@ class EnglishDateParser implements Parser {
       case 'sunday':
         return DateTime.sunday;
       default:
-      // 分からない場合は強制的に月曜日とする
         return DateTime.monday;
     }
   }
 
-  // ------------------------------
-  // ユーティリティ: 修飾子なしの場合は必ず将来の該当曜日を返す
-  // ------------------------------
   DateTime _getDateForWeekday(
       DateTime reference, int targetWeekday, String? modifier) {
     DateTime current = DateTime(reference.year, reference.month, reference.day);
@@ -232,9 +255,6 @@ class EnglishDateParser implements Parser {
     return current.add(Duration(days: diff));
   }
 
-  // ------------------------------
-  // ユーティリティ: 月名 -> int
-  // ------------------------------
   int _monthFromString(String month) {
     switch (month.toLowerCase()) {
       case 'january':
@@ -273,14 +293,10 @@ class EnglishDateParser implements Parser {
       case 'dec':
         return 12;
       default:
-      // 分からない場合は0
         return 0;
     }
   }
 
-  // ------------------------------
-  // ユーティリティ: "next week"等を扱う
-  // ------------------------------
   DateTime _getRelativePeriodDate(
       DateTime reference, String period, String modifier) {
     switch (period) {
@@ -313,13 +329,8 @@ class EnglishDateParser implements Parser {
     }
   }
 
-  // ------------------------------
-  // ユーティリティ: "5 days ago" などを扱う
-  // ------------------------------
   DateTime _calculateRelativeDate(
       DateTime reference, int number, String unit, String direction) {
-    // direction == 'ago' -> 過去
-    // direction == 'from now' -> 未来
     bool isFuture = direction.contains('from now');
 
     int daysToAdd = 0;
@@ -331,11 +342,9 @@ class EnglishDateParser implements Parser {
         daysToAdd = number * 7;
         break;
       case 'month':
-      // 簡易的に30日とする
         daysToAdd = number * 30;
         break;
       case 'year':
-      // 簡易的に365日とする
         daysToAdd = number * 365;
         break;
       default:
@@ -350,8 +359,6 @@ class EnglishDateParser implements Parser {
 class EnglishRefiner implements Refiner {
   @override
   List<ParsingResult> refine(List<ParsingResult> results, DateTime referenceDate) {
-    // 必要に応じた結果の統合や重複排除などの処理を記述可能
-    // ここではそのまま返す
     return results;
   }
 }
