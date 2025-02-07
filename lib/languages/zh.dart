@@ -92,17 +92,25 @@ class ChineseDateParser implements Parser {
     return DateTime.monday;
   }
 
+  // 修饰符为空时返回最接近的未来的对应星期
   DateTime _getDateForWeekday(DateTime reference, int targetWeekday, String modifier) {
     DateTime current = DateTime(reference.year, reference.month, reference.day);
     int diff = targetWeekday - current.weekday;
-    DateTime result = current.add(Duration(days: diff));
-    if (modifier == '下周') {
-      result = result.add(Duration(days: 7));
+    if (modifier.isEmpty || modifier == '本周') {
+      if (diff <= 0) {
+        diff += 7;
+      }
+    } else if (modifier == '下周') {
+      if (diff <= 0) {
+        diff += 7;
+      }
+      diff += 7;
     } else if (modifier == '上周') {
-      result = result.subtract(Duration(days: 7));
+      if (diff >= 0) {
+        diff -= 7;
+      }
     }
-    // "本周" 或无修饰符返回当周
-    return result;
+    return current.add(Duration(days: diff));
   }
 
   DateTime _getRelativePeriodDate(DateTime reference, String period) {

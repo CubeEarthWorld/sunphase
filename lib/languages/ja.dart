@@ -29,13 +29,17 @@ class JapaneseDateParser implements Parser {
       if (matched == '今日') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       } else if (matched == '明日') {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).add(Duration(days: 1));
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+            .add(Duration(days: 1));
       } else if (matched == '明後日') {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).add(Duration(days: 2));
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+            .add(Duration(days: 2));
       } else if (matched == '明々後日') {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).add(Duration(days: 3));
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+            .add(Duration(days: 3));
       } else if (matched == '昨日') {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).subtract(Duration(days: 1));
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+            .subtract(Duration(days: 1));
       } else {
         date = referenceDate;
       }
@@ -46,12 +50,15 @@ class JapaneseDateParser implements Parser {
     }
 
     // Pattern 2: 曜日の表現（例："来週 月曜日", "先週 火曜日", "水曜日", "木" など）
-    // 正規表現で一文字の曜日も一旦キャプチャし、後で置換処理を行う
-    final RegExp weekdayPattern = RegExp(r'(来週|先週|今週)?\s*(月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日|月|火|水|木|金|土|日)');
+    // 長い表現（"月曜日", "火曜日", …, "日曜日"）と、
+    // 単一文字（"月", "火", "水", "木", "金", "土", "日"）は
+    // 単一文字の場合、後ろに「曜」が続かないことを確認（(?!曜)）してマッチする
+    final RegExp weekdayPattern = RegExp(
+        r'(来週|先週|今週)?\s*(月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日|(?:月(?!曜))|(?:火(?!曜))|(?:水(?!曜))|(?:木(?!曜))|(?:金(?!曜))|(?:土(?!曜))|(?:日(?!曜)))');
     for (final match in weekdayPattern.allMatches(text)) {
       String? modifier = match.group(1) ?? '';
       String weekdayRaw = match.group(2)!;
-      // 一文字の場合は置換（例："月" -> "月曜"）
+      // もし長い表現ならそのまま、単一文字なら normalize して統一（例："月" → "月曜日"）
       String weekdayStr = weekdayRaw.length == 1 ? _normalizeWeekday(weekdayRaw) : weekdayRaw;
       int targetWeekday = _weekdayFromString(weekdayStr);
       DateTime date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
@@ -88,7 +95,7 @@ class JapaneseDateParser implements Parser {
     return results;
   }
 
-  // 一文字の曜日を正規化して、必ず「月曜日」などの形に統一する（ここでは「月曜」に変換）
+  // 一文字の曜日を正規化して「月曜日」などに統一する
   String _normalizeWeekday(String day) {
     switch (day) {
       case '月':
@@ -122,17 +129,25 @@ class JapaneseDateParser implements Parser {
     return DateTime.monday;
   }
 
+  // 修飾子がない場合、必ず将来の該当曜日を返す
   DateTime _getDateForWeekday(DateTime reference, int targetWeekday, String modifier) {
     DateTime current = DateTime(reference.year, reference.month, reference.day);
     int diff = targetWeekday - current.weekday;
-    DateTime result = current.add(Duration(days: diff));
-    if (modifier == '来週') {
-      result = result.add(Duration(days: 7));
+    if (modifier.isEmpty || modifier == '今週') {
+      if (diff <= 0) {
+        diff += 7;
+      }
+    } else if (modifier == '来週') {
+      if (diff <= 0) {
+        diff += 7;
+      }
+      diff += 7;
     } else if (modifier == '先週') {
-      result = result.subtract(Duration(days: 7));
+      if (diff >= 0) {
+        diff -= 7;
+      }
     }
-    // 「今週」または修飾子がない場合は当週を返す
-    return result;
+    return current.add(Duration(days: diff));
   }
 
   DateTime _getRelativePeriodDate(DateTime reference, String period) {

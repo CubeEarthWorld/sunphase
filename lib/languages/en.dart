@@ -127,17 +127,25 @@ class EnglishDateParser implements Parser {
     }
   }
 
+  // 修飾子がない場合は必ず将来の該当曜日を返す
   DateTime _getDateForWeekday(DateTime reference, int targetWeekday, String? modifier) {
     DateTime current = DateTime(reference.year, reference.month, reference.day);
     int diff = targetWeekday - current.weekday;
-    DateTime result = current.add(Duration(days: diff));
-    if (modifier == 'next') {
-      result = result.add(Duration(days: 7));
+    if (modifier == null || modifier.isEmpty || modifier == 'this') {
+      if (diff <= 0) {
+        diff += 7;
+      }
+    } else if (modifier == 'next') {
+      if (diff <= 0) {
+        diff += 7;
+      }
+      diff += 7;
     } else if (modifier == 'last') {
-      result = result.subtract(Duration(days: 7));
+      if (diff >= 0) {
+        diff -= 7;
+      }
     }
-    // "this" または修飾子なしは当週を返す
-    return result;
+    return current.add(Duration(days: diff));
   }
 
   int _monthFromString(String month) {
