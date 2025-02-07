@@ -6,6 +6,8 @@
 
 Sunphaseは、自然言語のテキストから日付を抽出して解析するための、強力で柔軟なDartライブラリです。複数の言語、タイムゾーンをサポートし、日付範囲を抽出するための範囲モードを提供します。
 
+サンプルプロジェクト https://github.com/CubeEarthWorld/sunphase_sample
+
 ## 特徴
 
 *   **自然言語解析:** "明日"、"来週"、"先月"などの文字列から日付を抽出します。
@@ -33,7 +35,7 @@ void main() {
   print(resultsJa);
 
   // 特定の基準日で日付を解析
-  List<ParsingResult> resultsRef = parse('来週', referenceDate: DateTime(2024, 1, 1));
+  List<ParsingResult> resultsRef = parse('来週', referenceDate: DateTime(2021, 2, 4));
   print(resultsRef);
 
   // 範囲モードで日付を解析

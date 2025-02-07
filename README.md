@@ -1,10 +1,10 @@
-# Sunphase
-
 [![License: CC0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](http://creativecommons.org/publicdomain/zero/1.0/)
 
 [README.jp.md](README.jp.md) | [README.zh.md](README.zh.md)
 
 Sunphase is a powerful and flexible Dart library for extracting and parsing dates from natural language text. It supports multiple languages, timezones, and provides a range mode for extracting date ranges.
+
+There is a sample project at https://github.com/CubeEarthWorld/sunphase_sample
 
 ## Features
 
@@ -32,7 +32,7 @@ void main() {
   print(resultsJa);
 
   // Parse a date with a specific reference date
-  List<ParsingResult> resultsRef = parse('Next week', referenceDate: DateTime(2024, 1, 1));
+  List<ParsingResult> resultsRef = parse('Next week', referenceDate: DateTime(2021, 2, 4));
   print(resultsRef);
 
     // Parse a date with range mode

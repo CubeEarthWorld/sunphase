@@ -6,6 +6,8 @@
 
 Sunphase 是一个强大而灵活的 Dart 库，用于从自然语言文本中提取和解析日期。它支持多种语言、时区，并提供用于提取日期范围的范围模式。
 
+示例项目 https://github.com/CubeEarthWorld/sunphase_sample
+
 ## 功能特点
 
 *   **自然语言解析：** 从“明天”、“下周”、“上个月”等字符串中提取日期。
@@ -32,7 +34,7 @@ void main() {
   print(resultsZh);
 
   // 使用特定参考日期解析日期
-  List<ParsingResult> resultsRef = parse('下周', referenceDate: DateTime(2024, 1, 1));
+  List<ParsingResult> resultsRef = parse('下周', referenceDate: DateTime(2021, 2, 4));
   print(resultsRef);
 
   // 使用范围模式解析日期
