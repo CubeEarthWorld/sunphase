@@ -101,7 +101,7 @@ class ChineseDateParser implements Parser {
     } else if (modifier == '上周') {
       result = result.subtract(Duration(days: 7));
     }
-    // "本周" 或空修饰符返回当周
+    // "本周" 或无修饰符返回当周
     return result;
   }
 
@@ -132,7 +132,7 @@ class ChineseDateParser implements Parser {
 class ChineseRefiner implements Refiner {
   @override
   List<ParsingResult> refine(List<ParsingResult> results, DateTime referenceDate) {
-    // 可根据需要添加重叠结果排除或结果修正
+    // 根据需要添加重叠排除或结果修正
     return results;
   }
 }

@@ -20,8 +20,9 @@ class JapaneseDateParser implements Parser {
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     List<ParsingResult> results = [];
 
-    // Pattern 1: 相対表現「今日」「明日」「昨日」
-    final RegExp relativeDayPattern = RegExp(r'(今日|明日|昨日)');
+    // Pattern 1: 相対表現（例："今日", "明日", "明後日", "明々後日", "昨日"）
+    // ※ 「明日」が「明日曜日」と誤判定しないよう、曜日が続かない場合にマッチする
+    final RegExp relativeDayPattern = RegExp(r'(今日(?!曜日)|明日(?!曜日)|明後日(?!曜日)|明々後日(?!曜日)|昨日(?!曜日))');
     for (final match in relativeDayPattern.allMatches(text)) {
       String matched = match.group(0)!;
       DateTime date;
@@ -29,6 +30,10 @@ class JapaneseDateParser implements Parser {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       } else if (matched == '明日') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).add(Duration(days: 1));
+      } else if (matched == '明後日') {
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).add(Duration(days: 2));
+      } else if (matched == '明々後日') {
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).add(Duration(days: 3));
       } else if (matched == '昨日') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).subtract(Duration(days: 1));
       } else {
@@ -40,11 +45,14 @@ class JapaneseDateParser implements Parser {
           component: ParsedComponent(date: date)));
     }
 
-    // Pattern 2: 曜日の表現（例：「来週 月曜日」「先週 火曜日」「水曜日」「木」など）
+    // Pattern 2: 曜日の表現（例："来週 月曜日", "先週 火曜日", "水曜日", "木" など）
+    // 正規表現で一文字の曜日も一旦キャプチャし、後で置換処理を行う
     final RegExp weekdayPattern = RegExp(r'(来週|先週|今週)?\s*(月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日|月|火|水|木|金|土|日)');
     for (final match in weekdayPattern.allMatches(text)) {
-      String modifier = match.group(1) ?? '';
-      String weekdayStr = match.group(2)!;
+      String? modifier = match.group(1) ?? '';
+      String weekdayRaw = match.group(2)!;
+      // 一文字の場合は置換（例："月" -> "月曜"）
+      String weekdayStr = weekdayRaw.length == 1 ? _normalizeWeekday(weekdayRaw) : weekdayRaw;
       int targetWeekday = _weekdayFromString(weekdayStr);
       DateTime date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
       results.add(ParsingResult(
@@ -53,7 +61,7 @@ class JapaneseDateParser implements Parser {
           component: ParsedComponent(date: date)));
     }
 
-    // Pattern 3: 絶対日付の表現（例：「2025年1月1日」「1月1日」）
+    // Pattern 3: 絶対日付の表現（例："2025年1月1日", "1月1日"）
     final RegExp absoluteDatePattern = RegExp(r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日');
     for (final match in absoluteDatePattern.allMatches(text)) {
       int year = match.group(1) != null ? int.parse(match.group(1)!) : referenceDate.year;
@@ -66,7 +74,7 @@ class JapaneseDateParser implements Parser {
           component: ParsedComponent(date: date)));
     }
 
-    // Pattern 4: 相対期間の表現（例：「来週」「先月」「来年」「今年」「先週」）
+    // Pattern 4: 相対期間の表現（例："来週", "先月", "来年", "今年", "先週"）
     final RegExp relativePeriodPattern = RegExp(r'(来週|先週|今週|来月|先月|今月|来年|去年|今年)');
     for (final match in relativePeriodPattern.allMatches(text)) {
       String matched = match.group(0)!;
@@ -80,8 +88,30 @@ class JapaneseDateParser implements Parser {
     return results;
   }
 
+  // 一文字の曜日を正規化して、必ず「月曜日」などの形に統一する（ここでは「月曜」に変換）
+  String _normalizeWeekday(String day) {
+    switch (day) {
+      case '月':
+        return '月曜日';
+      case '火':
+        return '火曜日';
+      case '水':
+        return '水曜日';
+      case '木':
+        return '木曜日';
+      case '金':
+        return '金曜日';
+      case '土':
+        return '土曜日';
+      case '日':
+        return '日曜日';
+      default:
+        return day;
+    }
+  }
+
   int _weekdayFromString(String weekday) {
-    // 曜日の変換: 月曜日=1, …, 日曜日=7
+    // 曜日を数値に変換: 月曜日=1, …, 日曜日=7
     if (weekday.contains("月")) return DateTime.monday;
     if (weekday.contains("火")) return DateTime.tuesday;
     if (weekday.contains("水")) return DateTime.wednesday;
@@ -132,7 +162,7 @@ class JapaneseDateParser implements Parser {
 class JapaneseRefiner implements Refiner {
   @override
   List<ParsingResult> refine(List<ParsingResult> results, DateTime referenceDate) {
-    // 必要に応じた重複排除や補正処理を実装可能
+    // 必要に応じた重複排除や結果補正の処理を実装（ここではそのまま返す）
     return results;
   }
 }
