@@ -142,14 +142,19 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // "5 days ago", "2 weeks from now", etc.
+    // "5 days ago", "2 weeks from now" のように、
+    // 数字だけでなく英単語表記 ("two weeks ago" など) にも対応
     // ------------------------------
+    // 改修ポイント: (\d+|one|two|three|...|twenty) のように拡張し、
+    // マッチ後に _enNumberToInt() で整数化
     final RegExp relativeNumberPattern = RegExp(
-      r'\b(\d+)\s+(day|week|month|year)s?\s+(ago|from\s+now)\b',
+      r'\b(?:(\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty))\s+(day|week|month|year)s?\s+(ago|from\s+now)\b',
       caseSensitive: false,
     );
+
     for (final match in relativeNumberPattern.allMatches(text)) {
-      int number = int.parse(match.group(1)!);
+      String numStr = match.group(1)!.toLowerCase();
+      int number = _enNumberToInt(numStr); // 追加関数で英単語→数値へ変換
       String unit = match.group(2)!.toLowerCase(); // day, week, month, year
       String direction = match.group(3)!.toLowerCase(); // ago, from now
       DateTime date = _calculateRelativeDate(referenceDate, number, unit, direction);
@@ -161,8 +166,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 標準的な日付文字列 (Sat Aug 17 2013 18:40:39 GMT+0900 (JST) 等)
-    // あるいは ISO8601 (2014-11-30T08:15:30-05:30)
+    // 標準的な日付文字列 (Sat Aug 17 2013 18:40:39 GMT+0900 (JST) 等) や ISO8601
     // ------------------------------
     try {
       final parsedDate = DateTime.parse(text.trim());
@@ -176,20 +180,18 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 追加: 「単独の"6th"等」を「今月/来月の最も近い日付」として扱う
-    //       (ex: "6th" -> if today is the 7th => next month 6th,
-    //                   else => this month 6th)
+    // 単独の "6th" などを (今月/来月の最も近い日付) として扱う
     // ------------------------------
-    final RegExp singleDayPattern = RegExp(r'\b(\d{1,2})(?:st|nd|rd|th)\b',
-        caseSensitive: false);
+    final RegExp singleDayPattern = RegExp(r'\b(\d{1,2})(?:st|nd|rd|th)\b', caseSensitive: false);
     for (final match in singleDayPattern.allMatches(text)) {
       int day = int.parse(match.group(1)!);
-      DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
+      DateTime current =
+      DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
 
       // 今月の day
       DateTime candidate = DateTime(current.year, current.month, day);
 
-      // すでにその日が過ぎていれば 来月
+      // すでにその日が過ぎていれば来月
       if (current.day > day) {
         int nextMonth = current.month + 1;
         int nextYear = current.year;
@@ -353,6 +355,64 @@ class EnglishDateParser implements Parser {
     return isFuture
         ? reference.add(Duration(days: daysToAdd))
         : reference.subtract(Duration(days: daysToAdd));
+  }
+
+  // ------------------------------------------------
+  // 英単語を数値に変換するヘルパー関数
+  // ※必要最低限の単語のみ対応（例示用）
+  // ------------------------------------------------
+  int _enNumberToInt(String word) {
+    // すでに数字ならそのまま変換
+    if (RegExp(r'^\d+$').hasMatch(word)) {
+      return int.parse(word);
+    }
+    switch (word) {
+      case 'zero':
+        return 0;
+      case 'one':
+        return 1;
+      case 'two':
+        return 2;
+      case 'three':
+        return 3;
+      case 'four':
+        return 4;
+      case 'five':
+        return 5;
+      case 'six':
+        return 6;
+      case 'seven':
+        return 7;
+      case 'eight':
+        return 8;
+      case 'nine':
+        return 9;
+      case 'ten':
+        return 10;
+      case 'eleven':
+        return 11;
+      case 'twelve':
+        return 12;
+      case 'thirteen':
+        return 13;
+      case 'fourteen':
+        return 14;
+      case 'fifteen':
+        return 15;
+      case 'sixteen':
+        return 16;
+      case 'seventeen':
+        return 17;
+      case 'eighteen':
+        return 18;
+      case 'nineteen':
+        return 19;
+      case 'twenty':
+        return 20;
+      default:
+      // ここでは該当しない場合は 0 とする
+        return 0;
+    }
   }
 }
 
