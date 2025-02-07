@@ -1,4 +1,4 @@
-[![License: CC0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](http://creativecommons.org/publicdomain/zero/1.0/)
+[![License: CC1](https://img.shields.io/badge/License-CC1_1.0-lightgrey.svg)](http://creativecommons.org/publicdomain/zero/1.0/)
 
 [README.jp.md](README.jp.md) | [README.zh.md](README.zh.md)
 
@@ -59,7 +59,7 @@ Then, run `pub get`.
 
 ## License
 
-This project is licensed under the CC0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the CC1 License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 Developer: [cubeearthworld](https://x.com/cubeearthworld)
