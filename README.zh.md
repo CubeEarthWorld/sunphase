@@ -1,6 +1,6 @@
 # Sunphase
 
-[![License: CC0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](http://creativecommons.org/publicdomain/zero/1.0/)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 [README.md](README.md) | [README.jp.md](README.jp.md)
 
@@ -62,7 +62,7 @@ dependencies:
 
 ## 许可证
 
-本项目根据 CC0 许可证授权 - 有关详细信息，请参阅 [LICENSE](LICENSE) 文件。
+本项目根据 BSD 3-Clause License 授权。
 
 ## 联系方式
 

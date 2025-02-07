@@ -1,6 +1,6 @@
 # Sunphase
 
-[![License: CC0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](http://creativecommons.org/publicdomain/zero/1.0/)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 [README.md](README.md) | [README.zh.md](README.zh.md)
 
@@ -61,9 +61,9 @@ dependencies:
 
 その後、`pub get`を実行します。
 
-## ライセンス
+## License
 
-このプロジェクトはCC0ライセンスの下でライセンスされています - 詳細は[LICENSE](LICENSE)ファイルを参照してください。
+This project is licensed under the BSD 3-Clause License.
 
 ## 連絡先
 
