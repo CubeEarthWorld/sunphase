@@ -23,8 +23,8 @@ import 'package:sunphase/sunphase.dart';
 void main() {
 
   // 日付を解析
-  List<ParsingResult> resultsEn = parse('今日');
-  print(resultsEn);
+  List<ParsingResult> results = parse('今日');
+  print(results);
 
   // 英語で日付を解析
   List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');

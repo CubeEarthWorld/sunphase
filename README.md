@@ -20,8 +20,8 @@ import 'package:sunphase/sunphase.dart';
 void main() {
 
     // Parse a date
-  List<ParsingResult> resultsEn = parse('Today');
-  print(resultsEn);
+  List<ParsingResult> results = parse('Today');
+  print(results);
 
   // Parse a date in English
   List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
