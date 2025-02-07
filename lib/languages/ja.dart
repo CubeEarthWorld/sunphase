@@ -21,7 +21,7 @@ class JapaneseDateParser implements Parser {
     List<ParsingResult> results = [];
 
     // Pattern 1: 相対表現（例："今日", "明日", "明後日", "明々後日", "昨日"）
-    // ※ 「明日」が「明日曜日」と誤判定しないよう、曜日が続かない場合にマッチする
+    // ※「明日」などは「曜日」が続かない場合にマッチする
     final RegExp relativeDayPattern = RegExp(r'(今日(?!曜日)|明日(?!曜日)|明後日(?!曜日)|明々後日(?!曜日)|昨日(?!曜日))');
     for (final match in relativeDayPattern.allMatches(text)) {
       String matched = match.group(0)!;
@@ -49,17 +49,14 @@ class JapaneseDateParser implements Parser {
           component: ParsedComponent(date: date)));
     }
 
-    // Pattern 2: 曜日の表現（例："来週 月曜日", "先週 火曜日", "水曜日", "木" など）
-    // 長い表現（"月曜日", "火曜日", …, "日曜日"）と、
-    // 単一文字（"月", "火", "水", "木", "金", "土", "日"）は
-    // 単一文字の場合、後ろに「曜」が続かないことを確認（(?!曜)）してマッチする
+    // Pattern 2: 曜日の表現（例："来週 月曜日", "先週 火曜日", "水曜日", "木曜" など）
+    // ※ 単一文字だけでなく、"月曜"や"月曜日"など、略称および完全形のみを対象とする
     final RegExp weekdayPattern = RegExp(
-        r'(来週|先週|今週)?\s*(月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日|(?:月(?!曜))|(?:火(?!曜))|(?:水(?!曜))|(?:木(?!曜))|(?:金(?!曜))|(?:土(?!曜))|(?:日(?!曜)))');
+        r'(来週|先週|今週)?\s*(?:月曜日|月曜|火曜日|火曜|水曜日|水曜|木曜日|木曜|金曜日|金曜|土曜日|土曜|日曜日|日曜)');
     for (final match in weekdayPattern.allMatches(text)) {
       String? modifier = match.group(1) ?? '';
-      String weekdayRaw = match.group(2)!;
-      // もし長い表現ならそのまま、単一文字なら normalize して統一（例："月" → "月曜日"）
-      String weekdayStr = weekdayRaw.length == 1 ? _normalizeWeekday(weekdayRaw) : weekdayRaw;
+      String weekdayStr = match.group(2) ?? match.group(0)!;
+      // 既に略称または完全形になっているのでそのまま利用
       int targetWeekday = _weekdayFromString(weekdayStr);
       DateTime date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
       results.add(ParsingResult(
@@ -95,30 +92,8 @@ class JapaneseDateParser implements Parser {
     return results;
   }
 
-  // 一文字の曜日を正規化して「月曜日」などに統一する
-  String _normalizeWeekday(String day) {
-    switch (day) {
-      case '月':
-        return '月曜日';
-      case '火':
-        return '火曜日';
-      case '水':
-        return '水曜日';
-      case '木':
-        return '木曜日';
-      case '金':
-        return '金曜日';
-      case '土':
-        return '土曜日';
-      case '日':
-        return '日曜日';
-      default:
-        return day;
-    }
-  }
-
+  // 曜日表現は、完全形("月曜日")または略称("月曜")のみを対象とする
   int _weekdayFromString(String weekday) {
-    // 曜日を数値に変換: 月曜日=1, …, 日曜日=7
     if (weekday.contains("月")) return DateTime.monday;
     if (weekday.contains("火")) return DateTime.tuesday;
     if (weekday.contains("水")) return DateTime.wednesday;
