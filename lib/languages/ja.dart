@@ -50,13 +50,12 @@ class JapaneseDateParser implements Parser {
     }
 
     // Pattern 2: 曜日の表現（例："来週 月曜日", "先週 火曜日", "水曜日", "木曜" など）
-    // ※ 単一文字だけでなく、"月曜"や"月曜日"など、略称および完全形のみを対象とする
+    // ※ "月曜日"や"月曜"など、完全形または略称のみを対象とするキャプチャグループを用いる
     final RegExp weekdayPattern = RegExp(
-        r'(来週|先週|今週)?\s*(?:月曜日|月曜|火曜日|火曜|水曜日|水曜|木曜日|木曜|金曜日|金曜|土曜日|土曜|日曜日|日曜)');
+        r'(来週|先週|今週)?\s*((?:月曜日|月曜|火曜日|火曜|水曜日|水曜|木曜日|木曜|金曜日|金曜|土曜日|土曜|日曜日|日曜))');
     for (final match in weekdayPattern.allMatches(text)) {
-      String? modifier = match.group(1) ?? '';
-      String weekdayStr = match.group(2) ?? match.group(0)!;
-      // 既に略称または完全形になっているのでそのまま利用
+      String modifier = match.group(1) ?? '';
+      String weekdayStr = match.group(2)!;
       int targetWeekday = _weekdayFromString(weekdayStr);
       DateTime date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
       results.add(ParsingResult(
@@ -92,7 +91,7 @@ class JapaneseDateParser implements Parser {
     return results;
   }
 
-  // 曜日表現は、完全形("月曜日")または略称("月曜")のみを対象とする
+  // 曜日表現は、完全形("月曜日", "火曜日", …)または略称("月曜", "火曜", …)のみを対象とする
   int _weekdayFromString(String weekday) {
     if (weekday.contains("月")) return DateTime.monday;
     if (weekday.contains("火")) return DateTime.tuesday;
