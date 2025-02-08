@@ -1,5 +1,4 @@
 // lib/languages/en.dart
-
 import 'language_interface.dart';
 import '../core/parser.dart';
 import '../core/refiner.dart';
@@ -16,37 +15,30 @@ class EnglishLanguage implements Language {
   ];
 
   @override
-  List<Refiner> get refiners => [
-    EnglishRefiner(),
-  ];
+  List<Refiner> get refiners => [EnglishRefiner()];
 }
 
 // -------------------------------------------------------
 // 1) EnglishDateParser
-//    - English-specific date expressions (today, tomorrow, etc.)
-//      (Avoiding pure numeric forms like "2024-04-01" -> not_language に委譲)
+//    - "today", "tomorrow", "Monday", "next week", "MonthName day, year" etc.
+//    - 純粋数値フォーマット(16:00やYYYY-MM-DDなど)はここでは扱わない
 // -------------------------------------------------------
 class EnglishDateParser implements Parser {
   @override
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     final results = <ParsingResult>[];
 
-    // ---------- (A) Relative words: today, tomorrow, yesterday ----------
-    final RegExp relativeDayPattern = RegExp(
-      r'\b(today|tomorrow|yesterday)\b',
-      caseSensitive: false,
-    );
+    // (例) "today", "tomorrow", "yesterday"
+    final RegExp relativeDayPattern = RegExp(r'\b(today|tomorrow|yesterday)\b', caseSensitive: false);
     for (final match in relativeDayPattern.allMatches(text)) {
-      final matched = match.group(0)!.toLowerCase();
+      String matched = match.group(0)!.toLowerCase();
       DateTime date;
       if (matched == 'today') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       } else if (matched == 'tomorrow') {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .add(const Duration(days: 1));
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).add(const Duration(days: 1));
       } else if (matched == 'yesterday') {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .subtract(const Duration(days: 1));
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).subtract(const Duration(days: 1));
       } else {
         date = referenceDate;
       }
@@ -57,16 +49,16 @@ class EnglishDateParser implements Parser {
       ));
     }
 
-    // ---------- (B) Weekdays ("next Monday", etc.) ----------
+    // (例) "next Monday", "this Friday", "last Tuesday"
     final RegExp weekdayPattern = RegExp(
       r'\b(?:(next|last|this)\s+)?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b',
       caseSensitive: false,
     );
     for (final match in weekdayPattern.allMatches(text)) {
-      final modifier = match.group(1)?.toLowerCase();
-      final weekdayStr = match.group(2)!;
-      final targetWeekday = _weekdayFromString(weekdayStr);
-      final date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
+      String? modifier = match.group(1)?.toLowerCase();
+      String weekdayStr = match.group(2)!;
+      int targetWeekday = _weekdayFromString(weekdayStr);
+      DateTime date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
@@ -74,10 +66,8 @@ class EnglishDateParser implements Parser {
       ));
     }
 
-    // ---------- (C) "MonthName day, year" / "day MonthName year" ----------
-    final RegExp monthDayYearPattern = RegExp(
-      r'\b([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\b',
-    );
+    // (例) "April 5, 2024" or "5 April 2024"
+    final RegExp monthDayYearPattern = RegExp(r'\b([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\b');
     for (final match in monthDayYearPattern.allMatches(text)) {
       final monthStr = match.group(1)!;
       final day = int.parse(match.group(2)!);
@@ -93,9 +83,8 @@ class EnglishDateParser implements Parser {
       }
     }
 
-    final RegExp dayMonthYearPattern = RegExp(
-      r'\b(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\b',
-    );
+    // もう一種類: "5 August 2024"
+    final RegExp dayMonthYearPattern = RegExp(r'\b(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\b');
     for (final match in dayMonthYearPattern.allMatches(text)) {
       final day = int.parse(match.group(1)!);
       final monthStr = match.group(2)!;
@@ -111,11 +100,9 @@ class EnglishDateParser implements Parser {
       }
     }
 
-    // ---------- (D) Relative periods: "next week", "last month", etc. ----------
-    final RegExp relativePeriodPattern = RegExp(
-      r'\b(?:(next|last|this)\s+)(week|month|year)\b',
-      caseSensitive: false,
-    );
+    // (例) "next week", "last month", "this year"
+    final RegExp relativePeriodPattern =
+    RegExp(r'\b(?:(next|last|this)\s+)(week|month|year)\b', caseSensitive: false);
     for (final match in relativePeriodPattern.allMatches(text)) {
       final modifier = match.group(1)!.toLowerCase();
       final period = match.group(2)!.toLowerCase();
@@ -127,7 +114,7 @@ class EnglishDateParser implements Parser {
       ));
     }
 
-    // ---------- (E) "5 days ago", "2 weeks from now", etc. ----------
+    // (例) "5 days ago", "2 weeks from now"
     final RegExp relativeNumberPattern = RegExp(
       r'\b(?:(\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty))\s+(day|week|month|year)s?\s+(ago|from\s+now)\b',
       caseSensitive: false,
@@ -136,7 +123,7 @@ class EnglishDateParser implements Parser {
       final numStr = match.group(1)!.toLowerCase();
       final number = _enNumberToInt(numStr);
       final unit = match.group(2)!.toLowerCase();
-      final direction = match.group(3)!.toLowerCase(); // "ago", "from now"
+      final direction = match.group(3)!.toLowerCase();
       final date = _calculateRelativeDate(referenceDate, number, unit, direction);
       results.add(ParsingResult(
         index: match.start,
@@ -145,7 +132,7 @@ class EnglishDateParser implements Parser {
       ));
     }
 
-    // ---------- (F) ISO8601 parse (optional) ----------
+    // ISO8601 など
     try {
       final parsedDate = DateTime.parse(text.trim());
       results.add(ParsingResult(
@@ -157,19 +144,16 @@ class EnglishDateParser implements Parser {
       // ignore
     }
 
-    // ---------- (G) Standalone "6th" etc. -> nearest day of this/next month ----------
-    final RegExp singleDayPattern = RegExp(
-      r'\b(\d{1,2})(?:st|nd|rd|th)\b',
-      caseSensitive: false,
-    );
+    // "6th", "21st" など
+    final RegExp singleDayPattern = RegExp(r'\b(\d{1,2})(?:st|nd|rd|th)\b', caseSensitive: false);
     for (final match in singleDayPattern.allMatches(text)) {
       final day = int.parse(match.group(1)!);
       final current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       DateTime candidate = DateTime(current.year, current.month, day);
       if (current.day > day) {
-        // next month
-        var nextMonth = current.month + 1;
-        var nextYear = current.year;
+        // 来月にする
+        int nextMonth = current.month + 1;
+        int nextYear = current.year;
         if (nextMonth > 12) {
           nextMonth -= 12;
           nextYear += 1;
@@ -186,11 +170,9 @@ class EnglishDateParser implements Parser {
     return results;
   }
 
-  // ---------------------------------------
-  // Utilities
-  // ---------------------------------------
-  int _weekdayFromString(String weekday) {
-    switch (weekday.toLowerCase()) {
+  // -------------- utility -------------
+  int _weekdayFromString(String w) {
+    switch (w.toLowerCase()) {
       case 'monday':
         return DateTime.monday;
       case 'tuesday':
@@ -205,9 +187,8 @@ class EnglishDateParser implements Parser {
         return DateTime.saturday;
       case 'sunday':
         return DateTime.sunday;
-      default:
-        return DateTime.monday;
     }
+    return DateTime.monday;
   }
 
   DateTime _getDateForWeekday(DateTime reference, int targetWeekday, String? modifier) {
@@ -224,8 +205,8 @@ class EnglishDateParser implements Parser {
     return current.add(Duration(days: diff));
   }
 
-  int _monthFromString(String month) {
-    switch (month.toLowerCase()) {
+  int _monthFromString(String m) {
+    switch (m.toLowerCase()) {
       case 'january':
       case 'jan':
         return 1;
@@ -261,9 +242,8 @@ class EnglishDateParser implements Parser {
       case 'december':
       case 'dec':
         return 12;
-      default:
-        return 0;
     }
+    return 0;
   }
 
   DateTime _getRelativePeriodDate(DateTime reference, String period, String modifier) {
@@ -297,8 +277,7 @@ class EnglishDateParser implements Parser {
     }
   }
 
-  DateTime _calculateRelativeDate(
-      DateTime reference, int number, String unit, String direction) {
+  DateTime _calculateRelativeDate(DateTime reference, int number, String unit, String direction) {
     final isFuture = direction.contains('from now');
     int daysToAdd = 0;
     switch (unit) {
@@ -314,19 +293,15 @@ class EnglishDateParser implements Parser {
       case 'year':
         daysToAdd = number * 365;
         break;
-      default:
-        daysToAdd = 0;
     }
     return isFuture
         ? reference.add(Duration(days: daysToAdd))
         : reference.subtract(Duration(days: daysToAdd));
   }
 
-  int _enNumberToInt(String word) {
-    if (RegExp(r'^\d+$').hasMatch(word)) {
-      return int.parse(word);
-    }
-    switch (word) {
+  int _enNumberToInt(String w) {
+    if (RegExp(r'^\d+$').hasMatch(w)) return int.parse(w);
+    switch (w) {
       case 'zero':
         return 0;
       case 'one':
@@ -369,34 +344,33 @@ class EnglishDateParser implements Parser {
         return 19;
       case 'twenty':
         return 20;
-      default:
-        return 0;
     }
+    return 0;
   }
 }
 
 // -------------------------------------------------------
 // 2) EnglishTimeParser
-//   - Recognize "HH:MM" (24h) => nearest future
-//   - If you want "4pm" or "16pm" logic, you can expand here.
+//   - "(\d{1,2}):(\d{1,2})" → 24時間制 (例 "16:00")
+//   - 単独の数字だけの時刻は扱わない (衝突多いため)
+//   - "closest future" ロジックを含む
 // -------------------------------------------------------
 class EnglishTimeParser implements Parser {
   @override
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     final results = <ParsingResult>[];
-    final now = referenceDate;
 
-    // e.g. "16:00", "08:30", etc.
     final RegExp timePattern = RegExp(r'\b(\d{1,2}):(\d{1,2})\b');
     for (final match in timePattern.allMatches(text)) {
       final hour = int.parse(match.group(1)!);
       final minute = int.parse(match.group(2)!);
+      if (hour > 23 || minute > 59) continue;
 
-      if (hour > 23 || minute > 59) {
-        continue;
-      }
-
+      // まず当日の日付で設定
+      final now = referenceDate;
       DateTime candidate = DateTime(now.year, now.month, now.day, hour, minute);
+
+      // 「もっとも近い未来」ロジック
       if (candidate.isBefore(now)) {
         candidate = candidate.add(const Duration(days: 1));
       }
@@ -414,23 +388,23 @@ class EnglishTimeParser implements Parser {
 
 // -------------------------------------------------------
 // 3) EnglishRefiner
-//   - Merge date-only result + time-only result => single result
+//   - 日付専用 + 時刻専用 を一つにマージ
 // -------------------------------------------------------
 class EnglishRefiner implements Refiner {
   @override
   List<ParsingResult> refine(List<ParsingResult> results, DateTime referenceDate) {
-    // ソート
     results.sort((a, b) => a.index.compareTo(b.index));
 
     final merged = <ParsingResult>[];
     int i = 0;
+
     while (i < results.length) {
       final current = results[i];
       if (i < results.length - 1) {
         final next = results[i + 1];
         if (_isDateOnly(current) && _isTimeOnly(next)) {
-          // Merge
-          final mergedDate = DateTime(
+          // "current" の日付 (year/month/day) に "next" の hour/minute を合わせる
+          final dt = DateTime(
             current.date.year,
             current.date.month,
             current.date.day,
@@ -442,7 +416,7 @@ class EnglishRefiner implements Refiner {
           merged.add(ParsingResult(
             index: current.index,
             text: mergedText,
-            component: ParsedComponent(date: mergedDate),
+            component: ParsedComponent(date: dt),
           ));
           i += 2;
           continue;
@@ -456,13 +430,12 @@ class EnglishRefiner implements Refiner {
   }
 
   bool _isDateOnly(ParsingResult r) {
-    // "date-only" => hour/minute == 0
-    return (r.date.hour == 0 && r.date.minute == 0 && r.date.second == 0);
+    // hour, minute = 0 => 日付のみとみなす
+    return r.date.hour == 0 && r.date.minute == 0 && r.date.second == 0;
   }
 
   bool _isTimeOnly(ParsingResult r) {
-    // "time-only" => hour or minute != 0
-    // (Even if it's day+1, we assume it's a time result if it has non-zero hour or minute)
+    // hourかminuteが0以外 => 時刻扱い
     return (r.date.hour != 0 || r.date.minute != 0);
   }
 }
