@@ -2,12 +2,12 @@
 import 'dart:core';
 import '../core/result.dart';
 
-/// dt が refDate より過去かどうかを判定する
+/// dt が refDate より過ぎているかを判定する
 bool isPast(DateTime dt, DateTime refDate) {
   return dt.isBefore(refDate);
 }
 
-/// 過ぎた日時の場合、単純に翌日の日付に補正する（例）
+/// 過ぎた日時の場合、翌日の日付に補正する（単純実装）
 ParsedComponents adjustPastDate(ParsedComponents comp, DateTime refDate) {
   DateTime dt = comp.toDateTime(refDate);
   if (dt.isBefore(refDate)) {
@@ -24,7 +24,7 @@ ParsedComponents adjustPastDate(ParsedComponents comp, DateTime refDate) {
   );
 }
 
-/// タイムゾーンオフセット（分）を利用して日時を調整する
+/// タイムゾーンオフセット（分）を用いて日時を調整する
 DateTime adjustTimezone(DateTime dt, int offsetMinutes) {
   return dt.toUtc().add(Duration(minutes: offsetMinutes));
 }

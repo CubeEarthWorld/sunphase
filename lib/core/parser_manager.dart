@@ -62,12 +62,10 @@ class ParserManager {
           results.add(result);
         }
       } catch (e) {
-        // エラー発生時はログ出力して続行
         print('Parser error: $e');
       }
     }
 
-    // rangeMode が有効な場合、各結果を期間として拡張する
     if (rangeMode) {
       List<ParsingResult> expanded = [];
       for (var res in results) {
@@ -76,7 +74,6 @@ class ParserManager {
       results = expanded;
     }
 
-    // タイムゾーン指定がある場合、各結果の timezoneOffset を設定する
     if (timezone != null) {
       int offset = int.tryParse(timezone) ?? 0;
       for (var res in results) {
@@ -87,7 +84,6 @@ class ParserManager {
       }
     }
 
-    // 既に過ぎた日時の場合、次回の該当日時に補正する
     for (var res in results) {
       DateTime dt = res.date;
       if (dateUtils.isPast(dt, refDate)) {
