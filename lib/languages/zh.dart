@@ -1,5 +1,4 @@
 // lib/languages/zh.dart
-
 import 'language_interface.dart';
 import '../core/parser.dart';
 import '../core/refiner.dart';
@@ -97,14 +96,12 @@ class ChineseDateParser implements Parser {
     }
 
     // ================================================================
-    // 変更ポイント: "天" を分けて扱う
-    // 1) "X天前" or "X天后" ⇒ 相対的な日数
-    // 2) "X天" (前/后なし) ⇒ 単独の日付（当月 or 翌月のX日）
+    // 「天」を分けて扱う：
+    //  (1) "X天前" / "X天后" ⇒ 相対的な日数
+    //  (2) "X天" (前/后なし) ⇒ 単独の日付（○月X日扱い）
     // ================================================================
 
-    // ------------------------------
-    // (1) "X天前" or "X天后" は相対日数として処理
-    // ------------------------------
+    // (1) "X天前" / "X天后"
     final RegExp relativeDayNumPattern = RegExp(r'([一二三四五六七八九十\d]+)天(前|后)');
     for (final match in relativeDayNumPattern.allMatches(text)) {
       String numStr = match.group(1)!;
@@ -121,9 +118,7 @@ class ChineseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
-    // (2) "X天" (前/后なし) ⇒ 単独の "X日" 扱い
-    // ------------------------------
+    // (2) "X天" (前/后なし) ⇒ 単独日付(○月X日)
     final RegExp singleDayPatternForTian =
     RegExp(r'(?<!月)([一二三四五六七八九十\d]+)天(?!前|后)');
     for (final match in singleDayPatternForTian.allMatches(text)) {
@@ -151,7 +146,7 @@ class ChineseDateParser implements Parser {
     }
 
     // ------------------------------
-    // 残りの "周|个月|月|年" (+ 前後) ⇒ 相対パターン
+    // 残りの "周|个月|月|年" (+ 前|后) ⇒ 相対パターン
     // ------------------------------
     final RegExp relativeNumPattern =
     RegExp(r'([一二三四五六七八九十\d]+)(周|个月|月|年)(前|后)?');
@@ -160,15 +155,11 @@ class ChineseDateParser implements Parser {
       String unit = match.group(2)!;
       String? direction = match.group(3);
       int number = _cnNumberToInt(numStr);
-      bool isFuture = true;
-      if (direction == '前') {
-        isFuture = false;
-      }
+      bool isFuture = (direction != '前'); // 前 or 後
       int daysToMove = 0;
       if (unit.contains('周')) {
         daysToMove = number * 7;
       } else if (unit.contains('个月') || unit == '月') {
-        // 30日換算
         daysToMove = number * 30;
       } else if (unit.contains('年')) {
         daysToMove = number * 365;
@@ -198,7 +189,7 @@ class ChineseDateParser implements Parser {
     }
 
     // ------------------------------
-    // 追加: 单独的 "◯日" or "◯号" => 当月/下月の最近那天
+    // 单独的 "◯日" or "◯号" => 当月/下月の最近那天 (漢数字にも対応)
     // ------------------------------
     final RegExp singleDayPattern = RegExp(r'(?<!月)([一二三四五六七八九十\d]+)(日|号)');
     for (final match in singleDayPattern.allMatches(text)) {
@@ -285,14 +276,58 @@ class ChineseDateParser implements Parser {
     return reference;
   }
 
+  // ------------------------------------------------
+  // 漢数字を整数に変換する関数
+  // "一"～"三十一" まで対応する簡易実装
+  // ------------------------------------------------
   int _cnNumberToInt(String cnNum) {
-    // すでに数字ならそのまま変換
+    // すでに数字（半角）ならパースして返す (1～31 の範囲)
     if (RegExp(r'^\d+$').hasMatch(cnNum)) {
-      return int.parse(cnNum);
+      final val = int.parse(cnNum);
+      return (val >= 1 && val <= 31) ? val : 0;
     }
-    // 以下は簡易サンプル（"一"～"十" のみ）
-    // 必要があれば拡張してください
-    switch (cnNum) {
+
+    // 「二十三」=> 23, 「三十一」=> 31, など 1～31 のみ対応
+    int result = 0;
+
+    if (cnNum.contains('十')) {
+      // "十" を含む: "十" の前が tens, 後が ones
+      // 例: "二十" => tens=2 => 2*10=20
+      //     "二十一" => 21
+      //     "三十一" => 31
+      final parts = cnNum.split('十');
+      final front = parts[0]; // "三" など
+      final back  = parts.length > 1 ? parts[1] : '';
+
+      int tens = 0;
+      if (front.isEmpty) {
+        tens = 1; // 例: "十" => 10
+      } else {
+        tens = _singleCnDigit(front); // frontが複数文字("三")でも合計する
+      }
+
+      int ones = 0;
+      for (int i = 0; i < back.length; i++) {
+        ones += _singleCnDigit(back[i]);
+      }
+
+      result = tens * 10 + ones;
+    } else {
+      // "八" "三" のように "十" を含まない => 個々を合計
+      for (int i = 0; i < cnNum.length; i++) {
+        result += _singleCnDigit(cnNum[i]);
+      }
+    }
+
+    // 1～31 の範囲内なら result, そうでなければ 0
+    return (result >= 1 && result <= 31) ? result : 0;
+  }
+
+  // 1文字の漢数字(一～九,十)を返す
+  int _singleCnDigit(String ch) {
+    switch (ch) {
+      case '零':
+        return 0;
       case '一':
         return 1;
       case '二':
@@ -314,7 +349,7 @@ class ChineseDateParser implements Parser {
       case '十':
         return 10;
       default:
-      // "十一" などを考慮するなら追加実装
+      // それ以外は0 (ここでは簡易対応)
         return 0;
     }
   }
