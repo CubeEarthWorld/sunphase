@@ -3,6 +3,7 @@ import 'language_interface.dart';
 import '../core/parser.dart';
 import '../core/refiner.dart';
 import '../core/result.dart';
+import '../core/merge_datetime_refiner.dart'; // 共通マージ処理をインポート
 
 class EnglishLanguage implements Language {
   @override
@@ -11,8 +12,9 @@ class EnglishLanguage implements Language {
   @override
   List<Parser> get parsers => [EnglishDateParser()];
 
+  // refiners に共通の MergeDateTimeRefiner を追加
   @override
-  List<Refiner> get refiners => [EnglishRefiner()];
+  List<Refiner> get refiners => [EnglishRefiner(), MergeDateTimeRefiner()];
 }
 
 class EnglishDateParser implements Parser {
@@ -20,30 +22,31 @@ class EnglishDateParser implements Parser {
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     List<ParsingResult> results = [];
 
-    // 【1】相対表現＋時刻（例："today 16:31", "tomorrow 08:00"）
-    final RegExp relativeDayPattern = RegExp(
-      r'\b(today|tomorrow|yesterday)(?:\s+(\d{1,2}):(\d{2}))?\b',
+    // ① 相対表現＋時刻：例 "today 16:31", "tomorrow 08:00"
+    RegExp relativeDay = RegExp(
+      r'(today|tomorrow|yesterday)(?:\s+(\d{1,2}):(\d{2}))?',
       caseSensitive: false,
     );
-    for (final match in relativeDayPattern.allMatches(text)) {
-      String matched = match.group(1)!.toLowerCase();
+    for (final match in relativeDay.allMatches(text)) {
+      String word = match.group(1)!.toLowerCase();
       DateTime date;
-      if (matched == 'today') {
+      if (word == 'today') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
-      } else if (matched == 'tomorrow') {
+      } else if (word == 'tomorrow') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .add(const Duration(days: 1));
-      } else if (matched == 'yesterday') {
+            .add(Duration(days: 1));
+      } else if (word == 'yesterday') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .subtract(const Duration(days: 1));
+            .subtract(Duration(days: 1));
       } else {
         date = referenceDate;
       }
+      int hour = 0, minute = 0;
       if (match.group(2) != null && match.group(3) != null) {
-        int hour = int.parse(match.group(2)!);
-        int minute = int.parse(match.group(3)!);
-        date = DateTime(date.year, date.month, date.day, hour, minute);
+        hour = int.parse(match.group(2)!);
+        minute = int.parse(match.group(3)!);
       }
+      date = DateTime(date.year, date.month, date.day, hour, minute);
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
@@ -51,12 +54,12 @@ class EnglishDateParser implements Parser {
       ));
     }
 
-    // 【2】曜日表現（例："next Monday" など）
-    final RegExp weekdayPattern = RegExp(
-      r'\b(?:(next|last|this)\s+)?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b',
+    // ② 曜日表現：例 "next Monday", "last Tuesday"
+    RegExp weekdayExp = RegExp(
+      r'(?:(next|last|this)\s+)?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)',
       caseSensitive: false,
     );
-    for (final match in weekdayPattern.allMatches(text)) {
+    for (final match in weekdayExp.allMatches(text)) {
       String? modifier = match.group(1)?.toLowerCase();
       String weekdayStr = match.group(2)!;
       int targetWeekday = _weekdayFromString(weekdayStr);
@@ -68,66 +71,18 @@ class EnglishDateParser implements Parser {
       ));
     }
 
-    // 【3】絶対日付（例："August 17, 2013", "2013-08-17", "8/17/2013"）
-    final RegExp absoluteDatePattern = RegExp(
-      r'\b(?:([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})|(\d{4})-(\d{2})-(\d{2})|(\d{1,2})/(\d{1,2})/(\d{4}))\b',
+    // ③ 絶対日付＋時刻（英語）: 例 "August 17, 2013 18:40"
+    RegExp absoluteDate = RegExp(
+        r'(?:([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4}))(?:\s+(\d{1,2}):(\d{2}))?'
     );
-    for (final match in absoluteDatePattern.allMatches(text)) {
-      DateTime? date;
-      if (match.group(1) != null) {
-        String monthStr = match.group(1)!;
-        int day = int.parse(match.group(2)!);
-        int year = int.parse(match.group(3)!);
-        int month = _monthFromString(monthStr);
-        if (month > 0) {
-          date = DateTime(year, month, day);
-        }
-      } else if (match.group(4) != null) {
-        int year = int.parse(match.group(4)!);
-        int month = int.parse(match.group(5)!);
-        int day = int.parse(match.group(6)!);
-        date = DateTime(year, month, day);
-      } else if (match.group(7) != null) {
-        int month = int.parse(match.group(7)!);
-        int day = int.parse(match.group(8)!);
-        int year = int.parse(match.group(9)!);
-        date = DateTime(year, month, day);
-      }
-      if (date != null) {
-        results.add(ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          component: ParsedComponent(date: date),
-        ));
-      }
-    }
-
-    // 【4】日-月-年パターン（例："17 August 2013"）
-    final RegExp dayMonthYearPattern = RegExp(
-      r'\b(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\b',
-    );
-    for (final match in dayMonthYearPattern.allMatches(text)) {
-      int day = int.parse(match.group(1)!);
-      String monthStr = match.group(2)!;
+    for (final match in absoluteDate.allMatches(text)) {
+      String monthStr = match.group(1)!;
+      int day = int.parse(match.group(2)!);
       int year = int.parse(match.group(3)!);
       int month = _monthFromString(monthStr);
-      if (month > 0) {
-        DateTime date = DateTime(year, month, day);
-        results.add(ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          component: ParsedComponent(date: date),
-        ));
-      }
-    }
-
-    // 【5】相対期間（例："next week", "last month", "this year"）
-    final RegExp relativePeriodPattern =
-    RegExp(r'\b(?:(next|last|this)\s+)(week|month|year)\b', caseSensitive: false);
-    for (final match in relativePeriodPattern.allMatches(text)) {
-      String modifier = match.group(1)!.toLowerCase();
-      String period = match.group(2)!.toLowerCase();
-      DateTime date = _getRelativePeriodDate(referenceDate, period, modifier);
+      int hour = match.group(4) != null ? int.parse(match.group(4)!) : 0;
+      int minute = match.group(5) != null ? int.parse(match.group(5)!) : 0;
+      DateTime date = DateTime(year, month, day, hour, minute);
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
@@ -135,17 +90,17 @@ class EnglishDateParser implements Parser {
       ));
     }
 
-    // 【6】相対数値表現（例："5 days ago", "2 weeks from now"）
-    final RegExp relativeNumberPattern = RegExp(
-      r'\b(?:(\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty))\s+(day|week|month|year)s?\s+(ago|from\s+now)\b',
-      caseSensitive: false,
+    // ④ ISO/数字形式の絶対日付＋時刻: 例 "2013-08-17 18:40"
+    RegExp isoDate = RegExp(
+        r'(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T]+(\d{1,2}):(\d{2}))?'
     );
-    for (final match in relativeNumberPattern.allMatches(text)) {
-      String numStr = match.group(1)!.toLowerCase();
-      int number = _enNumberToInt(numStr);
-      String unit = match.group(2)!.toLowerCase();
-      String direction = match.group(3)!.toLowerCase();
-      DateTime date = _calculateRelativeDate(referenceDate, number, unit, direction);
+    for (final match in isoDate.allMatches(text)) {
+      int year = int.parse(match.group(1)!);
+      int month = int.parse(match.group(2)!);
+      int day = int.parse(match.group(3)!);
+      int hour = match.group(4) != null ? int.parse(match.group(4)!) : 0;
+      int minute = match.group(5) != null ? int.parse(match.group(5)!) : 0;
+      DateTime date = DateTime(year, month, day, hour, minute);
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
@@ -153,41 +108,25 @@ class EnglishDateParser implements Parser {
       ));
     }
 
-    // 【7】ISO8601等の標準日付文字列
-    try {
-      final parsedDate = DateTime.parse(text.trim());
-      results.add(ParsingResult(
-        index: 0,
-        text: text,
-        component: ParsedComponent(date: parsedDate),
-      ));
-    } catch (_) {}
-
-    // 【8】単独の数字（例："6th"）→ 今月または来月の最も近いその日
-    final RegExp singleDayPattern = RegExp(r'\b(\d{1,2})(?:st|nd|rd|th)\b', caseSensitive: false);
-    for (final match in singleDayPattern.allMatches(text)) {
-      int day = int.parse(match.group(1)!);
-      DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
-      DateTime candidate = DateTime(current.year, current.month, day);
-      if (current.day > day) {
-        int nextMonth = current.month + 1;
-        int nextYear = current.year;
-        if (nextMonth > 12) {
-          nextMonth -= 12;
-          nextYear += 1;
-        }
-        candidate = DateTime(nextYear, nextMonth, day);
-      }
+    // ⑤ 日付のみ: 例 "8/17/2013"（時刻は 00:00）
+    RegExp mdy = RegExp(
+        r'(\d{1,2})/(\d{1,2})/(\d{4})'
+    );
+    for (final match in mdy.allMatches(text)) {
+      int month = int.parse(match.group(1)!);
+      int day = int.parse(match.group(2)!);
+      int year = int.parse(match.group(3)!);
+      DateTime date = DateTime(year, month, day);
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
-        component: ParsedComponent(date: candidate),
+        component: ParsedComponent(date: date),
       ));
     }
 
-    // 【9】追加：時刻のみのパターン（例："16:31"）
-    final RegExp timePattern = RegExp(r'\b(\d{1,2}):(\d{2})\b');
-    for (final match in timePattern.allMatches(text)) {
+    // ⑥ 時刻のみ（数字形式）: 例 "16:21" → 参照日付に対して最も近い未来の時刻
+    RegExp timeOnly = RegExp(r'(?<!\d)(\d{1,2}):(\d{2})(?!\d)');
+    for (final match in timeOnly.allMatches(text)) {
       int hour = int.parse(match.group(1)!);
       int minute = int.parse(match.group(2)!);
       DateTime candidate = DateTime(
@@ -209,194 +148,46 @@ class EnglishDateParser implements Parser {
   // 以下、内部ヘルパー関数
   int _weekdayFromString(String weekday) {
     switch (weekday.toLowerCase()) {
-      case 'monday':
-        return DateTime.monday;
-      case 'tuesday':
-        return DateTime.tuesday;
-      case 'wednesday':
-        return DateTime.wednesday;
-      case 'thursday':
-        return DateTime.thursday;
-      case 'friday':
-        return DateTime.friday;
-      case 'saturday':
-        return DateTime.saturday;
-      case 'sunday':
-        return DateTime.sunday;
-      default:
-        return DateTime.monday;
+      case 'monday': return DateTime.monday;
+      case 'tuesday': return DateTime.tuesday;
+      case 'wednesday': return DateTime.wednesday;
+      case 'thursday': return DateTime.thursday;
+      case 'friday': return DateTime.friday;
+      case 'saturday': return DateTime.saturday;
+      case 'sunday': return DateTime.sunday;
+      default: return DateTime.monday;
     }
   }
 
-  DateTime _getDateForWeekday(
-      DateTime reference, int targetWeekday, String? modifier) {
-    DateTime current = DateTime(reference.year, reference.month, reference.day);
-    int diff = targetWeekday - current.weekday;
+  DateTime _getDateForWeekday(DateTime reference, int targetWeekday, String? modifier) {
+    DateTime base = DateTime(reference.year, reference.month, reference.day);
+    int diff = targetWeekday - base.weekday;
     if (modifier == null || modifier.isEmpty || modifier == 'this') {
-      if (diff <= 0) {
-        diff += 7;
-      }
+      if (diff <= 0) diff += 7;
     } else if (modifier == 'next') {
-      if (diff <= 0) {
-        diff += 7;
-      }
+      if (diff <= 0) diff += 7;
       diff += 7;
     } else if (modifier == 'last') {
-      if (diff >= 0) {
-        diff -= 7;
-      }
+      if (diff >= 0) diff -= 7;
     }
-    return current.add(Duration(days: diff));
+    return base.add(Duration(days: diff));
   }
 
   int _monthFromString(String month) {
     switch (month.toLowerCase()) {
-      case 'january':
-      case 'jan':
-        return 1;
-      case 'february':
-      case 'feb':
-        return 2;
-      case 'march':
-      case 'mar':
-        return 3;
-      case 'april':
-      case 'apr':
-        return 4;
-      case 'may':
-        return 5;
-      case 'june':
-      case 'jun':
-        return 6;
-      case 'july':
-      case 'jul':
-        return 7;
-      case 'august':
-      case 'aug':
-        return 8;
-      case 'september':
-      case 'sep':
-        return 9;
-      case 'october':
-      case 'oct':
-        return 10;
-      case 'november':
-      case 'nov':
-        return 11;
-      case 'december':
-      case 'dec':
-        return 12;
-      default:
-        return 0;
-    }
-  }
-
-  DateTime _getRelativePeriodDate(
-      DateTime reference, String period, String modifier) {
-    switch (period) {
-      case 'week':
-        if (modifier == 'next') {
-          return reference.add(const Duration(days: 7));
-        } else if (modifier == 'last') {
-          return reference.subtract(const Duration(days: 7));
-        } else {
-          return reference;
-        }
-      case 'month':
-        if (modifier == 'next') {
-          return DateTime(reference.year, reference.month + 1, reference.day);
-        } else if (modifier == 'last') {
-          return DateTime(reference.year, reference.month - 1, reference.day);
-        } else {
-          return reference;
-        }
-      case 'year':
-        if (modifier == 'next') {
-          return DateTime(reference.year + 1, reference.month, reference.day);
-        } else if (modifier == 'last') {
-          return DateTime(reference.year - 1, reference.month, reference.day);
-        } else {
-          return reference;
-        }
-      default:
-        return reference;
-    }
-  }
-
-  DateTime _calculateRelativeDate(
-      DateTime reference, int number, String unit, String direction) {
-    bool isFuture = direction.contains('from now');
-    int daysToAdd = 0;
-    switch (unit) {
-      case 'day':
-        daysToAdd = number;
-        break;
-      case 'week':
-        daysToAdd = number * 7;
-        break;
-      case 'month':
-        daysToAdd = number * 30;
-        break;
-      case 'year':
-        daysToAdd = number * 365;
-        break;
-      default:
-        daysToAdd = 0;
-    }
-    return isFuture
-        ? reference.add(Duration(days: daysToAdd))
-        : reference.subtract(Duration(days: daysToAdd));
-  }
-
-  int _enNumberToInt(String word) {
-    if (RegExp(r'^\d+$').hasMatch(word)) {
-      return int.parse(word);
-    }
-    switch (word) {
-      case 'zero':
-        return 0;
-      case 'one':
-        return 1;
-      case 'two':
-        return 2;
-      case 'three':
-        return 3;
-      case 'four':
-        return 4;
-      case 'five':
-        return 5;
-      case 'six':
-        return 6;
-      case 'seven':
-        return 7;
-      case 'eight':
-        return 8;
-      case 'nine':
-        return 9;
-      case 'ten':
-        return 10;
-      case 'eleven':
-        return 11;
-      case 'twelve':
-        return 12;
-      case 'thirteen':
-        return 13;
-      case 'fourteen':
-        return 14;
-      case 'fifteen':
-        return 15;
-      case 'sixteen':
-        return 16;
-      case 'seventeen':
-        return 17;
-      case 'eighteen':
-        return 18;
-      case 'nineteen':
-        return 19;
-      case 'twenty':
-        return 20;
-      default:
-        return 0;
+      case 'january': case 'jan': return 1;
+      case 'february': case 'feb': return 2;
+      case 'march': case 'mar': return 3;
+      case 'april': case 'apr': return 4;
+      case 'may': return 5;
+      case 'june': case 'jun': return 6;
+      case 'july': case 'jul': return 7;
+      case 'august': case 'aug': return 8;
+      case 'september': case 'sep': return 9;
+      case 'october': case 'oct': return 10;
+      case 'november': case 'nov': return 11;
+      case 'december': case 'dec': return 12;
+      default: return 0;
     }
   }
 }

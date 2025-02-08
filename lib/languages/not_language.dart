@@ -13,20 +13,19 @@ class NonLanguage implements Language {
   List<Parser> get parsers => [NonLanguageDateTimeParser()];
 
   @override
-  List<Refiner> get refiners => [];
+  List<Refiner> get refiners => []; // 個別の統合処理は不要
 }
 
-/// 数値や記号のみのパターンから日付・時刻情報を抽出する実装例。
 class NonLanguageDateTimeParser implements Parser {
   @override
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     List<ParsingResult> results = [];
 
-    // ① フル数字形式：YYYY/MM/DD または YYYY-MM-DD　（オプションで "HH:MM"）
-    RegExp fullNumericDateTime = RegExp(
-        r'\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:[ T]+(\d{1,2}):(\d{2}))?\b'
+    // ① フル数字形式: YYYY/MM/DD または YYYY-MM-DD （オプションで "HH:MM"）
+    RegExp fullNumeric = RegExp(
+        r'(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:[ T]+(\d{1,2}):(\d{2}))?'
     );
-    for (final match in fullNumericDateTime.allMatches(text)) {
+    for (final match in fullNumeric.allMatches(text)) {
       int year   = int.parse(match.group(1)!);
       int month  = int.parse(match.group(2)!);
       int day    = int.parse(match.group(3)!);
@@ -40,12 +39,11 @@ class NonLanguageDateTimeParser implements Parser {
       ));
     }
 
-    // ② 日本語／中国語スタイルの絶対日付：例 "2024年4月1日"（オプションで "16時31分"）
-    RegExp fullJPDateTime = RegExp(
+    // ② 日本語／中国語スタイルの絶対日付: "YYYY年M月D日"（オプションで "H時M分"）
+    RegExp jpDate = RegExp(
         r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日(?:\s*(\d{1,2})時(?:\s*(\d{1,2})分)?)?'
     );
-    for (final match in fullJPDateTime.allMatches(text)) {
-      if (match.group(2) == null) continue;
+    for (final match in jpDate.allMatches(text)) {
       int year   = match.group(1) != null ? int.parse(match.group(1)!) : referenceDate.year;
       int month  = int.parse(match.group(2)!);
       int day    = int.parse(match.group(3)!);
@@ -59,14 +57,14 @@ class NonLanguageDateTimeParser implements Parser {
       ));
     }
 
-    // ③ 日付のみ（年なし）：例 "5/6" → 現在の年を用い、もし過ぎていれば翌年を採用
-    RegExp mdPattern = RegExp(r'\b(\d{1,2})/(\d{1,2})(?!/)\b');
+    // ③ 日付のみ（年なし）："M/D" 形式（将来の日付を採用）
+    RegExp mdPattern = RegExp(r'(\d{1,2})/(\d{1,2})(?![0-9])');
     for (final match in mdPattern.allMatches(text)) {
       int month = int.parse(match.group(1)!);
       int day   = int.parse(match.group(2)!);
-      DateTime candidate = DateTime(referenceDate.year, month, day, 0, 0);
+      DateTime candidate = DateTime(referenceDate.year, month, day);
       if (!candidate.isAfter(referenceDate)) {
-        candidate = DateTime(referenceDate.year + 1, month, day, 0, 0);
+        candidate = DateTime(referenceDate.year + 1, month, day);
       }
       results.add(ParsingResult(
         index: match.start,
@@ -75,9 +73,9 @@ class NonLanguageDateTimeParser implements Parser {
       ));
     }
 
-    // ④ 時刻のみ（数字コロン形式）：例 "16:31" → 参照日の時刻として、もし過ぎていれば翌日
-    RegExp timeOnlyNumeric = RegExp(r'\b(\d{1,2}):(\d{2})\b');
-    for (final match in timeOnlyNumeric.allMatches(text)) {
+    // ④ 時刻のみ（数字コロン形式）："16:21" → 参照日付の時刻（過ぎていれば翌日）
+    RegExp timeNumeric = RegExp(r'(?<!\d)(\d{1,2}):(\d{2})(?!\d)');
+    for (final match in timeNumeric.allMatches(text)) {
       int hour   = int.parse(match.group(1)!);
       int minute = int.parse(match.group(2)!);
       DateTime candidate = DateTime(
@@ -93,9 +91,9 @@ class NonLanguageDateTimeParser implements Parser {
       ));
     }
 
-    // ⑤ 時刻のみ（日本語／中国語スタイル）：例 "16時24分" または "16時" → 同様に最も近い将来の時刻を返す
-    RegExp timeOnlyJP = RegExp(r'\b(\d{1,2})時(?:\s*(\d{1,2})分)?\b');
-    for (final match in timeOnlyJP.allMatches(text)) {
+    // ⑤ 時刻のみ（日本語／中国語スタイル）："16時41分" または "16時"
+    RegExp timeJP = RegExp(r'(\d{1,2})時(?:\s*(\d{1,2})分)?');
+    for (final match in timeJP.allMatches(text)) {
       int hour   = int.parse(match.group(1)!);
       int minute = match.group(2) != null ? int.parse(match.group(2)!) : 0;
       DateTime candidate = DateTime(
