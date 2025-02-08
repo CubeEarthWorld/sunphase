@@ -11,7 +11,7 @@ class ChineseNumberUtil {
   };
 
   static int parse(String input) {
-    // Try parsing as regular number first
+    // まず、アラビア数字をチェック
     int? value = int.tryParse(input);
     if (value != null) return value;
 
@@ -32,13 +32,12 @@ class ChineseNumberUtil {
       return (numberMap[input[0]] ?? 0) * 10 + (numberMap[input[1]] ?? 0); // e.g., 二十, 二十一
     }
 
-    if (input.length == 3 && input[1] == '十') { // Handle cases like "二十一" to "九十九"
+    if (input.length == 3 && input[1] == '十') {
       return (numberMap[input[0]] ?? 0) * 10 + (numberMap[input[2]] ?? 0);
     }
 
-    return 0; // Handle other cases with "十" if needed, or return 0 as default for unsupported cases.
+    return 0;
   }
-
 
   static int _parseSimpleNumber(String input) {
     int result = 0;
@@ -49,7 +48,6 @@ class ChineseNumberUtil {
   }
 }
 
-/// Base class for Chinese date/time parsing
 abstract class ChineseParserBase extends BaseParser {
   static const Map<String, int> weekdayMap = {
     "一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6,
@@ -74,6 +72,11 @@ abstract class ChineseParserBase extends BaseParser {
       return 12;
     }
     return hour;
+  }
+
+  // 修正：数値変換関数の適用
+  int parseKanjiOrArabicNumber(String text) {
+    return ChineseNumberUtil.parse(text);
   }
 }
 

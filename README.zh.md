@@ -21,30 +21,59 @@ Sunphase 是一个强大而灵活的 Dart 库，用于从自然语言文本中�
 import 'package:sunphase/sunphase.dart';
 
 void main() {
-    // 解析日期
-  List<ParsingResult> results = parse('今天');
+  // 解析日期
+  List<ParsingResult> results = parse('Today');
   print(results);
 
-  // 解析英文日期
+// 解析时间
+  List<ParsingResult> results_time = parse('10:10');
+  print(results_time);
+
+// 解析日期和时间
+  List<ParsingResult> results_data = parse('march 7 10:10');
+  print(results_data);
+
+// 解析日语的日期和时间
+  List<ParsingResult> results_data_ja = parse('明日12时14分');
+  print(results_data_ja);
+
+// 解析中文的日期和时间
+  List<ParsingResult> results_data_zh = parse('三月七号上午九点');
+  print(results_data_zh);
+
+// 解析英文的日期
   List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
   print(resultsEn);
 
-  // 解析中文日期
-  List<ParsingResult> resultsZh = parse('明天', language: 'zh');
-  print(resultsZh);
+// 解析中文的日期
+  List<ParsingResult> resultsJa = parse('三天后', language: 'zh');
+  print(resultsJa);
 
-  // 使用特定参考日期解析日期
-  List<ParsingResult> resultsRef = parse('下周', referenceDate: DateTime(2021, 2, 4));
+// 基于参考日期解析日期
+  List<ParsingResult> resultsRef = parse('Next Tuesday', referenceDate: DateTime(2021, 2, 4));
   print(resultsRef);
 
-  // 使用范围模式解析日期
-  List<ParsingResult> resultsRange = parse('下周', language: 'zh', rangeMode: true);
+// 在范围模式下解析日期
+  List<ParsingResult> resultsRange = parse('Next week', rangeMode: true);
   print(resultsRange);
 
-  // 使用特定时区解析日期(UTC)。时区应以字符串形式提供，表示与 UTC 的分钟偏移量，例如，Asia/Shanghai 为 "480"。
-  List<ParsingResult> resultsTimezone = parse('明天', language: 'zh', timezone: '480');
+// 使用特定时区解析日期。时区必须以与UTC的分钟偏移量表示。例如，UTC+8表示为 "480"。
+  List<ParsingResult> resultsTimezone = parse('明天', timezone: '480');
   print(resultsTimezone);
 }
+
+// 在2025-02-08 11:05:00.000执行时
+//[[0] "today" -> 2025-02-09 00:00:00.000]
+//[[0] "10:10" -> 2025-02-09 10:10:00.000]
+//[[0] "march 7" -> 2025-03-07 10:10:00.000]
+//[[0] "明日12时14分" -> 2025-02-10 12:14:00.000, [0] "明日12时14分" -> 2025-02-10 12:14:00.000, [2] "12时14分" -> 2025-02-09 12:14:00.000]
+//[0] "三月七号" -> 2025-03-07 00:00:00.000, [2] "七号" -> 2025-03-07 00:00:00.000, [0] "三月七号上午九点" -> 2025-03-07 09:00:00.000]
+//[0] "tomorrow" -> 2025-02-10 00:00:00.000]
+//[0] "三天后" -> 2025-02-12 04:46:31.708556]
+//[0] "next tuesday" -> 2021-02-09 00:00:00.000]
+//[0] "next week" -> 2025-02-10 00:00:00.000, [0] "next week" -> 2025-02-11 00:00:00.000, [0] "next week" -> 2025-02-12 00:00:00.000, [0] "next week" -> 2025-02-13 00:00:00.000, [0] "next week" -> 2025-02-14 00:00:00.000, [0] "next week" -> 2025-02-15 00:00:00.000, [0] "next week" -> 2025-02-16 00:00:00.000]
+//[0] "明天" -> 2025-02-10 08:00:00.000]
+
 ```
 
 ## 安装

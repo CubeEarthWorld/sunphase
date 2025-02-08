@@ -15,34 +15,62 @@ There is a sample project at https://github.com/CubeEarthWorld/sunphase_sample
 
 ## Usage
 ```dart
+
 import 'package:sunphase/sunphase.dart';
 
 void main() {
+// Parse the date
+List<ParsingResult> results = parse('Today');
+print(results);
 
-    // Parse a date
-  List<ParsingResult> results = parse('Today');
-  print(results);
+// Parse the time
+List<ParsingResult> results_time = parse('10:10');
+print(results_time);
 
-  // Parse a date in English
-  List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
-  print(resultsEn);
+// Parse the date and time
+List<ParsingResult> results_data = parse('march 7 10:10');
+print(results_data);
 
-  // Parse a date in Japanese
-  List<ParsingResult> resultsJa = parse('明日', language: 'ja');
-  print(resultsJa);
+// Parse the date and time in Japanese
+List<ParsingResult> results_data_ja = parse('明日12時14分');
+print(results_data_ja);
 
-  // Parse a date with a specific reference date
-  List<ParsingResult> resultsRef = parse('Next week', referenceDate: DateTime(2021, 2, 4));
-  print(resultsRef);
+// Parse the date and time in Chinese
+List<ParsingResult> results_data_zh = parse('三月七号上午九点');
+print(results_data_zh);
 
-    // Parse a date with range mode
-  List<ParsingResult> resultsRange = parse('Next week', language: 'en', rangeMode: true);
-  print(resultsRange);
+// Parse the date in English
+List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
+print(resultsEn);
 
-  // Parse a date with a specific timezone. The timezone should be provided as a string representing the offset in minutes from UTC, e.g. "-480" for America/Los_Angeles.
-  List<ParsingResult> resultsTimezone = parse('Tomorrow', language: 'en', timezone: '-480');
-  print(resultsTimezone);
+// Parse the date in Chinese
+List<ParsingResult> resultsJa = parse('三天后', language: 'zh');
+print(resultsJa);
+
+// Parse the date based on a reference date
+List<ParsingResult> resultsRef = parse('Next Tuesday', referenceDate: DateTime(2021, 2, 4));
+print(resultsRef);
+
+// Parse the date in range mode
+List<ParsingResult> resultsRange = parse('Next week', rangeMode: true);
+print(resultsRange);
+
+// Parse the date with a specific time zone. The time zone must be specified as an offset in minutes from UTC. For example, UTC+8 is "480".
+List<ParsingResult> resultsTimezone = parse('明天', timezone: '480');
+print(resultsTimezone);
 }
+
+// Executed at 2025-02-08 11:05:00.000
+//[[0] "today" -> 2025-02-09 00:00:00.000]
+//[[0] "10:10" -> 2025-02-09 10:10:00.000]
+//[[0] "march 7" -> 2025-03-07 10:10:00.000]
+//[[0] "明日12時14分" -> 2025-02-10 12:14:00.000, [0] "明日12時14分" -> 2025-02-10 12:14:00.000, [2] "12時14分" -> 2025-02-09 12:14:00.000]
+//[0] "三月七号" -> 2025-03-07 00:00:00.000, [2] "七号" -> 2025-03-07 00:00:00.000, [0] "三月七号上午九点" -> 2025-03-07 09:00:00.000]
+//[0] "tomorrow" -> 2025-02-10 00:00:00.000]
+//[0] "三天后" -> 2025-02-12 04:46:31.708556]
+//[0] "next tuesday" -> 2021-02-09 00:00:00.000]
+//[0] "next week" -> 2025-02-10 00:00:00.000, [0] "next week" -> 2025-02-11 00:00:00.000, [0] "next week" -> 2025-02-12 00:00:00.000, [0] "next week" -> 2025-02-13 00:00:00.000, [0] "next week" -> 2025-02-14 00:00:00.000, [0] "next week" -> 2025-02-15 00:00:00.000, [0] "next week" -> 2025-02-16 00:00:00.000]
+//[0] "明天" -> 2025-02-10 08:00:00.000]
 
 ```
 

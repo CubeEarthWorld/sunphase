@@ -53,16 +53,18 @@ class JaNumberConverter {
   }
 }
 
-/// 日本語の相対表現解析の基本機能を提供する抽象クラス
 abstract class BaseJaParser extends BaseParser {
   DateTime adjustForPastDate(DateTime date, ParsingContext context) {
     if (date.isBefore(context.referenceDate)) {
       if (date.month < context.referenceDate.month) {
-        return DateTime(date.year + 1, date.month, date.day,
-            date.hour, date.minute);
+        return DateTime(date.year + 1, date.month, date.day, date.hour, date.minute);
       }
     }
     return date;
+  }
+
+  int parseKanjiOrArabicNumber(String text) {
+    return JaNumberConverter.parseNumber(text);
   }
 }
 
@@ -141,19 +143,15 @@ class JaRelativeParser extends BaseJaParser {
     final pattern = RegExp(r'([0-9一二三四五六七八九十]+)月([0-9一二三四五六七八九十]+)日([0-9一二三四五六七八九十]+)時([0-9一二三四五六七八九十]+)分');
 
     for (var match in pattern.allMatches(text)) {
-      int month = JaNumberConverter.parseNumber(match.group(1)!);
-      int day = JaNumberConverter.parseNumber(match.group(2)!);
-      int hour = JaNumberConverter.parseNumber(match.group(3)!);
-      int minute = JaNumberConverter.parseNumber(match.group(4)!);
+      int month = parseKanjiOrArabicNumber(match.group(1)!);
+      int day = parseKanjiOrArabicNumber(match.group(2)!);
+      int hour = parseKanjiOrArabicNumber(match.group(3)!);
+      int minute = parseKanjiOrArabicNumber(match.group(4)!);
 
       DateTime date = DateTime(context.referenceDate.year, month, day, hour, minute);
       date = adjustForPastDate(date, context);
 
-      results.add(ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          date: date
-      ));
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date));
     }
   }
 
