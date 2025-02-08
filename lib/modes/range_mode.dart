@@ -1,58 +1,44 @@
 // lib/modes/range_mode.dart
 import '../core/result.dart';
 import '../core/parsing_context.dart';
-import '../utils/date_utils.dart';
 
-/// If range_mode is enabled, this class generates a range of dates for expressions
-/// that indicate a period (e.g. "in 5 days" returns the dates for today through 5 days later).
+/// range_mode が有効なとき、各 ParsingResult に設定された range 情報に従い
+/// 複数日分の結果へ展開する（例："in 5 days" の場合、基準日時を含めて 5+1 日分を生成する）。
 class RangeMode {
-  /// Generate extended results based on the original parsing results.
-  /// If a result’s text matches a pattern like "in X days" (English)
-  /// or "X日以内" (Japanese), then generate a list of dates from the result date
-  /// (typically today) through (X - 1) days later.
   static List<ParsingResult> generate(List<ParsingResult> results, ParsingContext context) {
-    List<ParsingResult> rangeResults = [];
+    List<ParsingResult> expanded = [];
     for (var result in results) {
-      // Check for English range pattern: "in X days"
-      RegExp engRange = RegExp(r'in\s+(\d+)\s+days');
-      RegExpMatch? mEng = engRange.firstMatch(result.text.toLowerCase());
-      if (mEng != null) {
-        int days = int.parse(mEng.group(1)!);
-        // Generate a range including today up to (days - 1) days later.
+      if (result.rangeDays != null) {
+        int days = result.rangeDays!;
+        // 例："in 5 days" の場合、rangeDays に (5+1) を設定しているので
+        // 基準日時（通常は今日）から 0～(days-1) 日後まで生成する
         for (int i = 0; i < days; i++) {
-          DateTime d = DateUtils.adjustIfPast(context.referenceDate.add(Duration(days: i)), context.referenceDate);
-          rangeResults.add(ParsingResult(index: result.index, text: "${result.text} (Day ${i+1})", date: d));
+          DateTime d = result.date.add(Duration(days: i));
+          expanded.add(ParsingResult(index: result.index, text: result.text, date: d));
         }
-        continue;
-      }
-      // Check for Japanese range pattern: "X日以内"
-      RegExp jaRange = RegExp(r'([0-9一二三四五六七八九十]+)日以内');
-      RegExpMatch? mJa = jaRange.firstMatch(result.text);
-      if (mJa != null) {
-        int days = _parseJapaneseNumber(mJa.group(1)!);
-        for (int i = 0; i < days; i++) {
-          DateTime d = DateUtils.adjustIfPast(context.referenceDate.add(Duration(days: i)), context.referenceDate);
-          rangeResults.add(ParsingResult(index: result.index, text: "${result.text} (Day ${i+1})", date: d));
+      } else if (result.rangeType != null) {
+        if (result.rangeType == "week") {
+          // 次週の場合は、result.date を次週の初日とし、7日間分を展開する
+          for (int i = 0; i < 7; i++) {
+            DateTime d = result.date.add(Duration(days: i));
+            expanded.add(ParsingResult(index: result.index, text: result.text, date: d));
+          }
+        } else if (result.rangeType == "month") {
+          DateTime first = result.date;
+          // 翌月の0日目（＝当月の最終日）を求める
+          DateTime last = DateTime(first.year, first.month + 1, 0);
+          int totalDays = last.day;
+          for (int i = 0; i < totalDays; i++) {
+            DateTime d = first.add(Duration(days: i));
+            expanded.add(ParsingResult(index: result.index, text: result.text, date: d));
+          }
+        } else {
+          expanded.add(result);
         }
-        continue;
+      } else {
+        expanded.add(result);
       }
-      // For results not matching a range pattern, add as-is.
-      rangeResults.add(result);
     }
-    return rangeResults;
-  }
-
-  static int _parseJapaneseNumber(String s) {
-    int? value = int.tryParse(s);
-    if (value != null) return value;
-    Map<String, int> kanji = {
-      "零": 0, "一": 1, "二": 2, "三": 3, "四": 4,
-      "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
-    };
-    int result = 0;
-    for (int i = 0; i < s.length; i++) {
-      result = result * 10 + (kanji[s[i]] ?? 0);
-    }
-    return result;
+    return expanded;
   }
 }

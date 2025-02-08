@@ -2,17 +2,16 @@
 import '../core/base_parser.dart';
 import '../core/result.dart';
 import '../core/parsing_context.dart';
-import '../utils/date_utils.dart';
 
 /// 日本語の相対表現解析パーサー
-/// （例：「今日」「明日」「明後日」「昨日」「来週火曜」「来週日曜11時」「2週間後」「三日以内」など）
+/// （例：「今日」「明日」「明後日」「昨日」「来週火曜」「来週日曜11時」「2週間後」「5日以内」「三日以内」など）
 class JaRelativeParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
     DateTime ref = context.referenceDate;
 
-    // --- 統合パターン：「今日」「明日」「明後日」「昨日」＋任意の時刻指定 ---
+    // --- 「今日」「明日」「明後日」「昨日」＋任意の時刻指定の組み合わせ ---
     RegExp combined = RegExp(r'(今日|明日|明後日|昨日)(?:(\d{1,2})時)?');
     RegExpMatch? mCombined = combined.firstMatch(text);
     if (mCombined != null) {
@@ -32,13 +31,12 @@ class JaRelativeParser extends BaseParser {
       results.add(ParsingResult(index: mCombined.start, text: mCombined.group(0)!, date: candidate));
     }
 
-    // --- パターン："来週"＋曜日（任意時刻付き）【日本語では週の始まりを日曜とする】 ---
+    // --- 「来週」＋曜日（任意時刻指定）の場合（例：「来週火曜」「来週日曜11時」） ---
     RegExp regNextWeekday = RegExp(r'来週([月火水木金土日]曜)(?:(\d{1,2})時)?');
     RegExpMatch? mNextWeekday = regNextWeekday.firstMatch(text);
     if (mNextWeekday != null) {
       String weekdayStr = mNextWeekday.group(1)!;
-      // 日本語では「日曜」を週の初日とする（日曜:1, 月曜:2, …, 土曜:7）
-      Map<String, int> japWeekdayMap = {
+      Map<String, int> weekdayMap = {
         "日曜": 1,
         "月曜": 2,
         "火曜": 3,
@@ -47,9 +45,9 @@ class JaRelativeParser extends BaseParser {
         "金曜": 6,
         "土曜": 7,
       };
-      int targetDay = japWeekdayMap[weekdayStr]!;
-      // ISOの ref.weekday (月曜=1～日曜=7) を日本語週（日曜=1～土曜=7）に変換
-      int currentJap = (ref.weekday % 7) + 1;
+      int targetDay = weekdayMap[weekdayStr]!;
+      // 日本語では週の始まりを日曜とする（ref.weekday は月曜=1～日曜=7 なので変換）
+      int currentJap = ((ref.weekday % 7) + 1);
       int diff = (targetDay - currentJap + 7) % 7;
       if (diff == 0) diff = 7;
       DateTime candidate = ref.add(Duration(days: diff));
@@ -62,13 +60,16 @@ class JaRelativeParser extends BaseParser {
       results.add(ParsingResult(index: mNextWeekday.start, text: mNextWeekday.group(0)!, date: candidate));
     }
 
-    // --- パターン："([数字または漢数字])日以内"（非range_mode時は最終日＝基準日＋n日） ---
+    // --- 「X日以内」など range 表現の場合（今日を含むので rangeDays = X+1） ---
     RegExp withinDays = RegExp(r'([0-9一二三四五六七八九十]+)日以内');
     RegExpMatch? mWithin = withinDays.firstMatch(text);
     if (mWithin != null) {
       int days = _parseJapaneseNumber(mWithin.group(1)!);
-      DateTime target = ref.add(Duration(days: days));
-      results.add(ParsingResult(index: mWithin.start, text: mWithin.group(0)!, date: target));
+      results.add(ParsingResult(
+          index: mWithin.start,
+          text: mWithin.group(0)!,
+          date: ref,
+          rangeDays: days + 1));
     }
 
     // --- 数字を含む相対表現（例：「2週間後」「三日後」「4日後」「1ヶ月後」） ---
@@ -78,31 +79,47 @@ class JaRelativeParser extends BaseParser {
       String numStr = match.group(1)!;
       int value = _parseJapaneseNumber(numStr);
       String unit = match.group(2)!;
-      DateTime target;
+      DateTime candidate;
       if (unit == "日") {
-        target = ref.add(Duration(days: value));
+        candidate = ref.add(Duration(days: value));
       } else if (unit == "週間") {
-        target = ref.add(Duration(days: value * 7));
+        candidate = ref.add(Duration(days: value * 7));
       } else if (unit == "ヶ月") {
         int newMonth = ref.month + value;
         int newYear = ref.year + ((newMonth - 1) ~/ 12);
         newMonth = ((newMonth - 1) % 12) + 1;
-        target = DateTime(newYear, newMonth, ref.day);
+        candidate = DateTime(newYear, newMonth, ref.day);
       } else {
         continue;
       }
-      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: target));
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: candidate));
     }
 
-    // --- 既存の「来週」「先週」「来月」「先月」「来年」「今年」の固定表現 ---
+    // --- 固定表現 ---
+    // 「来週」が単独の場合は、range_type = "week"（次週の初日から7日分）
+    if (text.trim() == "来週") {
+      int daysToSunday = (8 - ((ref.weekday % 7) + 1)) % 7;
+      if (daysToSunday == 0) daysToSunday = 7;
+      DateTime startOfWeek =
+      DateTime(ref.year, ref.month, ref.day).add(Duration(days: daysToSunday));
+      results.add(ParsingResult(
+          index: text.indexOf("来週"),
+          text: "来週",
+          date: startOfWeek,
+          rangeType: "week"));
+    }
     if (text.contains("先週")) {
       DateTime lastWeek = ref.subtract(Duration(days: 7));
       results.add(ParsingResult(index: text.indexOf("先週"), text: "先週", date: lastWeek));
     }
-    if (text.contains("来月")) {
-      // 例：来月は同日（時刻は0:00）として処理
-      DateTime nextMonth = DateTime(ref.year, ref.month + 1, ref.day);
-      results.add(ParsingResult(index: text.indexOf("来月"), text: "来月", date: nextMonth));
+    // 「来月」が単独の場合は、range_type = "month"（次月の1日からその月末まで）
+    if (text.trim() == "来月") {
+      DateTime nextMonthStart = DateTime(ref.year, ref.month + 1, 1);
+      results.add(ParsingResult(
+          index: text.indexOf("来月"),
+          text: "来月",
+          date: nextMonthStart,
+          rangeType: "month"));
     }
     if (text.contains("先月")) {
       DateTime lastMonth = DateTime(ref.year, ref.month - 1, ref.day);
@@ -113,7 +130,10 @@ class JaRelativeParser extends BaseParser {
       results.add(ParsingResult(index: text.indexOf("来年"), text: "来年", date: nextYear));
     }
     if (text.contains("今年")) {
-      results.add(ParsingResult(index: text.indexOf("今年"), text: "今年", date: DateTime(ref.year, ref.month, ref.day)));
+      results.add(ParsingResult(
+          index: text.indexOf("今年"),
+          text: "今年",
+          date: DateTime(ref.year, ref.month, ref.day)));
     }
 
     return results;
@@ -123,8 +143,17 @@ class JaRelativeParser extends BaseParser {
     int? value = int.tryParse(s);
     if (value != null) return value;
     Map<String, int> kanji = {
-      "零": 0, "一": 1, "二": 2, "三": 3, "四": 4,
-      "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+      "零": 0,
+      "一": 1,
+      "二": 2,
+      "三": 3,
+      "四": 4,
+      "五": 5,
+      "六": 6,
+      "七": 7,
+      "八": 8,
+      "九": 9,
+      "十": 10,
     };
     int result = 0;
     for (int i = 0; i < s.length; i++) {
@@ -135,8 +164,6 @@ class JaRelativeParser extends BaseParser {
 }
 
 /// Parser for absolute date expressions in Japanese.
-/// （例：「4月26日4時8分」、「三月四号」、「三月六号十一点」など）
-/// ※また「今年」「来年」等の接頭語に対応
 class JaAbsoluteParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
@@ -161,7 +188,7 @@ class JaAbsoluteParser extends BaseParser {
           year = context.referenceDate.year + 1;
         } else if (prefix == "去年") {
           year = context.referenceDate.year - 1;
-        } else { // "今年"
+        } else {
           year = context.referenceDate.year;
         }
       } else {
@@ -171,11 +198,14 @@ class JaAbsoluteParser extends BaseParser {
           year += 1;
         }
       }
-      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: DateTime(year, month, day, hour, minute)));
+      results.add(ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          date: DateTime(year, month, day, hour, minute)));
     }
 
     // 漢数字形式：例 "三月四号" または "三月六号十一点"
-    RegExp regKanji = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[日号](?:(\d{1,2})时)?(?:(\d{1,2})分)?');
+    RegExp regKanji = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[日号](?:(\d{1,2})時)?(?:(\d{1,2})分)?');
     Iterable<RegExpMatch> kanjiMatches = regKanji.allMatches(text);
     for (var match in kanjiMatches) {
       int month = _parseJapaneseNumber(match.group(1)!);
@@ -198,8 +228,17 @@ class JaAbsoluteParser extends BaseParser {
     int? value = int.tryParse(s);
     if (value != null) return value;
     Map<String, int> kanji = {
-      "零": 0, "一": 1, "二": 2, "三": 3, "四": 4,
-      "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+      "零": 0,
+      "一": 1,
+      "二": 2,
+      "三": 3,
+      "四": 4,
+      "五": 5,
+      "六": 6,
+      "七": 7,
+      "八": 8,
+      "九": 9,
+      "十": 10,
     };
     int result = 0;
     for (int i = 0; i < s.length; i++) {
@@ -210,7 +249,6 @@ class JaAbsoluteParser extends BaseParser {
 }
 
 /// Parser for time-only expressions in Japanese.
-/// （例：「21時31分」「10時5分」）
 class JaTimeOnlyParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
@@ -220,8 +258,8 @@ class JaTimeOnlyParser extends BaseParser {
     for (var match in matches) {
       int hour = int.parse(match.group(1)!);
       int minute = match.group(2) != null ? int.parse(match.group(2)!) : 0;
-      DateTime candidate = DateTime(context.referenceDate.year, context.referenceDate.month, context.referenceDate.day, hour, minute);
-      // 時刻が基準より過去なら翌日とする
+      DateTime candidate = DateTime(context.referenceDate.year, context.referenceDate.month,
+          context.referenceDate.day, hour, minute);
       if (!candidate.isAfter(context.referenceDate)) {
         candidate = candidate.add(Duration(days: 1));
       }
