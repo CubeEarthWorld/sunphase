@@ -1,15 +1,16 @@
 // lib/sunphase.dart
-import 'core/result.dart';  // ここで明示的にimportする
-export 'core/result.dart'; // 外部向けに再エクスポートする
+import 'core/result.dart';  // 内部で使用するため明示的にimport
+export 'core/result.dart'; // 利用者が「package:sunphase/sunphase.dart」でParsingResultを利用できるよう再エクスポート
 
 import 'core/parser_manager.dart';
 
-/// テキストから日付情報を抽出し、解析結果のリストを返す。
-/// [text]：解析対象の文字列
-/// [referenceDate]：解析の基準日時（指定がない場合は現在日時）
-/// [language]：使用する言語コード（例："en", "ja", "zh"）
-/// [rangeMode]：true の場合、範囲モードで複数の日時を返す
-/// [timezone]：タイムゾーンのオフセット（分単位、例："540"）
+/// Parses natural language date expressions and returns a list of parsing results.
+///
+/// [text]: The input text to parse.
+/// [referenceDate]: The reference date (defaults to current date/time if not provided).
+/// [language]: The language code to use (e.g., "en", "ja", "zh").
+/// [rangeMode]: If true, returns a range of dates for expressions indicating a period.
+/// [timezone]: The timezone offset in minutes as a string (e.g., "540").
 List<ParsingResult> parse(String text,
     {DateTime? referenceDate,
       String? language,

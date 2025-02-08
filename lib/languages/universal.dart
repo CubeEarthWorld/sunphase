@@ -3,12 +3,12 @@ import '../core/base_parser.dart';
 import '../core/result.dart';
 import '../core/parsing_context.dart';
 
-/// 言語に依存しない、ISO形式や一般的な日付表現に対応するパーサー。
+/// Parser for language-independent date expressions (e.g., ISO formats).
 class UniversalParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
-    // ISO 8601 形式 (例: "2014-11-30T08:15:30-05:30")
+    // ISO 8601 format detection
     RegExp isoExp = RegExp(
         r'\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+\-]\d{2}:?\d{2})?');
     Iterable<RegExpMatch> isoMatches = isoExp.allMatches(text);
@@ -18,7 +18,7 @@ class UniversalParser extends BaseParser {
         DateTime dt = DateTime.parse(dateStr);
         results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
       } catch (e) {
-        // エラーは無視
+        // ignore error
       }
     }
 
@@ -31,11 +31,11 @@ class UniversalParser extends BaseParser {
         DateTime dt = DateTime.parse(dateStr);
         results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
       } catch (e) {
-        // エラー無視
+        // ignore error
       }
     }
 
-    // 絶対日付の範囲表現を検出: 例 "17 August 2013 - 19 August 2013"
+    // Range expression: e.g., "17 August 2013 - 19 August 2013"
     RegExp rangeExp = RegExp(
         r'(\d{1,2}\s*(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[\s,]+\d{4})\s*-\s*(\d{1,2}\s*(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[\s,]+\d{4})',
         caseSensitive: false);
@@ -75,7 +75,7 @@ class UniversalParser extends BaseParser {
     dateStr = dateStr.toLowerCase().trim();
     RegExp pattern1 = RegExp(r'^(\d{1,2})\s*([a-z]+)\s*(\d{4})$');
     RegExp pattern2 = RegExp(r'^([a-z]+)\s*(\d{1,2})\s*(\d{4})$');
-    RegExpMatch? m = pattern1.firstMatch(dateStr);
+    RegExpMatch? m = pattern1.firstMatch(dateStr) ?? pattern2.firstMatch(dateStr);
     if (m != null) {
       int day = int.parse(m.group(1)!);
       String monthStr = m.group(2)!;
@@ -84,24 +84,12 @@ class UniversalParser extends BaseParser {
       if (month != null) {
         return DateTime(year, month, day);
       }
-    } else {
-      m = pattern2.firstMatch(dateStr);
-      if (m != null) {
-        // この場合、グループ1: 月, グループ2: 日, グループ3: 年
-        String monthStr = m.group(1)!;
-        int? month = monthMap[monthStr];
-        int day = int.parse(m.group(2)!);
-        int year = int.parse(m.group(3)!);
-        if (month != null) {
-          return DateTime(year, month, day);
-        }
-      }
     }
     return null;
   }
 }
 
-/// 言語に依存しないパーサー群をまとめたクラス。
+/// Universal parsers collection.
 class UniversalParsers {
   static final List<BaseParser> parsers = [
     UniversalParser(),
