@@ -3,439 +3,385 @@ import '../core/base_parser.dart';
 import '../core/result.dart';
 import '../core/parsing_context.dart';
 
-/// 中文相对表达式解析器
-/// （例如：“今天”，“明天”，“后天”，“昨天”，“2天后”，“3天前”，“下周四”等）
-class ZhRelativeParser extends BaseParser {
+/// Utility class for Chinese number parsing
+class ChineseNumberUtil {
+  static const Map<String, int> numberMap = {
+    "零": 0, "一": 1, "二": 2, "三": 3, "四": 4,
+    "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+  };
+
+  static int parse(String input) {
+    // Try parsing as regular number first
+    int? value = int.tryParse(input);
+    if (value != null) return value;
+
+    if (input.contains("十")) {
+      return _parseWithTen(input);
+    }
+
+    return _parseSimpleNumber(input);
+  }
+
+  static int _parseWithTen(String input) {
+    if (input == "十") return 10;
+
+    if (input.length == 2) {
+      if (input.startsWith("十")) {
+        return 10 + (numberMap[input[1]] ?? 0);
+      }
+      return (numberMap[input[0]] ?? 0) * 10 + (numberMap[input[1]] ?? 0); // e.g., 二十, 二十一
+    }
+
+    if (input.length == 3 && input[1] == '十') { // Handle cases like "二十一" to "九十九"
+      return (numberMap[input[0]] ?? 0) * 10 + (numberMap[input[2]] ?? 0);
+    }
+
+    return 0; // Handle other cases with "十" if needed, or return 0 as default for unsupported cases.
+  }
+
+
+  static int _parseSimpleNumber(String input) {
+    int result = 0;
+    for (String char in input.split('')) {
+      result = result * 10 + (numberMap[char] ?? 0);
+    }
+    return result;
+  }
+}
+
+/// Base class for Chinese date/time parsing
+abstract class ChineseParserBase extends BaseParser {
+  static const Map<String, int> weekdayMap = {
+    "一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6,
+    "日": 7, "天": 7,
+  };
+
+  DateTime adjustToFuture(DateTime date, DateTime reference) {
+    if (!date.isAfter(reference)) {
+      return DateTime(date.year + 1, date.month, date.day,
+          date.hour, date.minute);
+    }
+    return date;
+  }
+
+  int getHourWithPeriod(int hour, String? period) {
+    if (period == null) return hour;
+
+    if (period.contains("下午") || period.contains("晚上")) {
+      return hour < 12 ? hour + 12 : hour;
+    }
+    if (period.contains("中午")) {
+      return 12;
+    }
+    return hour;
+  }
+}
+
+/// Parser for relative expressions like "今天", "明天", "后天", etc.
+class ZhRelativeParser extends ChineseParserBase {
+  static final RegExp _combinedPattern = RegExp(
+      r'^(今天|明天|后天|昨天)(?:\s*(上午|中午|下午|晚上))?\s*(\d{1,2})点(?:\s*(\d{1,2})分)?$');
+
+  @override
+  List<ParsingResult> parse(String text, ParsingContext context) {
+    List<ParsingResult> results = [];
+
+    // Parse combined patterns (e.g., "明天上午9点")
+    var combinedMatch = _combinedPattern.firstMatch(text);
+    if (combinedMatch != null) {
+      results.add(_parseCombinedDateTime(combinedMatch, context.referenceDate));
+    } else {
+      results.addAll(_parseSimpleDayExpressions(text, context.referenceDate));
+      results.addAll(_parseDayOffset(text, context.referenceDate));
+      results.addAll(_parseWeekExpressions(text, context.referenceDate));
+    }
+
+    return results;
+  }
+
+  ParsingResult _parseCombinedDateTime(RegExpMatch match, DateTime ref) {
+    final dayOffsets = {"今天": 0, "明天": 1, "后天": 2, "昨天": -1};
+    int offset = dayOffsets[match.group(1)] ?? 0;
+
+    DateTime date = ref.add(Duration(days: offset));
+    int hour = int.parse(match.group(3)!);
+    int minute = match.group(4) != null ? int.parse(match.group(4)!) : 0;
+
+    hour = getHourWithPeriod(hour, match.group(2));
+    date = DateTime(date.year, date.month, date.day, hour, minute);
+
+    return ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        date: date
+    );
+  }
+
+  List<ParsingResult> _parseSimpleDayExpressions(String text, DateTime ref) {
+    final dayWords = ["今天", "明天", "后天", "昨天"];
+    final dayOffsets = [0, 1, 2, -1];
+    List<ParsingResult> results = [];
+
+    for (int i = 0; i < dayWords.length; i++) {
+      if (text.contains(dayWords[i])) {
+        DateTime date = ref.add(Duration(days: dayOffsets[i]));
+        date = DateTime(date.year, date.month, date.day);
+        results.add(ParsingResult(
+            index: text.indexOf(dayWords[i]),
+            text: dayWords[i],
+            date: date
+        ));
+      }
+    }
+    return results;
+  }
+
+  List<ParsingResult> _parseDayOffset(String text, DateTime ref) {
+    final RegExp pattern = RegExp(r'(\d+|[零一二三四五六七八九十]+)天(后|前)');
+    List<ParsingResult> results = [];
+
+    for (var match in pattern.allMatches(text)) {
+      int days = ChineseNumberUtil.parse(match.group(1)!);
+      bool isForward = match.group(2) == "后";
+
+      DateTime date = isForward
+          ? ref.add(Duration(days: days))
+          : ref.subtract(Duration(days: days));
+
+      results.add(ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          date: date
+      ));
+    }
+    return results;
+  }
+
+  List<ParsingResult> _parseWeekExpressions(String text, DateTime ref) {
+    List<ParsingResult> results = [];
+
+    // Parse "下周X"
+    final nextWeekPattern = RegExp(r'下周[星期周]?([一二三四五六天日])');
+    var nextWeekMatch = nextWeekPattern.firstMatch(text);
+    if (nextWeekMatch != null) {
+      results.add(_parseWeekdayExpression(nextWeekMatch, ref, true));
+    }
+
+    // Parse "周X" or "星期X"
+    final thisWeekPattern = RegExp(r'[星期周]([一二三四五六天日])');
+    var thisWeekMatch = thisWeekPattern.firstMatch(text);
+    if (thisWeekMatch != null) {
+      results.add(_parseWeekdayExpression(thisWeekMatch, ref, false));
+    }
+
+    return results;
+  }
+
+  ParsingResult _parseWeekdayExpression(RegExpMatch match, DateTime ref, bool isNextWeek) {
+    int targetDay = ChineseParserBase.weekdayMap[match.group(1)!]!;
+    int currentDay = ref.weekday;
+    int offset = targetDay - currentDay;
+
+    if (isNextWeek) {
+      offset += 7;
+    } else if (offset < 0) {
+      offset += 7;
+    }
+
+    DateTime date = ref.add(Duration(days: offset));
+    date = DateTime(date.year, date.month, date.day);
+
+    return ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        date: date
+    );
+  }
+}
+
+/// Parser for absolute expressions like "4月26号", "2028年5月1号", etc.
+class ZhAbsoluteParser extends ChineseParserBase {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
     DateTime ref = context.referenceDate;
 
-    // 合成模式：例如 "明天上午9点", "后天晚上8点", "昨天12点"
-    RegExp combined = RegExp(
-        r'^(今天|明天|后天|昨天)(?:\s*(上午|中午|下午|晚上))?\s*(\d{1,2})点(?:\s*(\d{1,2})分)?$');
-    RegExpMatch? mCombined = combined.firstMatch(text);
-    if (mCombined != null) {
-      String dayWord = mCombined.group(1)!;
-      int offset = 0;
-      if (dayWord == "今天")
-        offset = 0;
-      else if (dayWord == "明天")
-        offset = 1;
-      else if (dayWord == "后天")
-        offset = 2;
-      else if (dayWord == "昨天") offset = -1;
-      DateTime candidate = ref.add(Duration(days: offset));
-      int hour = int.parse(mCombined.group(3)!);
-      int minute =
-      mCombined.group(4) != null ? int.parse(mCombined.group(4)!) : 0;
-      String? period = mCombined.group(2);
-      if (period != null) {
-        if ((period.contains("下午") || period.contains("晚上")) && hour < 12) {
-          hour += 12;
-        } else if (period.contains("中午")) {
-          hour = 12;
-        }
-      }
-      candidate =
-          DateTime(candidate.year, candidate.month, candidate.day, hour, minute);
-      results.add(ParsingResult(
-          index: mCombined.start, text: mCombined.group(0)!, date: candidate));
-    } else {
-      // 分别处理简单表达
-      if (text.contains("今天")) {
-        results.add(ParsingResult(
-            index: text.indexOf("今天"),
-            text: "今天",
-            date: DateTime(ref.year, ref.month, ref.day, 0, 0, 0)));
-      }
-      if (text.contains("明天")) {
-        DateTime tomorrow =
-        DateTime(ref.year, ref.month, ref.day).add(Duration(days: 1));
-        results.add(
-            ParsingResult(index: text.indexOf("明天"), text: "明天", date: DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 0, 0, 0)));
-      }
-      if (text.contains("后天")) {
-        DateTime dayAfterTomorrow =
-        DateTime(ref.year, ref.month, ref.day).add(Duration(days: 2));
-        results.add(ParsingResult(
-            index: text.indexOf("后天"), text: "后天", date: DateTime(dayAfterTomorrow.year, dayAfterTomorrow.month, dayAfterTomorrow.day, 0, 0, 0)));
-      }
-      if (text.contains("昨天")) {
-        DateTime yesterday =
-        DateTime(ref.year, ref.month, ref.day).subtract(Duration(days: 1));
-        results.add(ParsingResult(
-            index: text.indexOf("昨天"), text: "昨天", date: DateTime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0)));
-      }
-    }
-
-    // 处理类似“2天后”、“3天前”
-    RegExp regDay = RegExp(r'(\d+|[零一二三四五六七八九十]+)天(后|前)');
-    Iterable<RegExpMatch> matches = regDay.allMatches(text);
-    for (var match in matches) {
-      String numStr = match.group(1)!;
-      int value = _parseChineseNumber(numStr);
-      String dir = match.group(2)!;
-      DateTime target = (dir == "后")
-          ? ref.add(Duration(days: value))
-          : ref.subtract(Duration(days: value));
-      results.add(
-          ParsingResult(index: match.start, text: match.group(0)!, date: target));
-    }
-
-    // 处理“下周”＋星期（例如 “下周四”）
-    Map<String, int> wdMap = {
-      "一": 1,
-      "二": 2,
-      "三": 3,
-      "四": 4,
-      "五": 5,
-      "六": 6,
-      "日": 7,
-      "天": 7, // 兼容“星期天”
-    };
-    RegExp regNextWeek = RegExp(r'下周[星期周]?([一二三四五六天日])');
-    RegExpMatch? mNextWeek = regNextWeek.firstMatch(text);
-    if (mNextWeek != null) {
-      String wd = mNextWeek.group(1)!;
-      int targetWd = wdMap[wd]!;
-      int currentWd = ref.weekday;
-      int offset = targetWd - currentWd;
-      offset = (offset + 7) % 7; // Ensure offset is positive
-      if (offset == 0) offset = 7;
-      DateTime candidate = ref.add(Duration(days: offset )); // Calculate the target date.
-      candidate = DateTime(candidate.year, candidate.month, candidate.day, 0, 0, 0); // 時刻を0時0分0秒に設定
-
-      results.add(ParsingResult(
-          index: mNextWeek.start, text: mNextWeek.group(0)!, date: candidate));
-    }
-
-
-    // 处理“周”+ 星期 （例如 “周三”, “星期天”）
-    RegExp regThisWeek = RegExp(r'[星期周]([一二三四五六天日])');
-    RegExpMatch? mThisWeek = regThisWeek.firstMatch(text);
-    if (mThisWeek != null) {
-      String wd = mThisWeek.group(1)!;
-      int targetWd = wdMap[wd]!;
-      int currentWd = ref.weekday; // ref 是 referenceDate
-      int offset = targetWd - currentWd;
-      if (offset < 0) {
-        offset = offset + 7;
-      }
-      DateTime candidate = ref.add(Duration(days: offset));
-      candidate = DateTime(candidate.year, candidate.month, candidate.day, 0, 0, 0); // 時刻を0時0分0秒に設定
-      results.add(ParsingResult(
-          index: mThisWeek.start, text: mThisWeek.group(0)!, date: candidate));
-    }
+    results.addAll(_parseFullDateTime(text, ref));
+    results.addAll(_parseKanjiDateTime(text, ref));
+    results.addAll(_parseRelativeMonthDay(text, ref));
+    results.addAll(_parseDayOnly(text, ref));
 
     return results;
   }
 
-  int _parseChineseNumber(String s) {
-    Map<String, int> map = {
-      "零": 0,
-      "一": 1,
-      "二": 2,
-      "三": 3,
-      "四": 4,
-      "五": 5,
-      "六": 6,
-      "七": 7,
-      "八": 8,
-      "九": 9,
-      "十": 10,
-    };
-    int? value = int.tryParse(s);
-    if (value != null) return value;
-    int result = 0;
-    for (int i = 0; i < s.length; i++) {
-      result = result * 10 + (map[s[i]] ?? 0);
-    }
-    return result;
-  }
-}
-
-/// 中文绝对表达式解析器
-/// （例如：“4月26号4时8分”，“2028年5月1号”，“今年12月31号”，“三月四号”等）
-/// 同时支持 "明年1月1号" 以及 "下个月15号"、"上个月20号"
-class ZhAbsoluteParser extends BaseParser {
-  @override
-  List<ParsingResult> parse(String text, ParsingContext context) {
+  List<ParsingResult> _parseFullDateTime(String text, DateTime ref) {
+    final pattern = RegExp(
+        r'(?:(明年|去年|今年))?(\d{1,2})月(\d{1,2})号(?:\s*(\d{1,2})时(?:\s*(\d{1,2})分)?)?'
+    );
     List<ParsingResult> results = [];
-    // 支持带年份前缀的形式，例如 "明年1月1号"
-    RegExp regExp = RegExp(
-        r'(?:(明年|去年|今年))?(\d{1,2})月(\d{1,2})号(?:\s*(\d{1,2})时(?:\s*(\d{1,2})分)?)?');
-    Iterable<RegExpMatch> matches = regExp.allMatches(text);
-    for (var match in matches) {
+
+    for (var match in pattern.allMatches(text)) {
+      String? yearPrefix = match.group(1);
+      int year = ref.year;
+
+      switch (yearPrefix) {
+        case "明年": year++; break;
+        case "去年": year--; break;
+      }
+
       int month = int.parse(match.group(2)!);
       int day = int.parse(match.group(3)!);
-      int hour = 0,
-          minute = 0;
-      if (match.group(4) != null && match.group(4)!.isNotEmpty) {
-        hour = int.parse(match.group(4)!);
+      int hour = match.group(4) != null ? int.parse(match.group(4)!) : 0;
+      int minute = match.group(5) != null ? int.parse(match.group(5)!) : 0;
+
+      DateTime date = DateTime(year, month, day, hour, minute);
+      if (yearPrefix == null) {
+        date = adjustToFuture(date, ref);
       }
-      if (match.group(5) != null && match.group(5)!.isNotEmpty) {
-        minute = int.parse(match.group(5)!);
-      }
-      int year;
-      if (match.group(1) != null) {
-        String prefix = match.group(1)!;
-        if (prefix == "明年") {
-          year = context.referenceDate.year + 1;
-        } else if (prefix == "去年") {
-          year = context.referenceDate.year - 1;
-        } else if (prefix == "今年") {
-          year = context.referenceDate.year;
-        } else {
-          year = context.referenceDate.year;
-        }
-      } else {
-        year = context.referenceDate.year;
-        DateTime candidate = DateTime(year, month, day, hour, minute);
-        if (!candidate.isAfter(context.referenceDate)) {
-          year += 1;
-        }
-      }
+
       results.add(ParsingResult(
           index: match.start,
           text: match.group(0)!,
-          date: DateTime(year, month, day, hour, minute)));
-    }
-    // 漢字形式：例如 "三月四号"
-    RegExp regKanji = RegExp(
-        r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[号]');
-    Iterable<RegExpMatch> kanjiMatches = regKanji.allMatches(text);
-    for (var match in kanjiMatches) {
-      int month = _parseChineseNumber(match.group(1)!);
-      int day = _parseChineseNumber(match.group(2)!);
-      int year = context.referenceDate.year;
-      DateTime candidate = DateTime(year, month, day);
-      if (!candidate.isAfter(context.referenceDate)) {
-        candidate = DateTime(year + 1, month, day);
-      }
-      results.add(ParsingResult(
-          index: match.start, text: match.group(0)!, date: candidate));
-    }
-    // 处理 "下个月15号"
-    if (text.contains("下个月")) {
-      RegExp exp = RegExp(r'下个月(\d{1,2})[号]');
-      RegExpMatch? m = exp.firstMatch(text);
-      if (m != null) {
-        int day = int.parse(m.group(1)!);
-        DateTime nextMonthStart =
-        DateTime(
-            context.referenceDate.year, context.referenceDate.month + 1, 1);
-        DateTime candidate =
-        DateTime(nextMonthStart.year, nextMonthStart.month, day);
-        results.add(ParsingResult(
-            index: m.start, text: m.group(0)!, date: candidate));
-      }
-    }
-    // 处理 "上个月20号"
-    if (text.contains("上个月")) {
-      RegExp exp = RegExp(r'上个月(\d{1,2})[号]');
-      RegExpMatch? m = exp.firstMatch(text);
-      if (m != null) {
-        int day = int.parse(m.group(1)!);
-        DateTime prevMonth = DateTime(
-            context.referenceDate.year, context.referenceDate.month - 1, 1);
-        DateTime candidate = DateTime(prevMonth.year, prevMonth.month, day);
-        results.add(ParsingResult(
-            index: m.start, text: m.group(0)!, date: candidate));
-      }
-    }
-
-    // 处理 "6号" 这样的形式 (数字)
-    RegExp dayOnly = RegExp(r'(\d{1,2})[号]');
-    RegExpMatch? dayMatch = dayOnly.firstMatch(text);
-    if (dayMatch != null) {
-      int day = int.parse(dayMatch.group(1)!);
-      DateTime candidate =
-      DateTime(context.referenceDate.year, context.referenceDate.month, day);
-      // 入力日が参照日より前の場合は来月と判断
-      if (candidate.isBefore(context.referenceDate) ||
-          candidate.month < context.referenceDate.month) {
-        candidate =
-            DateTime(
-                context.referenceDate.year, context.referenceDate.month + 1,
-                day);
-        if (candidate.month == 1) {
-          candidate = DateTime(context.referenceDate.year + 1, 1, day);
-        }
-      }
-      results.add(ParsingResult(
-          index: dayMatch.start, text: dayMatch.group(0)!, date: candidate));
-    }
-
-    // 处理 "六号" 这样的形式 (漢数字)
-    RegExp kanjiDayOnly = RegExp(r'([一二三四五六七八九十]+)[号]');
-    RegExpMatch? kanjiDayMatch = kanjiDayOnly.firstMatch(text);
-    if (kanjiDayMatch != null) {
-      int day = _parseChineseNumber(kanjiDayMatch.group(1)!);
-      DateTime candidate =
-      DateTime(context.referenceDate.year, context.referenceDate.month, day);
-      // 入力日が参照日より前の場合は来月と判断
-      if (candidate.isBefore(context.referenceDate) ||
-          candidate.month < context.referenceDate.month) {
-        candidate =
-            DateTime(
-                context.referenceDate.year, context.referenceDate.month + 1,
-                day);
-        if (candidate.month == 1) {
-          candidate = DateTime(context.referenceDate.year + 1, 1, day);
-        }
-      }
-      results.add(ParsingResult(
-          index: kanjiDayMatch.start,
-          text: kanjiDayMatch.group(0)!,
-          date: candidate));
+          date: date
+      ));
     }
 
     return results;
   }
 
-  int _parseChineseNumber(String s) {
-    Map<String, int> map = {
-      "零": 0,
-      "一": 1,
-      "二": 2,
-      "三": 3,
-      "四": 4,
-      "五": 5,
-      "六": 6,
-      "七": 7,
-      "八": 8,
-      "九": 9,
-      "十": 10,
-    };
+  List<ParsingResult> _parseKanjiDateTime(String text, DateTime ref) {
+    final pattern = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[号]');
+    List<ParsingResult> results = [];
 
-    if (s.contains("十")) {
-      // Handle "十一", "十二", "十三", ..., "十九"
-      if (s.length == 2) {
-        if (s[0] == '十') {
-          return int.parse("1${s[1]}");
-        } else {
-          return map[s[0]]! * 10 + map[s[1]]!;
+    for (var match in pattern.allMatches(text)) {
+      int month = ChineseNumberUtil.parse(match.group(1)!);
+      int day = ChineseNumberUtil.parse(match.group(2)!);
+      DateTime date = DateTime(ref.year, month, day);
+      date = adjustToFuture(date, ref);
+
+      results.add(ParsingResult(
+          index: match.start, text: match.group(0)!, date: date));
+    }
+    return results;
+  }
+
+  List<ParsingResult> _parseRelativeMonthDay(String text, DateTime ref) {
+    List<ParsingResult> results = [];
+
+    // Process "下个月X号"
+    ParsingResult? nextMonthResult = _parseMonthDay(text, RegExp(r'下个月(\d{1,2})[号]'), 1, ref);
+    if (nextMonthResult != null) {
+      results.add(nextMonthResult);
+    }
+
+    // Process "上个月X号"
+    ParsingResult? lastMonthResult = _parseMonthDay(text, RegExp(r'上个月(\d{1,2})[号]'), -1, ref);
+    if (lastMonthResult != null) {
+      results.add(lastMonthResult);
+    }
+
+    return results;
+  }
+
+  ParsingResult? _parseMonthDay(String text, RegExp exp, int monthOffset, DateTime ref) {
+    RegExpMatch? match = exp.firstMatch(text);
+    if (match != null) {
+      int day = int.parse(match.group(1)!);
+      DateTime targetMonth = DateTime(ref.year, ref.month + monthOffset, 1);
+      DateTime date = DateTime(targetMonth.year, targetMonth.month, day);
+      return ParsingResult(index: match.start, text: match.group(0)!, date: date);
+    }
+    return null;
+  }
+
+
+  List<ParsingResult> _parseDayOnly(String text, DateTime ref) {
+    List<ParsingResult> results = [];
+
+    // Process "X号" (numeric)
+    ParsingResult? numberDayResult = _parseSingleDay(text, RegExp(r'(\d{1,2})[号]'), ref);
+    if (numberDayResult != null) {
+      results.add(numberDayResult);
+    }
+
+    // Process "X号" (kanji)
+    ParsingResult? kanjiDayResult = _parseSingleDay(text, RegExp(r'([一二三四五六七八九十]+)[号]'), ref);
+    if (kanjiDayResult != null) {
+      results.add(kanjiDayResult);
+    }
+
+    return results;
+  }
+
+
+  ParsingResult? _parseSingleDay(String text, RegExp exp, DateTime ref) {
+    RegExpMatch? dayMatch = exp.firstMatch(text);
+    if (dayMatch != null) {
+      int day = exp == RegExp(r'(\d{1,2})[号]') ? int.parse(dayMatch.group(1)!) : ChineseNumberUtil.parse(dayMatch.group(1)!);
+      DateTime candidate = DateTime(ref.year, ref.month, day);
+
+      if (!candidate.isAfter(DateTime(ref.year, ref.month, ref.day, 0, 0, 0))) { // If candidate is not after reference date (ignoring time)
+        candidate = DateTime(ref.year, ref.month + 1, day);
+        if (candidate.month == 13) { // Handle December to January case
+          candidate = DateTime(ref.year + 1, 1, day);
         }
       }
-      // Handle "二十" to "九十"
-      return map[s[0]]! * 10;
+      candidate = adjustToFuture(candidate, ref); // Adjust to future if necessary
+      return ParsingResult(index: dayMatch.start, text: dayMatch.group(0)!, date: candidate);
     }
-
-    int? value = int.tryParse(s);
-    if (value != null) return value;
-
-    int result = 0;
-    for (int i = 0; i < s.length; i++) {
-      result = result * 10 + (map[s[i]] ?? 0);
-    }
-    return result;
+    return null;
   }
 }
 
-/// 中文时刻表达式解析器
-/// （例如：“明天上午9点”，“后天晚上8点”，“昨天中午12点”）
-class ZhTimeOnlyParser extends BaseParser {
+/// Parser for time-only expressions in Chinese.
+class ZhTimeOnlyParser extends ChineseParserBase {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
 
-    // First, let's look for both the date ("三月七号") and time ("上午九点")
-    RegExp regExp = RegExp(
-        r'([一二三四五六七八九十]+月[一二三四五六七八九十]+号)?\s*(上午|中午|下午|晚上)?\s*(\d{1,2}|[一二三四五六七八九十]+)\s*点(?:\s*(\d{1,2}|[一二三四五六七八九十]+))?分?'
-    );
+    // Regex to capture date (optional), period (optional), hour, and minute (optional)
+    final regExp = RegExp(
+        r'([一二三四五六七八九十]+月[一二三四五六七八九十]+号)?\s*(上午|中午|下午|晚上)?\s*(\d{1,2}|[一二三四五六七八九十]+)\s*点(?:\s*(\d{1,2}|[一二三四五六七八九十]+))?分?');
 
-    Iterable<RegExpMatch> matches = regExp.allMatches(text);
-    for (var match in matches) {
-      String? monthStr = match.group(1);
-      String period = match.group(2) ?? "";
-      String hourStr = match.group(3)!;
-      String minuteStr = match.group(4) ?? "0"; // Default minute is 0 if not provided
-
-      // Handle the month and day part like "三月七号"
-      int month = 0, day = 0;
-      if (monthStr != null) {
-        RegExp regMonthDay = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)号');
-        RegExpMatch? monthDayMatch = regMonthDay.firstMatch(monthStr);
-        if (monthDayMatch != null) {
-          month = ChineseNumberParser.parse(monthDayMatch.group(1)!); // Parse the month (e.g., 三月 -> 3)
-          day = ChineseNumberParser.parse(monthDayMatch.group(2)!); // Parse the day (e.g., 七号 -> 7)
-        }
+    for (var match in regExp.allMatches(text)) {
+      ParsingResult? result = _parseTimeMatch(match, context.referenceDate);
+      if (result != null) {
+        results.add(result);
       }
-
-      // Handle the time part (hour and minute)
-      int hour = ChineseNumberParser.parse(hourStr); // Use the Chinese numeral parser
-      int minute = ChineseNumberParser.parse(minuteStr); // Use the Chinese numeral parser
-
-      if ((period.contains("下午") || period.contains("晚上")) && hour < 12) {
-        hour += 12;
-      } else if (period.contains("中午")) {
-        hour = 12;
-      }
-
-      // If no month/day is provided, default to the current date (from referenceDate)
-      DateTime candidate = DateTime(
-          context.referenceDate.year,
-          month == 0 ? context.referenceDate.month : month,
-          day == 0 ? context.referenceDate.day : day,
-          hour,
-          minute);
-
-      // If the constructed date is in the past, consider the next year (in case it's a future date)
-      if (candidate.isBefore(context.referenceDate)) {
-        candidate = DateTime(candidate.year + 1, candidate.month, candidate.day, hour, minute);
-      }
-
-      results.add(ParsingResult(
-          index: match.start, text: match.group(0)!, date: candidate));
     }
     return results;
   }
-}
 
 
+  ParsingResult? _parseTimeMatch(RegExpMatch match, DateTime refDate) {
+    String? monthDayStr = match.group(1);
+    String? periodStr = match.group(2);
+    String hourStr = match.group(3)!;
+    String? minuteStr = match.group(4);
 
-class ChineseNumberParser {
-  static int parse(String s) {
-    Map<String, int> map = {
-      "零": 0,
-      "一": 1,
-      "二": 2,
-      "三": 3,
-      "四": 4,
-      "五": 5,
-      "六": 6,
-      "七": 7,
-      "八": 8,
-      "九": 9,
-      "十": 10,
-    };
+    int month = refDate.month;
+    int day = refDate.day;
 
-    if (s.contains("十")) {
-      // Handle "十一", "十二", "十三", ..., "十九"
-      if (s.length == 2) {
-        if (s[0] == '十') {
-          return int.parse("1${s[1]}");
-        } else {
-          return map[s[0]]! * 10 + map[s[1]]!;
-        }
+    if (monthDayStr != null) {
+      RegExp monthDayRegExp = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)号');
+      RegExpMatch? mdMatch = monthDayRegExp.firstMatch(monthDayStr);
+      if (mdMatch != null) {
+        month = ChineseNumberUtil.parse(mdMatch.group(1)!);
+        day = ChineseNumberUtil.parse(mdMatch.group(2)!);
       }
-      // Handle "二十" to "九十"
-      return map[s[0]]! * 10;
     }
 
-    int? value = int.tryParse(s);
-    if (value != null) return value;
+    int hour = ChineseNumberUtil.parse(hourStr);
+    int minute = minuteStr != null ? ChineseNumberUtil.parse(minuteStr) : 0;
 
-    int result = 0;
-    for (int i = 0; i < s.length; i++) {
-      result = result * 10 + (map[s[i]] ?? 0);
-    }
-    return result;
+    hour = getHourWithPeriod(hour, periodStr);
+
+    DateTime candidate = DateTime(refDate.year, month, day, hour, minute);
+
+    return ParsingResult(
+        index: match.start, text: match.group(0)!, date: candidate);
   }
 }
-
-
 
 
 /// 中文解析器集合

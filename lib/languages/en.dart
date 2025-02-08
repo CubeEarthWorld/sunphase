@@ -1,263 +1,373 @@
-// lib/languages/en.dart
 import '../core/base_parser.dart';
 import '../core/result.dart';
 import '../core/parsing_context.dart';
 
+/// Shared constants and utilities for English date parsing
+class EnglishDateUtils {
+  static const Map<String, int> monthMap = {
+    'january': 1, 'jan': 1,
+    'february': 2, 'feb': 2,
+    'march': 3, 'mar': 3,
+    'april': 4, 'apr': 4,
+    'may': 5,
+    'june': 6, 'jun': 6,
+    'july': 7, 'jul': 7,
+    'august': 8, 'aug': 8,
+    'september': 9, 'sep': 9,
+    'october': 10, 'oct': 10,
+    'november': 11, 'nov': 11,
+    'december': 12, 'dec': 12,
+  };
+
+  static const Map<String, int> weekdayMap = {
+    'monday': 1,
+    'tuesday': 2,
+    'wednesday': 3,
+    'thursday': 4,
+    'friday': 5,
+    'saturday': 6,
+    'sunday': 7,
+  };
+
+  static const Map<String, int> numberWords = {
+    'one': 1, 'two': 2, 'three': 3, 'four': 4,
+    'five': 5, 'six': 6, 'seven': 7, 'eight': 8,
+    'nine': 9, 'ten': 10,
+  };
+
+  static DateTime adjustDateTimeWithTime(DateTime date, String text) {
+    final timeRegExp = RegExp(r'(\d{1,2}):(\d{2})');
+    final timeMatch = timeRegExp.firstMatch(text);
+
+    if (timeMatch != null) {
+      final hour = int.parse(timeMatch.group(1)!);
+      final minute = int.parse(timeMatch.group(2)!);
+      return DateTime(date.year, date.month, date.day, hour, minute);
+    }
+    return date;
+  }
+
+  static DateTime getNextOccurrence(DateTime reference, DateTime candidate) {
+    return candidate.isBefore(reference)
+        ? candidate.add(const Duration(days: 1))
+        : candidate;
+  }
+}
+
 /// Parser for relative expressions in English.
 class EnRelativeParser extends BaseParser {
+  static final RegExp _inDaysPattern = RegExp(r'in\s+(\d+)\s+days');
+  static final RegExp _relativePattern =
+  RegExp(r'(\d+|[a-z]+)\s*(days|weeks)\s*(from now|later|ago)');
+
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
-    List<ParsingResult> results = [];
-    String lowerText = text.toLowerCase().trim();
-    DateTime ref = context.referenceDate;
+    final results = <ParsingResult>[];
+    final lowerText = text.toLowerCase().trim();
+    final ref = context.referenceDate;
 
-    // "in X days" → range expression; ※ここでは今日を含むため rangeDays = X+1
-    RegExp inDays = RegExp(r'in\s+(\d+)\s+days');
-    RegExpMatch? mInDays = inDays.firstMatch(lowerText);
-    if (mInDays != null) {
-      int days = int.parse(mInDays.group(1)!);
-      results.add(ParsingResult(
-          index: mInDays.start,
-          text: mInDays.group(0)!,
-          date: ref,
-          rangeDays: days + 1));
-    }
-
-    // "next week" → range expression; set rangeType = "week"
-    if (lowerText == "next week") {
-      // Define next week’s start as next Monday.
-      int daysToNextMonday = (8 - ref.weekday) % 7;
-      if (daysToNextMonday == 0) daysToNextMonday = 7;
-      DateTime nextMonday = DateTime(ref.year, ref.month, ref.day)
-          .add(Duration(days: daysToNextMonday));
-      results.add(ParsingResult(
-          index: 0,
-          text: "next week",
-          date: nextMonday,
-          rangeType: "week"));
-    }
-
-    // Fixed expressions
-    if (lowerText == "today") {
-      results.add(ParsingResult(
-          index: 0,
-          text: "Today",
-          date: DateTime(ref.year, ref.month, ref.day, 0, 0, 0)));
-    }
-    if (lowerText == "tomorrow") {
-      DateTime tomorrow =
-      DateTime(ref.year, ref.month, ref.day).add(Duration(days: 1));
-      results.add(ParsingResult(index: 0, text: "Tomorrow", date: tomorrow));
-    }
-    if (lowerText == "yesterday") {
-      DateTime yesterday =
-      DateTime(ref.year, ref.month, ref.day).subtract(Duration(days: 1));
-      results.add(ParsingResult(index: 0, text: "Yesterday", date: yesterday));
-    }
-    if (lowerText == "next year") {
-      DateTime nextYear = DateTime(ref.year + 1, ref.month, ref.day, ref.hour,
-          ref.minute, ref.second);
-      results.add(ParsingResult(index: 0, text: "Next year", date: nextYear));
-    }
-    if (lowerText == "last year") {
-      DateTime lastYear = DateTime(ref.year - 1, ref.month, ref.day, ref.hour,
-          ref.minute, ref.second);
-      results.add(ParsingResult(index: 0, text: "Last year", date: lastYear));
-    }
-
-    // Weekday exact match (e.g. "saturday")
-    Map<String, int> weekdayMap = {
-      "monday": 1,
-      "tuesday": 2,
-      "wednesday": 3,
-      "thursday": 4,
-      "friday": 5,
-      "saturday": 6,
-      "sunday": 7,
-    };
-    if (weekdayMap.containsKey(lowerText)) {
-      int target = weekdayMap[lowerText]!;
-      int diff = (target - ref.weekday + 7) % 7;
-      if (diff == 0) diff = 7;
-      DateTime targetDate =
-      DateTime(ref.year, ref.month, ref.day).add(Duration(days: diff));
-      results.add(ParsingResult(index: 0, text: lowerText, date: targetDate));
-    }
-
-    // Phrases "next <weekday>" and "last <weekday>"
-    for (var entry in weekdayMap.entries) {
-      String nextPhrase = "next " + entry.key;
-      String lastPhrase = "last " + entry.key;
-      if (lowerText == nextPhrase) {
-        int current = ref.weekday;
-        int target = entry.value;
-        int daysToAdd = (target - current + 7) % 7;
-        if (daysToAdd == 0) daysToAdd = 7;
-        DateTime targetDate =
-        DateTime(ref.year, ref.month, ref.day).add(Duration(days: daysToAdd));
-        results.add(ParsingResult(index: 0, text: nextPhrase, date: targetDate));
-      }
-      if (lowerText == lastPhrase) {
-        int current = ref.weekday;
-        int target = entry.value;
-        int daysToSubtract = current - target;
-        if (daysToSubtract <= 0) daysToSubtract += 7;
-        DateTime targetDate =
-        DateTime(ref.year, ref.month, ref.day).subtract(Duration(days: daysToSubtract));
-        results.add(ParsingResult(index: 0, text: lastPhrase, date: targetDate));
-      }
-    }
-
-    // Relative expressions with numbers (e.g. "2 weeks from now", "4 days later", "5 days ago")
-    Map<String, int> numberMap = {
-      "one": 1,
-      "two": 2,
-      "three": 3,
-      "four": 4,
-      "five": 5,
-      "six": 6,
-      "seven": 7,
-      "eight": 8,
-      "nine": 9,
-      "ten": 10,
-    };
-    RegExp relExp =
-    RegExp(r'(\d+|[a-z]+)\s*(days|weeks)\s*(from now|later|ago)');
-    Iterable<RegExpMatch> matches = relExp.allMatches(lowerText);
-    for (var match in matches) {
-      String numStr = match.group(1)!;
-      int value = int.tryParse(numStr) ?? (numberMap[numStr] ?? 0);
-      String unit = match.group(2)!;
-      String direction = match.group(3)!;
-      Duration delta = unit.startsWith('day')
-          ? Duration(days: value)
-          : Duration(days: value * 7);
-      DateTime resultDate =
-      (direction == 'ago') ? ref.subtract(delta) : ref.add(delta);
-      results.add(ParsingResult(
-          index: match.start, text: match.group(0)!, date: resultDate));
-    }
+    _parseInDays(lowerText, ref, results);
+    _parseNextWeek(lowerText, ref, results);
+    _parseFixedExpressions(lowerText, ref, results);
+    _parseWeekdays(lowerText, ref, results);
+    _parseRelativeExpressions(lowerText, ref, results);
 
     return results;
+  }
+
+  void _parseInDays(String text, DateTime ref, List<ParsingResult> results) {
+    final match = _inDaysPattern.firstMatch(text);
+    if (match != null) {
+      final days = int.parse(match.group(1)!);
+      results.add(ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          date: ref,
+          rangeDays: days + 1
+      ));
+    }
+  }
+
+  void _parseNextWeek(String text, DateTime ref, List<ParsingResult> results) {
+    if (text == 'next week') {
+      int daysToNextMonday = (8 - ref.weekday) % 7;
+      if (daysToNextMonday == 0) daysToNextMonday = 7;
+
+      final nextMonday = DateTime(ref.year, ref.month, ref.day)
+          .add(Duration(days: daysToNextMonday));
+
+      results.add(ParsingResult(
+          index: 0,
+          text: 'next week',
+          date: nextMonday,
+          rangeType: 'week'
+      ));
+    }
+  }
+
+  void _parseFixedExpressions(String text, DateTime ref, List<ParsingResult> results) {
+    final fixedExpressions = {
+      'today': () => DateTime(ref.year, ref.month, ref.day),
+      'tomorrow': () => DateTime(ref.year, ref.month, ref.day).add(const Duration(days: 1)),
+      'yesterday': () => DateTime(ref.year, ref.month, ref.day).subtract(const Duration(days: 1)),
+      'next year': () => DateTime(ref.year + 1, ref.month, ref.day, ref.hour, ref.minute, ref.second),
+      'last year': () => DateTime(ref.year - 1, ref.month, ref.day, ref.hour, ref.minute, ref.second),
+    };
+
+    final expression = fixedExpressions[text];
+    if (expression != null) {
+      results.add(ParsingResult(
+          index: 0,
+          text: text,
+          date: expression()
+      ));
+    }
+  }
+
+  void _parseWeekdays(String text, DateTime ref, List<ParsingResult> results) {
+    // Direct weekday matching
+    if (EnglishDateUtils.weekdayMap.containsKey(text)) {
+      final target = EnglishDateUtils.weekdayMap[text]!;
+      var diff = (target - ref.weekday + 7) % 7;
+      if (diff == 0) diff = 7;
+
+      final targetDate = DateTime(ref.year, ref.month, ref.day)
+          .add(Duration(days: diff));
+
+      results.add(ParsingResult(
+          index: 0,
+          text: text,
+          date: targetDate
+      ));
+    }
+
+    // Next/Last weekday
+    for (final entry in EnglishDateUtils.weekdayMap.entries) {
+      _parseNextLastWeekday(text, ref, entry.key, entry.value, results);
+    }
+  }
+
+  void _parseNextLastWeekday(String text, DateTime ref, String weekday,
+      int weekdayValue, List<ParsingResult> results) {
+    final nextPhrase = 'next $weekday';
+    final lastPhrase = 'last $weekday';
+
+    if (text == nextPhrase || text == lastPhrase) {
+      final current = ref.weekday;
+      final target = weekdayValue;
+
+      final days = text.startsWith('next')
+          ? (target - current + 7) % 7
+          : ((current - target + 7) % 7);
+
+      final daysToAdjust = days == 0 ? 7 : days;
+      final targetDate = DateTime(ref.year, ref.month, ref.day)
+          .add(Duration(days: text.startsWith('next') ? daysToAdjust : -daysToAdjust));
+
+      results.add(ParsingResult(
+          index: 0,
+          text: text,
+          date: targetDate
+      ));
+    }
+  }
+
+  void _parseRelativeExpressions(String text, DateTime ref, List<ParsingResult> results) {
+    for (final match in _relativePattern.allMatches(text)) {
+      final numStr = match.group(1)!;
+      final value = int.tryParse(numStr) ??
+          (EnglishDateUtils.numberWords[numStr] ?? 0);
+      final unit = match.group(2)!;
+      final direction = match.group(3)!;
+
+      final delta = unit.startsWith('day')
+          ? Duration(days: value)
+          : Duration(days: value * 7);
+
+      final resultDate = (direction == 'ago')
+          ? ref.subtract(delta)
+          : ref.add(delta);
+
+      results.add(ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          date: resultDate
+      ));
+    }
   }
 }
 
 /// Parser for absolute date expressions in English.
 class EnAbsoluteParser extends BaseParser {
+  static final RegExp _fullDatePattern = RegExp(
+      r'([a-z]+)[\s,]+(\d{1,2})(?:st|nd|rd|th)?(?:[\s,]+(\d{4}))?',
+      caseSensitive: false
+  );
+
+  static final RegExp _ordinalPattern = RegExp(
+      r'(\d{1,2})(?:st|nd|rd|th)(?:\s*,?\s*(\d{4}))?'
+  );
+
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
-    List<ParsingResult> results = [];
-    // Regex to capture expressions like "june 20" or "august 17, 2025"
-    RegExp regExp =
-    RegExp(r'([a-z]+)[\s,]+(\d{1,2})(?:st|nd|rd|th)?(?:[\s,]+(\d{4}))?', caseSensitive: false);
-    Iterable<RegExpMatch> matches = regExp.allMatches(text);
-    Map<String, int> monthMap = {
-      'january': 1,
-      'february': 2,
-      'march': 3,
-      'april': 4,
-      'may': 5,
-      'june': 6,
-      'july': 7,
-      'august': 8,
-      'september': 9,
-      'october': 10,
-      'november': 11,
-      'december': 12,
-      'jan': 1,
-      'feb': 2,
-      'mar': 3,
-      'apr': 4,
-      'jun': 6,
-      'jul': 7,
-      'aug': 8,
-      'sep': 9,
-      'oct': 10,
-      'nov': 11,
-      'dec': 12,
-    };
-    for (var match in matches) {
-      String possibleMonth = match.group(1)!;
-      if (!monthMap.containsKey(possibleMonth.toLowerCase())) continue;
-      String dateStr = match.group(0)!;
-      DateTime? parsedDate =
-      _parseEnglishDate(dateStr, context, monthMap: monthMap);
+    final results = <ParsingResult>[];
+    final lowerText = text.toLowerCase();
 
-      // Check if time is included in the string
-      RegExp timeRegExp = RegExp(r'(\d{1,2}):(\d{2})');
-      RegExpMatch? timeMatch = timeRegExp.firstMatch(text);
-      if (parsedDate != null && timeMatch != null) {
-        // If time is found, update the date with the parsed time
-        int hour = int.parse(timeMatch.group(1)!);
-        int minute = int.parse(timeMatch.group(2)!);
-        parsedDate = DateTime(parsedDate.year, parsedDate.month, parsedDate.day, hour, minute);
-      }
+    _parseFullDates(lowerText, text, context, results);
+    _parseOrdinalDates(lowerText, text, context, results);
 
-      if (parsedDate != null) {
-        results.add(ParsingResult(index: match.start, text: dateStr, date: parsedDate));
-      }
-    }
     return results;
   }
 
-  DateTime? _parseEnglishDate(String dateStr, ParsingContext context,
-      {required Map<String, int> monthMap}) {
-    dateStr = dateStr.toLowerCase().trim();
-    RegExp pattern = RegExp(r'^([a-z]+)[\s,]+(\d{1,2})(?:st|nd|rd|th)?(?:[\s,]+(\d{4}))?$');
-    RegExpMatch? m = pattern.firstMatch(dateStr);
-    if (m != null) {
-      String monthStr = m.group(1)!;
-      int? month = monthMap[monthStr];
-      int day = int.parse(m.group(2)!);
-      int year;
-      if (m.group(3) != null) {
-        year = int.parse(m.group(3)!);
-      } else {
-        year = context.referenceDate.year;
-        DateTime candidate = DateTime(year, month!, day);
-        if (!candidate.isAfter(context.referenceDate)) {
-          year += 1;
-        }
-      }
-      if (month != null) {
-        return DateTime(year, month, day);
+  void _parseFullDates(String lowerText, String originalText,
+      ParsingContext context, List<ParsingResult> results) {
+    for (final match in _fullDatePattern.allMatches(lowerText)) {
+      final monthStr = match.group(1)!;
+      if (!EnglishDateUtils.monthMap.containsKey(monthStr.toLowerCase())) continue;
+
+      final dateStr = match.group(0)!;
+      final parsedDate = _parseEnglishDate(dateStr, context);
+
+      if (parsedDate != null) {
+        final adjustedDate = EnglishDateUtils.adjustDateTimeWithTime(parsedDate, originalText);
+        results.add(ParsingResult(
+            index: match.start,
+            text: dateStr,
+            date: adjustedDate
+        ));
       }
     }
+  }
+
+  void _parseOrdinalDates(String lowerText, String originalText,
+      ParsingContext context, List<ParsingResult> results) {
+    for (final match in _ordinalPattern.allMatches(lowerText)) {
+      final dateStr = match.group(0)!;
+      final parsedDate = _parseEnglishDate(dateStr, context);
+
+      if (parsedDate != null) {
+        final adjustedDate = EnglishDateUtils.adjustDateTimeWithTime(parsedDate, originalText);
+        results.add(ParsingResult(
+            index: match.start,
+            text: dateStr,
+            date: adjustedDate
+        ));
+      }
+    }
+  }
+
+  DateTime? _parseEnglishDate(String dateStr, ParsingContext context) {
+    final lowerDateStr = dateStr.toLowerCase().trim();
+
+    // Try full date format
+    final fullMatch = _fullDatePattern.firstMatch(lowerDateStr);
+    if (fullMatch != null) {
+      return _parseFullDateMatch(fullMatch, context);
+    }
+
+    // Try ordinal date format
+    final ordinalMatch = _ordinalPattern.firstMatch(lowerDateStr);
+    if (ordinalMatch != null) {
+      return _parseOrdinalMatch(ordinalMatch, context);
+    }
+
     return null;
+  }
+
+  DateTime? _parseFullDateMatch(RegExpMatch match, ParsingContext context) {
+    final monthStr = match.group(1)!;
+    final month = EnglishDateUtils.monthMap[monthStr];
+    final day = int.parse(match.group(2)!);
+
+    if (month == null) return null;
+
+    final year = match.group(3) != null
+        ? int.parse(match.group(3)!)
+        : _inferYear(context.referenceDate, month, day);
+
+    return DateTime(year, month, day);
+  }
+
+  DateTime? _parseOrdinalMatch(RegExpMatch match, ParsingContext context) {
+    final day = int.parse(match.group(1)!);
+    var month = context.referenceDate.month;
+    var year = match.group(2) != null
+        ? int.parse(match.group(2)!)
+        : context.referenceDate.year;
+
+    var candidate = DateTime(year, month, day);
+    if (candidate.isBefore(context.referenceDate)) {
+      month++;
+      if (month > 12) {
+        month = 1;
+        year++;
+      }
+      candidate = DateTime(year, month, day);
+    }
+
+    return candidate;
+  }
+
+  int _inferYear(DateTime reference, int month, int day) {
+    final year = reference.year;
+    final candidate = DateTime(year, month, day);
+    return candidate.isBefore(reference) ? year + 1 : year;
   }
 }
 
 /// Parser for time-only expressions in English.
 class EnTimeOnlyParser extends BaseParser {
+  static final RegExp _timePattern = RegExp(r'^(\d{1,2}):(\d{2})$');
+
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
-    List<ParsingResult> results = [];
-    String lowerText = text.toLowerCase().trim();
-    DateTime ref = context.referenceDate;
+    final results = <ParsingResult>[];
+    final lowerText = text.toLowerCase().trim();
+    final ref = context.referenceDate;
 
-    if (lowerText == "midnight") {
-      DateTime candidate = DateTime(ref.year, ref.month, ref.day, 0, 0, 0);
-      if (!candidate.isAfter(ref)) {
-        candidate = candidate.add(Duration(days: 1));
-      }
-      results.add(ParsingResult(index: 0, text: "Midnight", date: candidate));
-    } else if (lowerText == "noon") {
-      DateTime candidate = DateTime(ref.year, ref.month, ref.day, 12, 0, 0);
-      results.add(ParsingResult(index: 0, text: "Noon", date: candidate));
+    if (lowerText == 'midnight' || lowerText == 'noon') {
+      _parseFixedTime(lowerText, ref, results);
     } else {
-      RegExp regExp = RegExp(r'^(\d{1,2}):(\d{2})$');
-      RegExpMatch? m = regExp.firstMatch(lowerText);
-      if (m != null) {
-        int hour = int.parse(m.group(1)!);
-        int minute = int.parse(m.group(2)!);
-        DateTime candidate = DateTime(ref.year, ref.month, ref.day, hour, minute);
-        if (!candidate.isAfter(ref)) {
-          candidate = candidate.add(Duration(days: 1));
-        }
-        results.add(ParsingResult(index: 0, text: lowerText, date: candidate));
-      }
+      _parseTimeExpression(lowerText, ref, results);
     }
+
     return results;
+  }
+
+  void _parseFixedTime(String text, DateTime ref, List<ParsingResult> results) {
+    if (text == 'midnight') {
+      final candidate = DateTime(ref.year, ref.month, ref.day);
+      final adjustedDate = EnglishDateUtils.getNextOccurrence(ref, candidate);
+      results.add(ParsingResult(
+          index: 0,
+          text: 'Midnight',
+          date: adjustedDate
+      ));
+    } else if (text == 'noon') {
+      final noonDate = DateTime(ref.year, ref.month, ref.day, 12);
+      results.add(ParsingResult(
+          index: 0,
+          text: 'Noon',
+          date: noonDate
+      ));
+    }
+  }
+
+  void _parseTimeExpression(String text, DateTime ref, List<ParsingResult> results) {
+    final match = _timePattern.firstMatch(text);
+    if (match != null) {
+      final hour = int.parse(match.group(1)!);
+      final minute = int.parse(match.group(2)!);
+
+      final candidate = DateTime(ref.year, ref.month, ref.day, hour, minute);
+      final adjustedDate = EnglishDateUtils.getNextOccurrence(ref, candidate);
+
+      results.add(ParsingResult(
+          index: 0,
+          text: text,
+          date: adjustedDate
+      ));
+    }
   }
 }
 
