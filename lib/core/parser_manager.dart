@@ -1,99 +1,61 @@
 // lib/core/parser_manager.dart
+import 'parsing_context.dart';
 import 'result.dart';
-import 'parser.dart';
-import '../languages/en.dart' as en;
-import '../languages/ja.dart' as ja;
-import '../languages/zh.dart' as zh;
-import '../languages/not_language.dart' as notLang;
-import '../modes/range_mode.dart' as rangeModeModule;
-import '../utils/date_utils.dart' as dateUtils;
+import '../languages/en.dart';
+import '../languages/ja.dart';
+import '../languages/zh.dart';
+import '../languages/universal.dart';
+import '../modes/range_mode.dart';
+import '../utils/timezone_utils.dart';
+import 'base_parser.dart';
 
+/// ユーザーからの入力テキストと各種オプションに応じ、
+/// 適切なパーサー群を呼び出して解析結果を統合する管理クラス。
 class ParserManager {
-  /// 指定された言語に応じたパーサーリストを返す。
-  /// 言語指定がなければ、全言語のパーサーを返す。
-  static List<Parser> getParsers(String? language) {
-    List<Parser> parsers = [];
-    if (language == null) {
-      parsers.addAll(en.parsers);
-      parsers.addAll(ja.parsers);
-      parsers.addAll(zh.parsers);
-      parsers.addAll(notLang.parsers);
-    } else {
-      switch (language.toLowerCase()) {
-        case 'en':
-          parsers.addAll(en.parsers);
-          break;
-        case 'ja':
-          parsers.addAll(ja.parsers);
-          break;
-        case 'zh':
-          parsers.addAll(zh.parsers);
-          break;
-        case 'not_language':
-          parsers.addAll(notLang.parsers);
-          break;
-        default:
-          parsers.addAll(en.parsers);
-          parsers.addAll(ja.parsers);
-          parsers.addAll(zh.parsers);
-          parsers.addAll(notLang.parsers);
-          break;
-      }
-    }
-    return parsers;
-  }
-
-  /// パブリックAPI。入力テキストとオプションに基づき解析結果リストを返す。
   static List<ParsingResult> parse(String text,
       {DateTime? referenceDate,
         String? language,
         bool rangeMode = false,
-        bool strict = false,
         String? timezone}) {
-    DateTime refDate = referenceDate ?? DateTime.now();
+    // 基準日時、タイムゾーン、言語などの情報を ParsingContext にまとめる
+    ParsingContext context = ParsingContext(
+      referenceDate: referenceDate ?? DateTime.now(),
+      timezoneOffset: timezone != null
+          ? TimezoneUtils.offsetFromString(timezone)
+          : Duration.zero,
+      language: language,
+    );
+
+    // 言語指定に応じたパーサー群を取得
+    List<BaseParser> parsers = _getParsersForLanguage(context.language);
+
+    // 各パーサーを実行して解析結果を収集する
     List<ParsingResult> results = [];
-
-    List<Parser> parsers = getParsers(language);
     for (var parser in parsers) {
-      try {
-        ParsingResult? result = parser.parse(text, refDate,
-            rangeMode: rangeMode, strict: strict, timezone: timezone);
-        if (result != null) {
-          results.add(result);
-        }
-      } catch (e) {
-        print('Parser error: $e');
-      }
+      results.addAll(parser.parse(text, context));
     }
 
+    // rangeMode が true の場合、範囲指定の結果を生成
     if (rangeMode) {
-      List<ParsingResult> expanded = [];
-      for (var res in results) {
-        expanded.addAll(rangeModeModule.expandRange(res, refDate));
-      }
-      results = expanded;
+      results = RangeMode.generate(results, context);
     }
 
-    if (timezone != null) {
-      int offset = int.tryParse(timezone) ?? 0;
-      for (var res in results) {
-        res.start.timezoneOffset = offset;
-        if (res.end != null) {
-          res.end!.timezoneOffset = offset;
-        }
-      }
-    }
-
-    for (var res in results) {
-      DateTime dt = res.date;
-      if (dateUtils.isPast(dt, refDate)) {
-        res.start = dateUtils.adjustPastDate(res.start, refDate);
-        if (res.end != null) {
-          res.end = dateUtils.adjustPastDate(res.end!, refDate);
-        }
-      }
-    }
+    // タイムゾーンの補正を適用
+    results = TimezoneUtils.applyTimezone(results, context.timezoneOffset);
 
     return results;
+  }
+
+  static List<BaseParser> _getParsersForLanguage(String? language) {
+    switch (language) {
+      case 'en':
+        return EnParsers.parsers;
+      case 'ja':
+        return JaParsers.parsers;
+      case 'zh':
+        return ZhParsers.parsers;
+      default:
+        return UniversalParsers.parsers;
+    }
   }
 }
