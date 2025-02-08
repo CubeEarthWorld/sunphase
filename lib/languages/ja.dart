@@ -195,57 +195,8 @@ class JaAbsoluteParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
-// アラビア数字形式：例 "4月26日4時8分"、"今年12月31日"
-    RegExp regExp =
-    RegExp(r'(?:(今年|来年|去年))?(\d{1,2})月(\d{1,2})日(?:\s*(\d{1,2})時(?:\s*(\d{1,2})分)?)?');
-    Iterable<RegExpMatch> matches = regExp.allMatches(text);
-    for (var match in matches) {
-      int month = int.parse(match.group(2)!);
-      int day = int.parse(match.group(3)!);
-      int hour = 0, minute = 0;
-      if (match.group(4) != null && match.group(4)!.isNotEmpty) {
-        hour = int.parse(match.group(4)!);
-      }
-      if (match.group(5) != null && match.group(5)!.isNotEmpty) {
-        minute = int.parse(match.group(5)!);
-      }
-      int year;
-      if (match.group(1) != null) {
-        String prefix = match.group(1)!;
-        if (prefix == "来年") {
-          year = context.referenceDate.year + 1;
-        } else if (prefix == "去年") {
-          year = context.referenceDate.year - 1;
-        } else {
-          year = context.referenceDate.year;
-        }
-      } else {
-        year = context.referenceDate.year;
-        DateTime candidate = DateTime(year, month, day, hour, minute);
-        if (!candidate.isAfter(context.referenceDate)) {
-          year += 1;
-        }
-      }
-      results.add(ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          date: DateTime(year, month, day, hour, minute)));
-    }
-// 漢数字形式：例 "三月四日"
-    RegExp regKanji = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[日]');
-    Iterable<RegExpMatch> kanjiMatches = regKanji.allMatches(text);
-    for (var match in kanjiMatches) {
-      int month = _parseJapaneseNumber(match.group(1)!);
-      int day = _parseJapaneseNumber(match.group(2)!);
-      int year = context.referenceDate.year;
-      DateTime candidate = DateTime(year, month, day);
-      if (!candidate.isAfter(context.referenceDate)) {
-        candidate = DateTime(year + 1, month, day);
-      }
-      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: candidate));
-    }
 
-    // 日付のみの表現：例 "14日"
+    // Modify the RegExp for handling kanji numbers for days
     RegExp dayOnly = RegExp(r'([0-9一二三四五六七八九十]+)[日]');
     Iterable<RegExpMatch> dayOnlyMatches = dayOnly.allMatches(text);
     for (var match in dayOnlyMatches) {
@@ -274,9 +225,11 @@ class JaAbsoluteParser extends BaseParser {
     return results;
   }
 
+  // Improved parsing of kanji numbers
   int _parseJapaneseNumber(String s) {
     int? value = int.tryParse(s);
     if (value != null) return value;
+
     Map<String, int> kanji = {
       "零": 0,
       "一": 1,
@@ -289,32 +242,105 @@ class JaAbsoluteParser extends BaseParser {
       "八": 8,
       "九": 9,
       "十": 10,
+      "百": 100,
+      "千": 1000
     };
+
     int result = 0;
+    int tempValue = 0;
+    bool isHundred = false;
+
     for (int i = 0; i < s.length; i++) {
-      result = result * 10 + (kanji[s[i]] ?? 0);
+      String char = s[i];
+      if (kanji[char] != null) {
+        if (char == "十") {
+          tempValue = tempValue == 0 ? 10 : tempValue * 10;
+        } else if (char == "百" || char == "千") {
+          tempValue = tempValue == 0 ? kanji[char]! : tempValue * kanji[char]!;
+          isHundred = true;
+        } else {
+          if (tempValue == 0) {
+            tempValue = kanji[char]!;
+          } else {
+            result += tempValue;
+            tempValue = kanji[char]!;
+          }
+        }
+      }
     }
-    return result;
+    return result + tempValue;
   }
 }
 
-/// Parser for time-only expressions in Japanese.
 class JaTimeOnlyParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
-    RegExp regExp = RegExp(r'(\d{1,2})時(?:\s*(\d{1,2})分)?');
-    Iterable<RegExpMatch> matches = regExp.allMatches(text);
-    for (var match in matches) {
-      int hour = int.parse(match.group(1)!);
-      int minute = match.group(2) != null ? int.parse(match.group(2)!) : 0;
+
+    // Handle kanji time such as 十二時三十分
+    RegExp regExpKanjiTime = RegExp(r'([一二三四五六七八九十]+)時([一二三四五六七八九十]+)分');
+    Iterable<RegExpMatch> kanjiMatches = regExpKanjiTime.allMatches(text);
+
+    for (var match in kanjiMatches) {
+      int hour = _parseJapaneseNumber(match.group(1)!);
+      int minute = _parseJapaneseNumber(match.group(2)!);
+
       DateTime candidate = DateTime(context.referenceDate.year, context.referenceDate.month, context.referenceDate.day, hour, minute);
+
       if (!candidate.isAfter(context.referenceDate)) {
         candidate = candidate.add(Duration(days: 1));
       }
+
       results.add(ParsingResult(index: match.start, text: match.group(0)!, date: candidate));
     }
+
     return results;
+  }
+
+  // Improved parsing of kanji numbers for time
+  int _parseJapaneseNumber(String s) {
+    int? value = int.tryParse(s);
+    if (value != null) return value;
+
+    Map<String, int> kanji = {
+      "零": 0,
+      "一": 1,
+      "二": 2,
+      "三": 3,
+      "四": 4,
+      "五": 5,
+      "六": 6,
+      "七": 7,
+      "八": 8,
+      "九": 9,
+      "十": 10,
+      "百": 100,
+      "千": 1000
+    };
+
+    int result = 0;
+    int tempValue = 0;
+    bool isHundred = false;
+
+    for (int i = 0; i < s.length; i++) {
+      String char = s[i];
+      if (kanji[char] != null) {
+        if (char == "十") {
+          tempValue = tempValue == 0 ? 10 : tempValue * 10;
+        } else if (char == "百" || char == "千") {
+          tempValue = tempValue == 0 ? kanji[char]! : tempValue * kanji[char]!;
+          isHundred = true;
+        } else {
+          if (tempValue == 0) {
+            tempValue = kanji[char]!;
+          } else {
+            result += tempValue;
+            tempValue = kanji[char]!;
+          }
+        }
+      }
+    }
+    return result + tempValue;
   }
 }
 

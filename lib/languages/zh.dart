@@ -169,7 +169,8 @@ class ZhAbsoluteParser extends BaseParser {
     for (var match in matches) {
       int month = int.parse(match.group(2)!);
       int day = int.parse(match.group(3)!);
-      int hour = 0, minute = 0;
+      int hour = 0,
+          minute = 0;
       if (match.group(4) != null && match.group(4)!.isNotEmpty) {
         hour = int.parse(match.group(4)!);
       }
@@ -201,7 +202,8 @@ class ZhAbsoluteParser extends BaseParser {
           date: DateTime(year, month, day, hour, minute)));
     }
     // 漢字形式：例如 "三月四号"
-    RegExp regKanji = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[号]');
+    RegExp regKanji = RegExp(
+        r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[号]');
     Iterable<RegExpMatch> kanjiMatches = regKanji.allMatches(text);
     for (var match in kanjiMatches) {
       int month = _parseChineseNumber(match.group(1)!);
@@ -221,7 +223,8 @@ class ZhAbsoluteParser extends BaseParser {
       if (m != null) {
         int day = int.parse(m.group(1)!);
         DateTime nextMonthStart =
-        DateTime(context.referenceDate.year, context.referenceDate.month + 1, 1);
+        DateTime(
+            context.referenceDate.year, context.referenceDate.month + 1, 1);
         DateTime candidate =
         DateTime(nextMonthStart.year, nextMonthStart.month, day);
         results.add(ParsingResult(
@@ -253,7 +256,9 @@ class ZhAbsoluteParser extends BaseParser {
       if (candidate.isBefore(context.referenceDate) ||
           candidate.month < context.referenceDate.month) {
         candidate =
-            DateTime(context.referenceDate.year, context.referenceDate.month + 1, day);
+            DateTime(
+                context.referenceDate.year, context.referenceDate.month + 1,
+                day);
         if (candidate.month == 1) {
           candidate = DateTime(context.referenceDate.year + 1, 1, day);
         }
@@ -273,7 +278,9 @@ class ZhAbsoluteParser extends BaseParser {
       if (candidate.isBefore(context.referenceDate) ||
           candidate.month < context.referenceDate.month) {
         candidate =
-            DateTime(context.referenceDate.year, context.referenceDate.month + 1, day);
+            DateTime(
+                context.referenceDate.year, context.referenceDate.month + 1,
+                day);
         if (candidate.month == 1) {
           candidate = DateTime(context.referenceDate.year + 1, 1, day);
         }
@@ -288,8 +295,6 @@ class ZhAbsoluteParser extends BaseParser {
   }
 
   int _parseChineseNumber(String s) {
-    int? value = int.tryParse(s);
-    if (value != null) return value;
     Map<String, int> map = {
       "零": 0,
       "一": 1,
@@ -303,6 +308,23 @@ class ZhAbsoluteParser extends BaseParser {
       "九": 9,
       "十": 10,
     };
+
+    if (s.contains("十")) {
+      // Handle "十一", "十二", "十三", ..., "十九"
+      if (s.length == 2) {
+        if (s[0] == '十') {
+          return int.parse("1${s[1]}");
+        } else {
+          return map[s[0]]! * 10 + map[s[1]]!;
+        }
+      }
+      // Handle "二十" to "九十"
+      return map[s[0]]! * 10;
+    }
+
+    int? value = int.tryParse(s);
+    if (value != null) return value;
+
     int result = 0;
     for (int i = 0; i < s.length; i++) {
       result = result * 10 + (map[s[i]] ?? 0);
@@ -317,29 +339,78 @@ class ZhTimeOnlyParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
-    RegExp regExp = RegExp(r'(上午|中午|下午|晚上)?\s*(\d{1,2})点(?:\s*(\d{1,2})fen)?');
+    RegExp regExp = RegExp(r'(上午|中午|下午|晚上)?\s*(\d{1,2}|[一二三四五六七八九十]+)\s*点(?:\s*(\d{1,2}|[一二三四五六七八九十]+))?分?');
     Iterable<RegExpMatch> matches = regExp.allMatches(text);
     for (var match in matches) {
       String period = match.group(1) ?? "";
-      int hour = int.parse(match.group(2)!);
-      int minute = match.group(3) != null ? int.parse(match.group(3)!) : 0;
+      String hourStr = match.group(2)!;
+      String minuteStr = match.group(3) ?? "0"; // Default minute is 0 if not provided
+
+      int hour = ChineseNumberParser.parse(hourStr);
+      int minute = ChineseNumberParser.parse(minuteStr);
+
       if ((period.contains("下午") || period.contains("晚上")) && hour < 12) {
         hour += 12;
       } else if (period.contains("中午")) {
         hour = 12;
       }
+
       DateTime candidate = DateTime(
           context.referenceDate.year,
           context.referenceDate.month,
           context.referenceDate.day,
           hour,
           minute);
+
       results.add(ParsingResult(
           index: match.start, text: match.group(0)!, date: candidate));
     }
     return results;
   }
 }
+
+class ChineseNumberParser {
+  static int parse(String s) {
+    Map<String, int> map = {
+      "零": 0,
+      "一": 1,
+      "二": 2,
+      "三": 3,
+      "四": 4,
+      "五": 5,
+      "六": 6,
+      "七": 7,
+      "八": 8,
+      "九": 9,
+      "十": 10,
+    };
+
+    if (s.contains("十")) {
+      // Handle "十一", "十二", "十三", ..., "十九"
+      if (s.length == 2) {
+        if (s[0] == '十') {
+          return int.parse("1${s[1]}");
+        } else {
+          return map[s[0]]! * 10 + map[s[1]]!;
+        }
+      }
+      // Handle "二十" to "九十"
+      return map[s[0]]! * 10;
+    }
+
+    int? value = int.tryParse(s);
+    if (value != null) return value;
+
+    int result = 0;
+    for (int i = 0; i < s.length; i++) {
+      result = result * 10 + (map[s[i]] ?? 0);
+    }
+    return result;
+  }
+}
+
+
+
 
 /// 中文解析器集合
 class ZhParsers {

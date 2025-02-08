@@ -182,34 +182,21 @@ class EnAbsoluteParser extends BaseParser {
       String dateStr = match.group(0)!;
       DateTime? parsedDate =
       _parseEnglishDate(dateStr, context, monthMap: monthMap);
+
+      // Check if time is included in the string
+      RegExp timeRegExp = RegExp(r'(\d{1,2}):(\d{2})');
+      RegExpMatch? timeMatch = timeRegExp.firstMatch(text);
+      if (parsedDate != null && timeMatch != null) {
+        // If time is found, update the date with the parsed time
+        int hour = int.parse(timeMatch.group(1)!);
+        int minute = int.parse(timeMatch.group(2)!);
+        parsedDate = DateTime(parsedDate.year, parsedDate.month, parsedDate.day, hour, minute);
+      }
+
       if (parsedDate != null) {
         results.add(ParsingResult(index: match.start, text: dateStr, date: parsedDate));
       }
     }
-    // Regex to capture expressions like "3rd" or "12th"
-    RegExp dateOnlyExp = RegExp(r'(\d{1,2})(?:st|nd|rd|th)\b', caseSensitive: false);
-    Iterable<RegExpMatch> dateOnlyMatches = dateOnlyExp.allMatches(text);
-    for (var match in dateOnlyMatches) {
-      int day = int.parse(match.group(1)!);
-      int month = context.referenceDate.month;
-      int year = context.referenceDate.year;
-
-      // 参照日より前の場合は月を進める
-      DateTime candidate = DateTime(year, month, day);
-      if (candidate.isBefore(context.referenceDate)) {
-        month++;
-        if (month > 12) {
-          month = 1;
-          year++;
-        }
-      }
-      results.add(ParsingResult(
-        index: match.start,
-        text: match.group(0)!,
-        date: DateTime(year, month, day),
-      ));
-    }
-
     return results;
   }
 

@@ -23,29 +23,30 @@ import 'package:sunphase/sunphase.dart';
 void main() {
 
   // 日付を解析
-  List<ParsingResult> results = parse('今日');
+  List<ParsingResult> results = parse('Today');
   print(results);
 
   // 英語で日付を解析
   List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
   print(resultsEn);
 
-  // 日本語で日付を解析
-  List<ParsingResult> resultsJa = parse('明日', language: 'ja');
+  // 中国語で日付を解析
+  List<ParsingResult> resultsJa = parse('三天后', language: 'zh');
   print(resultsJa);
 
   // 特定の基準日で日付を解析
-  List<ParsingResult> resultsRef = parse('来週', referenceDate: DateTime(2021, 2, 4));
+  List<ParsingResult> resultsRef = parse('Next Tuesday', referenceDate: DateTime(2025, 2, 8));
   print(resultsRef);
 
   // 範囲モードで日付を解析
-  List<ParsingResult> resultsRange = parse('来週', language: 'ja', rangeMode: true);
+  List<ParsingResult> resultsRange = parse('Next week', rangeMode: true);
   print(resultsRange);
 
   // 特定のタイムゾーンで日付を解析。タイムゾーンは、UTCからの分単位オフセットを表す文字列として指定する必要があります。例：UTC+9の場合は "540"。
-  List<ParsingResult> resultsTimezone = parse('明日', language: 'ja', timezone: '540');
+  List<ParsingResult> resultsTimezone = parse('明天', timezone: '480');
   print(resultsTimezone);
 }
+
 ```
 
 ## インストール
