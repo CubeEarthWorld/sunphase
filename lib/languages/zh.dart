@@ -63,7 +63,7 @@ class ChineseDateParser implements Parser {
     }
 
     // ------------------------------
-    // 绝对日期 (YYYY年M月D日 或 1月1日)
+    // 绝对日期 (YYYY年M月D日, 或 1月1日)
     // ------------------------------
     final RegExp absoluteDatePattern = RegExp(r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日');
     for (final match in absoluteDatePattern.allMatches(text)) {
@@ -266,6 +266,9 @@ class ChineseDateParser implements Parser {
     return results;
   }
 
+  // ---------------------------------------
+  // 工具函数
+  // ---------------------------------------
   int _weekdayFromString(String weekday) {
     if (weekday.contains("一")) return DateTime.monday;
     if (weekday.contains("二")) return DateTime.tuesday;
@@ -293,9 +296,9 @@ class ChineseDateParser implements Parser {
 
   DateTime _getRelativePeriodDate(DateTime reference, String period) {
     if (period == '下周') {
-      return reference.add(const Duration(days: 7));
+      return reference.add(Duration(days: 7));
     } else if (period == '上周') {
-      return reference.subtract(const Duration(days: 7));
+      return reference.subtract(Duration(days: 7));
     } else if (period == '本周') {
       return reference;
     } else if (period == '下个月') {

@@ -32,16 +32,16 @@ class JapaneseDateParser implements Parser {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       } else if (matched == '明日') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .add(const Duration(days: 1));
+            .add(Duration(days: 1));
       } else if (matched == '明後日') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .add(const Duration(days: 2));
+            .add(Duration(days: 2));
       } else if (matched == '明々後日') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .add(const Duration(days: 3));
+            .add(Duration(days: 3));
       } else if (matched == '昨日') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .subtract(const Duration(days: 1));
+            .subtract(Duration(days: 1));
       } else {
         date = referenceDate;
       }
@@ -70,14 +70,17 @@ class JapaneseDateParser implements Parser {
     }
 
     // ------------------------------
-    // 絶対日付の表現 (YYYY年M月D日)
+    // 絶対日付の表現 (YYYY年M月D日 および オプションで時刻)
     // ------------------------------
-    final RegExp absoluteDatePattern = RegExp(r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日');
+    final RegExp absoluteDatePattern = RegExp(
+        r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日(?:\s*(\d{1,2})時(?:(\d{1,2})分)?)?');
     for (final match in absoluteDatePattern.allMatches(text)) {
-      int year = (match.group(1) != null) ? int.parse(match.group(1)!) : referenceDate.year;
+      int year = match.group(1) != null ? int.parse(match.group(1)!) : referenceDate.year;
       int month = int.parse(match.group(2)!);
       int day = int.parse(match.group(3)!);
-      DateTime date = DateTime(year, month, day);
+      int hour = match.group(4) != null ? int.parse(match.group(4)!) : 0;
+      int minute = match.group(5) != null ? int.parse(match.group(5)!) : 0;
+      DateTime date = DateTime(year, month, day, hour, minute);
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
@@ -149,7 +152,7 @@ class JapaneseDateParser implements Parser {
     // 相対日と時刻の組み合わせ (例: "明日17時41分")
     // ------------------------------
     final RegExp relativeTimePattern = RegExp(
-      r'(今日|明日|明後日|明々後日|昨日)\s*(\d{1,2})時(?:(\d{1,2})分)?',
+        r'(今日|明日|明後日|明々後日|昨日)\s*(\d{1,2})時(?:(\d{1,2})分)?'
     );
     for (final match in relativeTimePattern.allMatches(text)) {
       String dayWord = match.group(1)!;
@@ -188,7 +191,7 @@ class JapaneseDateParser implements Parser {
     // 時刻のみの表現 (例: "16時24分" または "16時")
     // ------------------------------
     final RegExp timeOnlyPattern = RegExp(
-      r'(?<!\d)(\d{1,2})時(?:(\d{1,2})分)?(?!\d)',
+        r'(?<!\d)(\d{1,2})時(?:(\d{1,2})分)?(?!\d)'
     );
     for (final match in timeOnlyPattern.allMatches(text)) {
       String matchText = match.group(0)!;
@@ -216,6 +219,9 @@ class JapaneseDateParser implements Parser {
     return results;
   }
 
+  // ---------------------------------------
+  // ユーティリティ
+  // ---------------------------------------
   int _weekdayFromString(String weekday) {
     if (weekday.contains("月")) return DateTime.monday;
     if (weekday.contains("火")) return DateTime.tuesday;
@@ -243,9 +249,9 @@ class JapaneseDateParser implements Parser {
 
   DateTime _getRelativePeriodDate(DateTime reference, String period) {
     if (period == '来週') {
-      return reference.add(const Duration(days: 7));
+      return reference.add(Duration(days: 7));
     } else if (period == '先週') {
-      return reference.subtract(const Duration(days: 7));
+      return reference.subtract(Duration(days: 7));
     } else if (period == '今週') {
       return reference;
     } else if (period == '来月') {

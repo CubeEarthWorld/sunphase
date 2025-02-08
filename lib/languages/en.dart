@@ -241,7 +241,6 @@ class EnglishDateParser implements Parser {
       int hour = int.parse(match.group(1)!);
       int minute = int.parse(match.group(2)!);
       DateTime candidate = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
-      // 指定時刻が過ぎていれば翌日にする
       if (!candidate.isAfter(referenceDate)) {
         candidate = candidate.add(Duration(days: 1));
       }
@@ -255,9 +254,9 @@ class EnglishDateParser implements Parser {
     return results;
   }
 
-  // ------------------------------
-  // 以下、ユーティリティ関数
-  // ------------------------------
+  // ---------------------------------------
+  // ユーティリティ
+  // ---------------------------------------
   int _weekdayFromString(String weekday) {
     switch (weekday.toLowerCase()) {
       case 'monday':
@@ -279,7 +278,8 @@ class EnglishDateParser implements Parser {
     }
   }
 
-  DateTime _getDateForWeekday(DateTime reference, int targetWeekday, String? modifier) {
+  DateTime _getDateForWeekday(
+      DateTime reference, int targetWeekday, String? modifier) {
     DateTime current = DateTime(reference.year, reference.month, reference.day);
     int diff = targetWeekday - current.weekday;
     if (modifier == null || modifier.isEmpty || modifier == 'this') {
@@ -341,7 +341,8 @@ class EnglishDateParser implements Parser {
     }
   }
 
-  DateTime _getRelativePeriodDate(DateTime reference, String period, String modifier) {
+  DateTime _getRelativePeriodDate(
+      DateTime reference, String period, String modifier) {
     switch (period) {
       case 'week':
         if (modifier == 'next') {
@@ -372,8 +373,10 @@ class EnglishDateParser implements Parser {
     }
   }
 
-  DateTime _calculateRelativeDate(DateTime reference, int number, String unit, String direction) {
+  DateTime _calculateRelativeDate(
+      DateTime reference, int number, String unit, String direction) {
     bool isFuture = direction.contains('from now');
+
     int daysToAdd = 0;
     switch (unit) {
       case 'day':

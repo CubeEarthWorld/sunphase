@@ -25,8 +25,9 @@ class NonLanguageParser implements Parser {
     // ------------------------------
     // 絶対日付＋時刻の表現 (例: "2024/4/1 16:31" や "2024-04-04 16時40分")
     // ------------------------------
+    // \b の代わりに負の先読み／後読みを利用
     final RegExp fullDateTimePattern = RegExp(
-        r'\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:\s+(\d{1,2})(?::|時)(\d{2}))?(?:分)?\b'
+        r'(?<!\d)(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:\s+(\d{1,2})(?::|時)(\d{2}))?(?:分)?(?!\d)'
     );
     for (final match in fullDateTimePattern.allMatches(text)) {
       int year = int.parse(match.group(1)!);
@@ -46,10 +47,10 @@ class NonLanguageParser implements Parser {
     // 絶対日付（年指定なし：例 "5/6"）＋オプションの時刻 (例: "5/6 16:40")
     // ------------------------------
     final RegExp monthDayTimePattern = RegExp(
-        r'\b(\d{1,2})[/-](\d{1,2})(?:\s+(\d{1,2})(?::|時)(\d{2}))?(?:分)?\b'
+        r'(?<!\d)(\d{1,2})[/-](\d{1,2})(?:\s+(\d{1,2})(?::|時)(\d{2}))?(?:分)?(?!\d)'
     );
     for (final match in monthDayTimePattern.allMatches(text)) {
-      // 4桁の数字で始まる場合は fullDateTimePattern のはずなので除外
+      // 4桁の数字で始まる場合は fullDateTimePattern により処理済み
       if (match.group(1)!.length == 4) continue;
       int month = int.parse(match.group(1)!);
       int day = int.parse(match.group(2)!);
@@ -71,14 +72,13 @@ class NonLanguageParser implements Parser {
     // 時刻のみの表現 (例: "16:31", "16時40分", "16時")
     // ------------------------------
     final RegExp timeOnlyPattern = RegExp(
-        r'\b(\d{1,2})(?::|時)(\d{2})?(?:分)?\b'
+        r'(?<!\d)(\d{1,2})(?::|時)(\d{2})?(?:分)?(?!\d)'
     );
     for (final match in timeOnlyPattern.allMatches(text)) {
-      // 時刻のみと判断するため、前後に日付の区切りがないことを想定
       int hour = int.parse(match.group(1)!);
       int minute = match.group(2) != null ? int.parse(match.group(2)!) : 0;
-      // 日付指定がない場合、参照日時より未来になる最も近い日時を設定
       DateTime candidate = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
+      // 日付指定がなく、指定時刻が過ぎていれば翌日にする
       if (!candidate.isAfter(referenceDate)) {
         candidate = candidate.add(Duration(days: 1));
       }
