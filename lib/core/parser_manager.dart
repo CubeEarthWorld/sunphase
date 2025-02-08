@@ -1,7 +1,6 @@
 // lib/core/parser_manager.dart
 import 'result.dart';
 import 'parser.dart';
-// import 'refiner.dart'; // 不要なため削除
 import '../languages/en.dart' as en;
 import '../languages/ja.dart' as ja;
 import '../languages/zh.dart' as zh;
