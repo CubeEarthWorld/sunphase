@@ -1,4 +1,5 @@
 // lib/languages/ja.dart
+
 import 'language_interface.dart';
 import '../core/parser.dart';
 import '../core/refiner.dart';
@@ -22,21 +23,18 @@ class JapaneseLanguage implements Language {
 
 // -------------------------------------------------------
 // 1) JapaneseDateParser
-//   - 日本語特有の「明日」「来週 月曜日」「YYYY年M月D日」等をパース
+//    - "明日", "先週 火曜日", "YYYY年M月D日" など
 // -------------------------------------------------------
 class JapaneseDateParser implements Parser {
   @override
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     final results = <ParsingResult>[];
 
-    // ------------------------------
-    // 相対表現 (今日, 明日, 明後日, 明々後日, 昨日)
-    // ------------------------------
-    final RegExp relativeDayPattern = RegExp(
-      r'(今日(?!曜日)|明日(?!曜日)|明後日(?!曜日)|明々後日(?!曜日)|昨日(?!曜日))',
-    );
+    // ---------- A. 相対日 ----------
+    final RegExp relativeDayPattern =
+    RegExp(r'(今日(?!曜日)|明日(?!曜日)|明後日(?!曜日)|明々後日(?!曜日)|昨日(?!曜日))');
     for (final match in relativeDayPattern.allMatches(text)) {
-      String matched = match.group(0)!;
+      final matched = match.group(0)!;
       DateTime date;
       if (matched == '今日') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
@@ -55,161 +53,139 @@ class JapaneseDateParser implements Parser {
       } else {
         date = referenceDate;
       }
-      results.add(
-        ParsingResult(
-          index: match.start,
-          text: matched,
-          component: ParsedComponent(date: date),
-        ),
-      );
+      results.add(ParsingResult(
+        index: match.start,
+        text: matched,
+        component: ParsedComponent(date: date),
+      ));
     }
 
-    // ------------------------------
-    // 曜日の表現 (来週 月曜日, 先週 火曜日, 今週 金曜日, etc.)
-    // ------------------------------
+    // ---------- B. 曜日 ----------
     final RegExp weekdayPattern = RegExp(
       r'(来週|先週|今週)?\s*((?:月曜日|月曜|火曜日|火曜|水曜日|水曜|木曜日|木曜|金曜日|金曜|土曜日|土曜|日曜日|日曜))',
     );
     for (final match in weekdayPattern.allMatches(text)) {
-      String modifier = match.group(1) ?? '';
-      String weekdayStr = match.group(2)!;
-      int targetWeekday = _weekdayFromString(weekdayStr);
-      DateTime date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
-      results.add(
-        ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          component: ParsedComponent(date: date),
-        ),
-      );
+      final modifier = match.group(1) ?? '';
+      final weekdayStr = match.group(2)!;
+      final targetWeekday = _weekdayFromString(weekdayStr);
+      final date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: date),
+      ));
     }
 
-    // ------------------------------
-    // 絶対日付 (YYYY年M月D日)
-    // ------------------------------
+    // ---------- C. YYYY年M月D日 ----------
     final RegExp absoluteDatePattern = RegExp(r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日');
     for (final match in absoluteDatePattern.allMatches(text)) {
-      int year = (match.group(1) != null) ? int.parse(match.group(1)!) : referenceDate.year;
-      int month = int.parse(match.group(2)!);
-      int day = int.parse(match.group(3)!);
-      DateTime date = DateTime(year, month, day);
-      results.add(
-        ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          component: ParsedComponent(date: date),
-        ),
-      );
+      final yearStr = match.group(1);
+      final year =
+      (yearStr != null) ? int.parse(yearStr) : referenceDate.year;
+      final month = int.parse(match.group(2)!);
+      final day = int.parse(match.group(3)!);
+      final date = DateTime(year, month, day);
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: date),
+      ));
     }
 
-    // ------------------------------
-    // 相対期間 (来週, 先週, 今週, 来月, 先月, 今月, 来年, 去年, 今年)
-    // ------------------------------
-    final RegExp relativePeriodPattern = RegExp(r'(来週|先週|今週|来月|先月|今月|来年|去年|今年)');
+    // ---------- D. 相対期間 (来週,先週,今週,来月,先月,今月,来年,去年,今年) ----------
+    final RegExp relativePeriodPattern =
+    RegExp(r'(来週|先週|今週|来月|先月|今月|来年|去年|今年)');
     for (final match in relativePeriodPattern.allMatches(text)) {
-      String matched = match.group(0)!;
-      DateTime date = _getRelativePeriodDate(referenceDate, matched);
-      results.add(
-        ParsingResult(
-          index: match.start,
-          text: matched,
-          component: ParsedComponent(date: date),
-        ),
-      );
+      final matched = match.group(0)!;
+      final date = _getRelativePeriodDate(referenceDate, matched);
+      results.add(ParsingResult(
+        index: match.start,
+        text: matched,
+        component: ParsedComponent(date: date),
+      ));
     }
 
-    // ------------------------------
-    // 「X日前」「X日後」など
-    // ------------------------------
+    // ---------- E. 「X日前」「X日後」等 ----------
     final RegExp relativeDayNumPattern = RegExp(r'([一二三四五六七八九十\d]+)日(前|後)');
     for (final match in relativeDayNumPattern.allMatches(text)) {
-      String numStr = match.group(1)!;
-      String direction = match.group(2)!; // 前 or 後
-      int number = _jaNumberToInt(numStr);
-      bool isFuture = (direction == '後');
-      DateTime date = isFuture
+      final numStr = match.group(1)!;
+      final direction = match.group(2)!;
+      final number = _jaNumberToInt(numStr);
+      final isFuture = (direction == '後');
+      final date = isFuture
           ? referenceDate.add(Duration(days: number))
           : referenceDate.subtract(Duration(days: number));
-      results.add(
-        ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          component: ParsedComponent(date: date),
-        ),
-      );
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: date),
+      ));
     }
 
     final RegExp relativeWeekPattern = RegExp(r'([一二三四五六七八九十\d]+)週間(前|後)');
     for (final match in relativeWeekPattern.allMatches(text)) {
-      String numStr = match.group(1)!;
-      int number = _jaNumberToInt(numStr);
-      String direction = match.group(2)!;
-      bool isFuture = (direction == '後');
-      int daysToMove = number * 7;
-      DateTime date = isFuture
+      final numStr = match.group(1)!;
+      final number = _jaNumberToInt(numStr);
+      final direction = match.group(2)!;
+      final isFuture = (direction == '後');
+      final daysToMove = number * 7;
+      final date = isFuture
           ? referenceDate.add(Duration(days: daysToMove))
           : referenceDate.subtract(Duration(days: daysToMove));
-      results.add(
-        ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          component: ParsedComponent(date: date),
-        ),
-      );
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: date),
+      ));
     }
 
     final RegExp relativeMonthPattern = RegExp(r'([一二三四五六七八九十\d]+)ヶ月(前|後)');
     for (final match in relativeMonthPattern.allMatches(text)) {
-      String numStr = match.group(1)!;
-      int number = _jaNumberToInt(numStr);
-      String direction = match.group(2)!;
-      bool isFuture = (direction == '後');
-      DateTime date = isFuture
-          ? DateTime(referenceDate.year, referenceDate.month + number, referenceDate.day)
-          : DateTime(referenceDate.year, referenceDate.month - number, referenceDate.day);
-      results.add(
-        ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          component: ParsedComponent(date: date),
-        ),
-      );
+      final numStr = match.group(1)!;
+      final number = _jaNumberToInt(numStr);
+      final direction = match.group(2)!;
+      final isFuture = (direction == '後');
+      final date = isFuture
+          ? DateTime(
+          referenceDate.year, referenceDate.month + number, referenceDate.day)
+          : DateTime(
+          referenceDate.year, referenceDate.month - number, referenceDate.day);
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: date),
+      ));
     }
 
-    // ------------------------------
-    // 単独の「XX日」「XX号」(「月」が書かれていない)
-    // ------------------------------
+    // ---------- F. 単独の「XX日」「XX号」 ----------
     final RegExp singleDayPattern = RegExp(r'(?<!月)([一二三四五六七八九十\d]+)(日|号)');
     for (final match in singleDayPattern.allMatches(text)) {
-      String numStr = match.group(1)!;
-      int day = _jaNumberToInt(numStr);
+      final numStr = match.group(1)!;
+      final day = _jaNumberToInt(numStr);
       if (day <= 0) continue;
-
       final current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       DateTime candidate = DateTime(current.year, current.month, day);
       if (current.day > day) {
-        int nextMonth = current.month + 1;
-        int nextYear = current.year;
-        if (nextMonth > 12) {
-          nextMonth -= 12;
-          nextYear += 1;
+        var nm = current.month + 1;
+        var ny = current.year;
+        if (nm > 12) {
+          nm -= 12;
+          ny += 1;
         }
-        candidate = DateTime(nextYear, nextMonth, day);
+        candidate = DateTime(ny, nm, day);
       }
-      results.add(
-        ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          component: ParsedComponent(date: candidate),
-        ),
-      );
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: candidate),
+      ));
     }
 
     return results;
   }
 
   // ---------------------------------------
-  // Utils
+  // Utilities
   // ---------------------------------------
   int _weekdayFromString(String weekday) {
     if (weekday.contains("月")) return DateTime.monday;
@@ -325,7 +301,9 @@ class JapaneseDateParser implements Parser {
 
 // -------------------------------------------------------
 // 2) JapaneseTimeParser
-//   - "(\d{1,2})(時|点|:)(\d{1,2})?(分)?" で「17時」「17時32分」「16点24分」「16:00」などをパース
+//   - "(\d{1,2}):(\d{1,2})" (コロン形式)
+//   - "(\d{1,2})時((\d{1,2})分)?" (「17時32分」など)
+//   => 最も近い将来の時刻を返す
 // -------------------------------------------------------
 class JapaneseTimeParser implements Parser {
   @override
@@ -333,49 +311,44 @@ class JapaneseTimeParser implements Parser {
     final results = <ParsingResult>[];
     final now = referenceDate;
 
-    // (1) hour => (\d{1,2})
-    // (2) 区切り => 時 or 点 or :
-    // (3) minute => (\d{1,2})? (無い場合もある)
-    // (4) 分 => あっても無くても良い
-    //
-    // 例:
-    //   "17時" -> hour=17, minute=なし -> minute=0
-    //   "17時32分" -> hour=17, minute=32
-    //   "16点24分" -> hour=16, minute=24
-    //   "16:00" -> hour=16, minute=00
-    final RegExp timePatternKanji = RegExp(r'(\d{1,2})(時|点|:)(\d{1,2})?(分)?');
-    for (final match in timePatternKanji.allMatches(text)) {
-      final hourStr = match.group(1)!;
-      final divider = match.group(2)!; // "時" or "点" or ":"
-      final minuteStr = match.group(3);
-      // group(4) は "分" (使わなくてOK)
-
-      final hour = int.parse(hourStr);
-      int minute = 0;
-      if (minuteStr != null && minuteStr.isNotEmpty) {
-        // 「17時32分」のように minutes がある場合
-        minute = int.parse(minuteStr);
-      }
-
-      // hour, minute が正しい範囲かチェック
-      if (hour > 23 || minute > 59) {
-        continue; // 不正な時刻
-      }
-
+    // (1) コロン区切り e.g. "16:00", "17:40"
+    final RegExp timePatternColon = RegExp(r'\b(\d{1,2}):(\d{1,2})\b');
+    for (final match in timePatternColon.allMatches(text)) {
+      final hour = int.parse(match.group(1)!);
+      final minute = int.parse(match.group(2)!);
+      if (hour > 23 || minute > 59) continue;
       DateTime candidate = DateTime(now.year, now.month, now.day, hour, minute);
-
-      // 過ぎていれば翌日にする仕様であれば実行
       if (candidate.isBefore(now)) {
         candidate = candidate.add(const Duration(days: 1));
       }
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: candidate),
+      ));
+    }
 
-      results.add(
-        ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          component: ParsedComponent(date: candidate),
-        ),
-      );
+    // (2) 「HH時((\d{1,2})分)?」
+    //    例: "17時", "17時32分"
+    final RegExp timePatternKanji = RegExp(r'(\d{1,2})時((\d{1,2})分)?');
+    for (final match in timePatternKanji.allMatches(text)) {
+      final hourStr = match.group(1)!;
+      final minuteStr = match.group(3);
+      final hour = int.parse(hourStr);
+      int minute = 0;
+      if (minuteStr != null && minuteStr.isNotEmpty) {
+        minute = int.parse(minuteStr);
+      }
+      if (hour > 23 || minute > 59) continue;
+      DateTime candidate = DateTime(now.year, now.month, now.day, hour, minute);
+      if (candidate.isBefore(now)) {
+        candidate = candidate.add(const Duration(days: 1));
+      }
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: candidate),
+      ));
     }
 
     return results;
@@ -384,7 +357,7 @@ class JapaneseTimeParser implements Parser {
 
 // -------------------------------------------------------
 // 3) JapaneseRefiner
-//    - 日付だけの結果 + 時刻だけの結果 をマージ
+//   - 日付結果 + 時刻結果 を1つにまとめる
 // -------------------------------------------------------
 class JapaneseRefiner implements Refiner {
   @override
@@ -393,10 +366,12 @@ class JapaneseRefiner implements Refiner {
 
     final merged = <ParsingResult>[];
     int i = 0;
+
     while (i < results.length) {
       final current = results[i];
       if (i < results.length - 1) {
         final next = results[i + 1];
+        // (日付のみ) + (時刻のみ) ならマージ
         if (_isDateOnly(current) && _isTimeOnly(next)) {
           final dt = DateTime(
             current.date.year,
@@ -406,14 +381,12 @@ class JapaneseRefiner implements Refiner {
             next.date.minute,
             next.date.second,
           );
-          final newText = current.text + next.text;
-          merged.add(
-            ParsingResult(
-              index: current.index,
-              text: newText,
-              component: ParsedComponent(date: dt),
-            ),
-          );
+          final mergedText = current.text + next.text;
+          merged.add(ParsingResult(
+            index: current.index,
+            text: mergedText,
+            component: ParsedComponent(date: dt),
+          ));
           i += 2;
           continue;
         }
@@ -426,12 +399,10 @@ class JapaneseRefiner implements Refiner {
   }
 
   bool _isDateOnly(ParsingResult r) {
-    // hour=0 && minute=0 && second=0 なら日付のみ
     return (r.date.hour == 0 && r.date.minute == 0 && r.date.second == 0);
   }
 
   bool _isTimeOnly(ParsingResult r) {
-    // hour !=0 or minute !=0 なら時刻要素あり
     return (r.date.hour != 0 || r.date.minute != 0);
   }
 }
