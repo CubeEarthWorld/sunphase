@@ -5,8 +5,6 @@ import '../core/parser.dart';
 import '../core/refiner.dart';
 import '../core/result.dart';
 
-/// 非言語 (数値フォーマット) 用の Language 実装
-/// code: 'not'
 class NotLanguage implements Language {
   @override
   String get code => 'not';
@@ -23,20 +21,15 @@ class NotLanguage implements Language {
   ];
 }
 
-// -------------------------------------------------------
-// 1) NotLanguageDateParser
-//    - "YYYY-MM-DD" / "YYYY/MM/DD" / "M/D" など数値フォーマットの日付をパース
-//    - 年が省略された場合は「もっとも近い未来」となるよう翌年補正など
-// -------------------------------------------------------
+// ----------------------
+// 1) 数値フォーマット日付 (YYYY-MM-DD, YYYY/MM/DD, M/D など)
+// ----------------------
 class NotLanguageDateParser implements Parser {
   @override
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     final results = <ParsingResult>[];
 
-    // --------------------------------
-    // A) YYYY-MM-DD or YYYY/MM/DD
-    //    例: "2024-01-05", "2024/1/5"
-    // --------------------------------
+    // (A) YYYY-MM-DD or YYYY/MM/DD
     final RegExp ymdPattern = RegExp(r'\b(\d{4})[-/](\d{1,2})[-/](\d{1,2})\b');
     for (final match in ymdPattern.allMatches(text)) {
       final year = int.parse(match.group(1)!);
@@ -52,25 +45,16 @@ class NotLanguageDateParser implements Parser {
       );
     }
 
-    // --------------------------------
-    // B) M/D  (年省略)
-    //    例: "1/5", "12/31"
-    //    → 今年か、過ぎていれば翌年
-    // --------------------------------
+    // (B) M/D (年がない) => もっとも近い(今年or来年)
     final RegExp mdPattern = RegExp(r'\b(\d{1,2})[-/](\d{1,2})\b');
     for (final match in mdPattern.allMatches(text)) {
-      // すでに YYYY-MM-DD にマッチしている可能性もあるが
-      // 重複は後で Merger or Refiner で排除される想定
-      final now = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       final month = int.parse(match.group(1)!);
       final day = int.parse(match.group(2)!);
-
-      // 今年で作って、もし過ぎていれば翌年
+      final nowDate = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       var candidate = DateTime(referenceDate.year, month, day);
-      if (candidate.isBefore(now)) {
+      if (candidate.isBefore(nowDate)) {
         candidate = DateTime(referenceDate.year + 1, month, day);
       }
-
       results.add(
         ParsingResult(
           index: match.start,
@@ -80,17 +64,9 @@ class NotLanguageDateParser implements Parser {
       );
     }
 
-    // --------------------------------
-    // C) ISO8601 全文 parse できるなら試す
-    //    (ex: "2025-01-05T16:40:00Z") など
-    //    ただし複合要素をまとめて解析してしまうと
-    //    分割検知が難しいので要件次第
-    // --------------------------------
+    // (C) ISO8601 parse
     try {
       final parsed = DateTime.parse(text.trim());
-      // これが成功すると、"2024-01-05 16:00" など空白込みも解析して
-      // 一発で dateTime = 2024-01-05 16:00:00.000 になる可能性がありますが、
-      // 文中に余分な文字がある場合などは失敗することも
       results.add(
         ParsingResult(
           index: 0,
@@ -106,18 +82,15 @@ class NotLanguageDateParser implements Parser {
   }
 }
 
-// -------------------------------------------------------
-// 2) NotLanguageTimeParser
-//    - 数値フォーマットの時刻 (HH:MM) をパース
-//    - 24時間制とし、"00:00"～"23:59" まで
-// -------------------------------------------------------
+// ----------------------
+// 2) 数値フォーマット時刻 (HH:MM) → もっとも近い将来
+// ----------------------
 class NotLanguageTimeParser implements Parser {
   @override
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     final results = <ParsingResult>[];
     final now = referenceDate;
 
-    // e.g. "16:00", "09:30"
     final RegExp timePattern = RegExp(r'\b(\d{1,2}):(\d{1,2})\b');
     for (final match in timePattern.allMatches(text)) {
       final hour = int.parse(match.group(1)!);
@@ -125,14 +98,10 @@ class NotLanguageTimeParser implements Parser {
       if (hour > 23 || minute > 59) {
         continue;
       }
-
-      // 当日 hour:minute
       var candidate = DateTime(now.year, now.month, now.day, hour, minute);
-      // "もっとも近い未来" にするなら (candidate.isBefore(now)) で +1日
       if (candidate.isBefore(now)) {
         candidate = candidate.add(const Duration(days: 1));
       }
-
       results.add(
         ParsingResult(
           index: match.start,
@@ -146,79 +115,73 @@ class NotLanguageTimeParser implements Parser {
   }
 }
 
-// -------------------------------------------------------
-// 3) NotLanguageRefiner
-//    - 日付パーサと時刻パーサの結果が連続していれば、1つのDateTimeにマージ
-//    - 例: "2024-01-05 16:00" →
-//        "2024-01-05" (index=0) と "16:00" (index=11) などを1件にまとめる
-// -------------------------------------------------------
+// ----------------------
+// 3) Refiner: 日付(0:00) と 時刻(当日or翌日) を合体
+// ----------------------
 class NotLanguageRefiner implements Refiner {
   @override
   List<ParsingResult> refine(List<ParsingResult> results, DateTime referenceDate) {
-    if (results.isEmpty) return results;
+    return _mergeDateAndTimeResults(results, referenceDate);
+  }
 
-    // index順にソート
+  List<ParsingResult> _mergeDateAndTimeResults(List<ParsingResult> results, DateTime referenceDate) {
     results.sort((a, b) => a.index.compareTo(b.index));
-
     final merged = <ParsingResult>[];
-    int i = 0;
+    final used = <int>{};
 
-    while (i < results.length) {
-      final current = results[i];
+    for (int i = 0; i < results.length; i++) {
+      if (used.contains(i)) continue;
+      final rA = results[i];
+      bool mergedAny = false;
 
-      if (i < results.length - 1) {
-        final next = results[i + 1];
-        // 2つの結果が近接していればマージ
-        final distance = next.index - (current.index + current.text.length);
+      // date-only => hour:minute = 0:00
+      final isDateOnlyA = (rA.date.hour == 0 && rA.date.minute == 0 && rA.date.second == 0);
 
-        if (_isDateOnly(current, referenceDate) && _isTimeOnly(next, referenceDate)) {
-          // マージ
-          // current.date (年・月・日) + next.date (hour/minute)
-          final combined = DateTime(
-            current.date.year,
-            current.date.month,
-            current.date.day,
-            next.date.hour,
-            next.date.minute,
-            next.date.second,
-          );
-          final mergedText = '${current.text} ${next.text}';
-          merged.add(
-            ParsingResult(
-              index: current.index,
-              text: mergedText,
-              component: ParsedComponent(date: combined),
-            ),
-          );
-          i += 2;
+      for (int j = i + 1; j < results.length; j++) {
+        if (used.contains(j)) continue;
+        final rB = results[j];
+        final isDateOnlyB = (rB.date.hour == 0 && rB.date.minute == 0 && rB.date.second == 0);
+
+        final distance = rB.index - (rA.index + rA.text.length);
+        if (distance.abs() > 3) {
           continue;
+        }
+
+        // 片方日付のみ(0:00) & 片方時刻(実質future補正済み) => 合体
+        if (isDateOnlyA && !isDateOnlyB) {
+          merged.add(_combineDateTime(rA, rB));
+          used.add(i);
+          used.add(j);
+          mergedAny = true;
+          break;
+        } else if (!isDateOnlyA && isDateOnlyB) {
+          merged.add(_combineDateTime(rB, rA));
+          used.add(i);
+          used.add(j);
+          mergedAny = true;
+          break;
         }
       }
 
-      merged.add(current);
-      i++;
+      if (!mergedAny) {
+        merged.add(rA);
+        used.add(i);
+      }
     }
 
     return merged;
   }
 
-  /// 「日付のみ」かどうかの簡易判定
-  ///   - hour/minute/second == 0
-  ///   - あるいは text 内に ":" が含まれていない など
-  bool _isDateOnly(ParsingResult r, DateTime reference) {
-    final dt = r.date;
-    // ざっくり hour/minute/second が 0 なら「日付のみ」と判定
-    if (dt.hour == 0 && dt.minute == 0 && dt.second == 0) {
-      return true;
-    }
-    return false;
-  }
-
-  /// 「時刻のみ」かどうかの簡易判定
-  ///   - text 内に ":" が含まれる など
-  bool _isTimeOnly(ParsingResult r, DateTime reference) {
-    // ここでは text に ":" が含まれていれば "time only" とする (ざっくり)
-    // または dt と reference を比較して "日が同じ + 時間が違う" などでもOK
-    return r.text.contains(":");
+  ParsingResult _combineDateTime(ParsingResult dateResult, ParsingResult timeResult) {
+    final d = dateResult.date;
+    final t = timeResult.date;
+    // dateの年月日に timeのhour/minuteを合わせる
+    final combined = DateTime(d.year, d.month, d.day, t.hour, t.minute, t.second);
+    final newText = '${dateResult.text} ${timeResult.text}';
+    return ParsingResult(
+      index: dateResult.index,
+      text: newText,
+      component: ParsedComponent(date: combined),
+    );
   }
 }
