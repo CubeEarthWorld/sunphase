@@ -537,9 +537,26 @@ void main() {
     });
   });
 
+  List<ParsingResult> results1 = parse('3日12時15分');
+  print(results1);
 
-  List<ParsingResult> results = parse('Today');
-  print(results);
+  List<ParsingResult> results2 = parse('四号一点');
+  print(results2);
+
+  List<ParsingResult> results3 = parse('3月1号 14:24');
+  print(results3);
+
+  List<ParsingResult> results4 = parse('3月23日 14:24');
+  print(results4);
+
+  List<ParsingResult> results5 = parse('明日14時25分 ');
+  print(results5);
+
+  List<ParsingResult> results6 = parse('24日14時25分');
+  print(results6);
+
+  List<ParsingResult> results7 = parse('木曜14時36分');
+  print(results7);
 
   // 時間を解析
   List<ParsingResult> results_time = parse('10:10');
