@@ -277,7 +277,7 @@ class JaTimeOnlyParser extends BaseParser {
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
 
-    // Handle kanji time such as 十二時三十分
+    // Handle kanji time such as "十二時三十分" or "十一時"
     RegExp regExpKanjiTime = RegExp(r'([一二三四五六七八九十]+)時([一二三四五六七八九十]+)分');
     Iterable<RegExpMatch> kanjiMatches = regExpKanjiTime.allMatches(text);
 
@@ -289,6 +289,22 @@ class JaTimeOnlyParser extends BaseParser {
 
       if (!candidate.isAfter(context.referenceDate)) {
         candidate = candidate.add(Duration(days: 1));
+      }
+
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: candidate));
+    }
+
+    // Handle hour-only time such as "12時" or "十一時"
+    RegExp regExpHourOnly = RegExp(r'([一二三四五六七八九十]+)時');
+    Iterable<RegExpMatch> hourOnlyMatches = regExpHourOnly.allMatches(text);
+
+    for (var match in hourOnlyMatches) {
+      int hour = _parseJapaneseNumber(match.group(1)!);
+
+      DateTime candidate = DateTime(context.referenceDate.year, context.referenceDate.month, context.referenceDate.day, hour, 0); // Assume minute is 0
+
+      if (!candidate.isAfter(context.referenceDate)) {
+        candidate = candidate.add(Duration(days: 1)); // If the time is already passed, move to the next day
       }
 
       results.add(ParsingResult(index: match.start, text: match.group(0)!, date: candidate));
@@ -320,7 +336,6 @@ class JaTimeOnlyParser extends BaseParser {
 
     int result = 0;
     int tempValue = 0;
-    bool isHundred = false;
 
     for (int i = 0; i < s.length; i++) {
       String char = s[i];
@@ -329,7 +344,6 @@ class JaTimeOnlyParser extends BaseParser {
           tempValue = tempValue == 0 ? 10 : tempValue * 10;
         } else if (char == "百" || char == "千") {
           tempValue = tempValue == 0 ? kanji[char]! : tempValue * kanji[char]!;
-          isHundred = true;
         } else {
           if (tempValue == 0) {
             tempValue = kanji[char]!;
@@ -343,6 +357,7 @@ class JaTimeOnlyParser extends BaseParser {
     return result + tempValue;
   }
 }
+
 
 /// 日本語パーサー群の集合
 class JaParsers {
