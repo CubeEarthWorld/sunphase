@@ -20,13 +20,12 @@ class JapaneseDateParser implements Parser {
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     List<ParsingResult> results = [];
 
-    // ------------------------------
-    // 相対表現 (今日, 明日, 明後日, 明々後日, 昨日)
-    // ------------------------------
-    final RegExp relativeDayPattern =
-    RegExp(r'(今日(?!曜日)|明日(?!曜日)|明後日(?!曜日)|明々後日(?!曜日)|昨日(?!曜日))');
+    // 【1】相対表現＋時刻（例："明日 17時41分"、"今日 08時"）
+    final RegExp relativeDayPattern = RegExp(
+        r'(今日(?!曜日)|明日(?!曜日)|明後日(?!曜日)|明々後日(?!曜日)|昨日(?!曜日))(?:\s*(\d{1,2})時(?:\s*(\d{1,2})分)?)?'
+    );
     for (final match in relativeDayPattern.allMatches(text)) {
-      String matched = match.group(0)!;
+      String matched = match.group(1)!;
       DateTime date;
       if (matched == '今日') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
@@ -45,18 +44,22 @@ class JapaneseDateParser implements Parser {
       } else {
         date = referenceDate;
       }
+      if (match.group(2) != null) {
+        int hour = int.parse(match.group(2)!);
+        int minute = match.group(3) != null ? int.parse(match.group(3)!) : 0;
+        date = DateTime(date.year, date.month, date.day, hour, minute);
+      }
       results.add(ParsingResult(
         index: match.start,
-        text: matched,
+        text: match.group(0)!,
         component: ParsedComponent(date: date),
       ));
     }
 
-    // ------------------------------
-    // 曜日の表現 (来週 月曜日, 先週 火曜日, 今週 金曜日, etc.)
-    // ------------------------------
+    // 【2】曜日表現（例："来週 月曜日" 等）
     final RegExp weekdayPattern = RegExp(
-        r'(来週|先週|今週)?\s*((?:月曜日|月曜|火曜日|火曜|水曜日|水曜|木曜日|木曜|金曜日|金曜|土曜日|土曜|日曜日|日曜))');
+        r'(来週|先週|今週)?\s*((?:月曜日|月曜|火曜日|火曜|水曜日|水曜|木曜日|木曜|金曜日|金曜|土曜日|土曜|日曜日|日曜))'
+    );
     for (final match in weekdayPattern.allMatches(text)) {
       String modifier = match.group(1) ?? '';
       String weekdayStr = match.group(2)!;
@@ -69,13 +72,12 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
-    // 絶対日付の表現 (YYYY年M月D日 および オプションで時刻)
-    // ------------------------------
+    // 【3】絶対日付＋時刻（例："2024年4月1日 16時31分"、"4月1日"の場合は時刻は0:00）
     final RegExp absoluteDatePattern = RegExp(
-        r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日(?:\s*(\d{1,2})時(?:(\d{1,2})分)?)?');
+        r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日(?:\s*(\d{1,2})時(?:\s*(\d{1,2})分)?)?'
+    );
     for (final match in absoluteDatePattern.allMatches(text)) {
-      int year = match.group(1) != null ? int.parse(match.group(1)!) : referenceDate.year;
+      int year = (match.group(1) != null) ? int.parse(match.group(1)!) : referenceDate.year;
       int month = int.parse(match.group(2)!);
       int day = int.parse(match.group(3)!);
       int hour = match.group(4) != null ? int.parse(match.group(4)!) : 0;
@@ -88,11 +90,8 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
-    // 相対期間 (来週, 先週, 今週, 来月, 先月, 今月, 来年, 去年, 今年)
-    // ------------------------------
-    final RegExp relativePeriodPattern =
-    RegExp(r'(来週|先週|今週|来月|先月|今月|来年|去年|今年)');
+    // 【4】相対期間（例："来週", "先月" 等）
+    final RegExp relativePeriodPattern = RegExp(r'(来週|先週|今週|来月|先月|今月|来年|去年|今年)');
     for (final match in relativePeriodPattern.allMatches(text)) {
       String matched = match.group(0)!;
       DateTime date = _getRelativePeriodDate(referenceDate, matched);
@@ -103,9 +102,7 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
-    // 「X日前」「X日後」
-    // ------------------------------
+    // 【5】「X日前」「X日後」
     final RegExp relativeDayNumPattern = RegExp(r'([一二三四五六七八九十\d]+)日(前|後)');
     for (final match in relativeDayNumPattern.allMatches(text)) {
       String numStr = match.group(1)!;
@@ -122,9 +119,42 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
-    // 単独の「XX日」「XX号」(「月」が書かれていない) => 今月または来月の最も近いその日
-    // ------------------------------
+    // 【6】「X週間前」「X週間後」
+    final RegExp relativeWeekPattern = RegExp(r'([一二三四五六七八九十\d]+)週間(前|後)');
+    for (final match in relativeWeekPattern.allMatches(text)) {
+      String numStr = match.group(1)!;
+      int number = _jaNumberToInt(numStr);
+      String direction = match.group(2)!;
+      bool isFuture = (direction == '後');
+      int daysToMove = number * 7;
+      DateTime date = isFuture
+          ? referenceDate.add(Duration(days: daysToMove))
+          : referenceDate.subtract(Duration(days: daysToMove));
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: date),
+      ));
+    }
+
+    // 【7】「Xヶ月前」「Xヶ月後」
+    final RegExp relativeMonthPattern = RegExp(r'([一二三四五六七八九十\d]+)ヶ月(前|後)');
+    for (final match in relativeMonthPattern.allMatches(text)) {
+      String numStr = match.group(1)!;
+      int number = _jaNumberToInt(numStr);
+      String direction = match.group(2)!;
+      bool isFuture = (direction == '後');
+      DateTime date = isFuture
+          ? DateTime(referenceDate.year, referenceDate.month + number, referenceDate.day)
+          : DateTime(referenceDate.year, referenceDate.month - number, referenceDate.day);
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: date),
+      ));
+    }
+
+    // 【8】単独の「XX日」「XX号」→ 今月または来月の最も近いその日
     final RegExp singleDayPattern = RegExp(r'(?<!月)([一二三四五六七八九十\d]+)(日|号)');
     for (final match in singleDayPattern.allMatches(text)) {
       String numStr = match.group(1)!;
@@ -148,70 +178,20 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
-    // 相対日と時刻の組み合わせ (例: "明日17時41分")
-    // ------------------------------
-    final RegExp relativeTimePattern = RegExp(
-        r'(今日|明日|明後日|明々後日|昨日)\s*(\d{1,2})時(?:(\d{1,2})分)?'
-    );
-    for (final match in relativeTimePattern.allMatches(text)) {
-      String dayWord = match.group(1)!;
-      int hour = int.parse(match.group(2)!);
-      int minute = match.group(3) != null ? int.parse(match.group(3)!) : 0;
-      DateTime date;
-      if (dayWord == '今日') {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
-      } else if (dayWord == '明日') {
-        DateTime base = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .add(Duration(days: 1));
-        date = DateTime(base.year, base.month, base.day, hour, minute);
-      } else if (dayWord == '明後日') {
-        DateTime base = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .add(Duration(days: 2));
-        date = DateTime(base.year, base.month, base.day, hour, minute);
-      } else if (dayWord == '明々後日') {
-        DateTime base = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .add(Duration(days: 3));
-        date = DateTime(base.year, base.month, base.day, hour, minute);
-      } else if (dayWord == '昨日') {
-        DateTime base = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
-            .subtract(Duration(days: 1));
-        date = DateTime(base.year, base.month, base.day, hour, minute);
-      } else {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
-      }
-      results.add(ParsingResult(
-        index: match.start,
-        text: match.group(0)!,
-        component: ParsedComponent(date: date),
-      ));
-    }
-
-    // ------------------------------
-    // 時刻のみの表現 (例: "16時24分" または "16時")
-    // ------------------------------
-    final RegExp timeOnlyPattern = RegExp(
-        r'(?<!\d)(\d{1,2})時(?:(\d{1,2})分)?(?!\d)'
-    );
+    // 【9】時刻のみのパターン（例："16時24分"、"16時"）→ 参照日時より未来の最も近いその時刻
+    final RegExp timeOnlyPattern = RegExp(r'\b(\d{1,2})時(?:\s*(\d{1,2})分)?\b');
     for (final match in timeOnlyPattern.allMatches(text)) {
-      String matchText = match.group(0)!;
-      // 既に相対表現と組み合わせたものはスキップ
-      if (matchText.contains('今日') ||
-          matchText.contains('明日') ||
-          matchText.contains('明後日') ||
-          matchText.contains('明々後日') ||
-          matchText.contains('昨日')) {
-        continue;
-      }
       int hour = int.parse(match.group(1)!);
       int minute = match.group(2) != null ? int.parse(match.group(2)!) : 0;
-      DateTime candidate = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
+      DateTime candidate = DateTime(
+          referenceDate.year, referenceDate.month, referenceDate.day, hour, minute
+      );
       if (!candidate.isAfter(referenceDate)) {
         candidate = candidate.add(Duration(days: 1));
       }
       results.add(ParsingResult(
         index: match.start,
-        text: matchText,
+        text: match.group(0)!,
         component: ParsedComponent(date: candidate),
       ));
     }
@@ -219,9 +199,7 @@ class JapaneseDateParser implements Parser {
     return results;
   }
 
-  // ---------------------------------------
-  // ユーティリティ
-  // ---------------------------------------
+  // 以下、内部ヘルパー関数
   int _weekdayFromString(String weekday) {
     if (weekday.contains("月")) return DateTime.monday;
     if (weekday.contains("火")) return DateTime.tuesday;
@@ -237,12 +215,18 @@ class JapaneseDateParser implements Parser {
     DateTime current = DateTime(reference.year, reference.month, reference.day);
     int diff = targetWeekday - current.weekday;
     if (modifier.isEmpty || modifier == '今週') {
-      if (diff <= 0) diff += 7;
+      if (diff <= 0) {
+        diff += 7;
+      }
     } else if (modifier == '来週') {
-      if (diff <= 0) diff += 7;
+      if (diff <= 0) {
+        diff += 7;
+      }
       diff += 7;
     } else if (modifier == '先週') {
-      if (diff >= 0) diff -= 7;
+      if (diff >= 0) {
+        diff -= 7;
+      }
     }
     return current.add(Duration(days: diff));
   }
@@ -279,7 +263,7 @@ class JapaneseDateParser implements Parser {
     if (input.contains('十')) {
       final parts = input.split('十');
       final front = parts[0];
-      final back = parts.length > 1 ? parts[1] : '';
+      final back  = parts.length > 1 ? parts[1] : '';
       int tens = front.isEmpty ? 1 : _singleKanjiDigit(front);
       int ones = 0;
       for (int i = 0; i < back.length; i++) {
