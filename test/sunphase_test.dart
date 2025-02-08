@@ -292,7 +292,7 @@ void main() {
       expect(results.first.date == expected, true);
     });
 
-    test('Japanese: 三月四号', () {
+    test('Chinese: 三月四号', () {
       String input = "三月四号";
       List<ParsingResult> results = parse(input, referenceDate: reference);
       DateTime expected = DateTime(2025, 3, 4, 0, 0, 0);

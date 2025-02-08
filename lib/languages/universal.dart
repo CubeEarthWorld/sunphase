@@ -3,7 +3,6 @@ import '../core/base_parser.dart';
 import '../core/result.dart';
 import '../core/parsing_context.dart';
 
-/// Parser for language-independent date expressions (e.g., ISO 8601).
 class UniversalParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
@@ -35,8 +34,6 @@ class UniversalParser extends BaseParser {
       }
     }
 
-
-
     // Range expression: e.g., "17 August 2013 - 19 August 2013"
     RegExp rangeExp = RegExp(
         r'(\d{1,2}\s*(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[\s,]+\d{4})\s*-\s*(\d{1,2}\s*(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[\s,]+\d{4})',
@@ -53,6 +50,23 @@ class UniversalParser extends BaseParser {
           DateTime d = startDate.add(Duration(days: i));
           results.add(ParsingResult(index: match.start, text: "${match.group(0)} (Day ${i+1})", date: d));
         }
+      }
+    }
+
+    // Add new regex for additional formats (2012-12-4 12:31:00, 4/7, 2041/7/1, etc.)
+    RegExp dateFormats = RegExp(
+        r'(\d{1,4}[/-]\d{1,2}[/-]\d{1,4})\s*(\d{1,2}:\d{2}(:\d{2})?)?',
+        caseSensitive: false);
+    Iterable<RegExpMatch> dateMatches = dateFormats.allMatches(text);
+    for (var match in dateMatches) {
+      String dateStr = match.group(0)!;
+      try {
+        DateTime? dt = DateTime.tryParse(dateStr.replaceAll('/', '-'));
+        if (dt != null) {
+          results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
+        }
+      } catch (e) {
+        // Ignore errors.
       }
     }
 
@@ -90,7 +104,6 @@ class UniversalParser extends BaseParser {
   }
 }
 
-/// Universal parsers collection.
 class UniversalParsers {
   static final List<BaseParser> parsers = [
     UniversalParser(),
