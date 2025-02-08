@@ -26,6 +26,22 @@ void main() {
   List<ParsingResult> results = parse('Today');
   print(results);
 
+  // 時間を解析
+  List<ParsingResult> results_time = parse('10:10');
+  print(results_time);
+
+  // 日時を解析
+  List<ParsingResult> results_data = parse('march 7 10:10');
+  print(results_data);
+
+  // 日本語で日時を解析
+  List<ParsingResult> results_data_ja = parse('明日12時14分');
+  print(results_data_ja);
+
+  // 中国語で日時を解析
+  List<ParsingResult> results_data_zh = parse('三月七号上午九点');
+  print(results_data_zh);
+
   // 英語で日付を解析
   List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
   print(resultsEn);
@@ -35,14 +51,14 @@ void main() {
   print(resultsJa);
 
   // 特定の基準日で日付を解析
-  List<ParsingResult> resultsRef = parse('Next Tuesday', referenceDate: DateTime(2025, 2, 8));
+  List<ParsingResult> resultsRef = parse('Next Tuesday', referenceDate: DateTime(2021, 2, 4));
   print(resultsRef);
 
   // 範囲モードで日付を解析
   List<ParsingResult> resultsRange = parse('Next week', rangeMode: true);
   print(resultsRange);
 
-  // 特定のタイムゾーンで日付を解析。タイムゾーンは、UTCからの分単位オフセットを表す文字列として指定する必要があります。例：UTC+9の場合は "540"。
+  // 特定のタイムゾーンで日付を解析。タイムゾーンは、UTCからの分単位オフセットを表す文字列として指定する必要があります。例：UTC+8の場合は "480"。
   List<ParsingResult> resultsTimezone = parse('明天', timezone: '480');
   print(resultsTimezone);
 }

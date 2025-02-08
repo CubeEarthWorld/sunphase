@@ -11,6 +11,8 @@ class JaRelativeParser extends BaseParser {
     List<ParsingResult> results = [];
     DateTime ref = context.referenceDate;
 
+
+
 // ① 「X週間後Y曜」パターン（例：「2週間後火曜」）
     RegExp regRelWeekday = RegExp(r'([0-9一二三四五六七八九十]+)週間後([月火水木金土日])曜');
     RegExpMatch? mRelWeekday = regRelWeekday.firstMatch(text);
@@ -65,6 +67,26 @@ class JaRelativeParser extends BaseParser {
       if (diff == 0) diff = 7;
       DateTime candidate = DateTime(ref.year, ref.month, ref.day).add(Duration(days: diff));
       results.add(ParsingResult(index: 0, text: trimmed, date: candidate));
+    }
+    // Handle relative expressions like "明日12時14分"
+    RegExp regRelativeWithTime = RegExp(r'^(明日|今日|明後日|昨日)(\d{1,2})時(\d{1,2})分$');
+    RegExpMatch? mRelativeWithTime = regRelativeWithTime.firstMatch(text);
+
+    if (mRelativeWithTime != null) {
+      String dayWord = mRelativeWithTime.group(1)!;
+      int hour = int.parse(mRelativeWithTime.group(2)!);
+      int minute = int.parse(mRelativeWithTime.group(3)!);
+
+      int offset = 0;
+      if (dayWord == "今日") offset = 0;
+      else if (dayWord == "明日") offset = 1;
+      else if (dayWord == "明後日") offset = 2;
+      else if (dayWord == "昨日") offset = -1;
+
+      DateTime candidate = ref.add(Duration(days: offset));
+      candidate = DateTime(candidate.year, candidate.month, candidate.day, hour, minute);
+
+      results.add(ParsingResult(index: mRelativeWithTime.start, text: mRelativeWithTime.group(0)!, date: candidate));
     }
 
 // ④ 「来週」＋曜日（例：「来週火曜」および「来週日曜11時」）
@@ -336,6 +358,7 @@ class JaTimeOnlyParser extends BaseParser {
 
     int result = 0;
     int tempValue = 0;
+    bool isHundred = false;
 
     for (int i = 0; i < s.length; i++) {
       String char = s[i];
@@ -344,6 +367,7 @@ class JaTimeOnlyParser extends BaseParser {
           tempValue = tempValue == 0 ? 10 : tempValue * 10;
         } else if (char == "百" || char == "千") {
           tempValue = tempValue == 0 ? kanji[char]! : tempValue * kanji[char]!;
+          isHundred = true;
         } else {
           if (tempValue == 0) {
             tempValue = kanji[char]!;

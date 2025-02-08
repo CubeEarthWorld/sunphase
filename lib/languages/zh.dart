@@ -339,15 +339,33 @@ class ZhTimeOnlyParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
-    RegExp regExp = RegExp(r'(上午|中午|下午|晚上)?\s*(\d{1,2}|[一二三四五六七八九十]+)\s*点(?:\s*(\d{1,2}|[一二三四五六七八九十]+))?分?');
+
+    // First, let's look for both the date ("三月七号") and time ("上午九点")
+    RegExp regExp = RegExp(
+        r'([一二三四五六七八九十]+月[一二三四五六七八九十]+号)?\s*(上午|中午|下午|晚上)?\s*(\d{1,2}|[一二三四五六七八九十]+)\s*点(?:\s*(\d{1,2}|[一二三四五六七八九十]+))?分?'
+    );
+
     Iterable<RegExpMatch> matches = regExp.allMatches(text);
     for (var match in matches) {
-      String period = match.group(1) ?? "";
-      String hourStr = match.group(2)!;
-      String minuteStr = match.group(3) ?? "0"; // Default minute is 0 if not provided
+      String? monthStr = match.group(1);
+      String period = match.group(2) ?? "";
+      String hourStr = match.group(3)!;
+      String minuteStr = match.group(4) ?? "0"; // Default minute is 0 if not provided
 
-      int hour = ChineseNumberParser.parse(hourStr);
-      int minute = ChineseNumberParser.parse(minuteStr);
+      // Handle the month and day part like "三月七号"
+      int month = 0, day = 0;
+      if (monthStr != null) {
+        RegExp regMonthDay = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)号');
+        RegExpMatch? monthDayMatch = regMonthDay.firstMatch(monthStr);
+        if (monthDayMatch != null) {
+          month = ChineseNumberParser.parse(monthDayMatch.group(1)!); // Parse the month (e.g., 三月 -> 3)
+          day = ChineseNumberParser.parse(monthDayMatch.group(2)!); // Parse the day (e.g., 七号 -> 7)
+        }
+      }
+
+      // Handle the time part (hour and minute)
+      int hour = ChineseNumberParser.parse(hourStr); // Use the Chinese numeral parser
+      int minute = ChineseNumberParser.parse(minuteStr); // Use the Chinese numeral parser
 
       if ((period.contains("下午") || period.contains("晚上")) && hour < 12) {
         hour += 12;
@@ -355,12 +373,18 @@ class ZhTimeOnlyParser extends BaseParser {
         hour = 12;
       }
 
+      // If no month/day is provided, default to the current date (from referenceDate)
       DateTime candidate = DateTime(
           context.referenceDate.year,
-          context.referenceDate.month,
-          context.referenceDate.day,
+          month == 0 ? context.referenceDate.month : month,
+          day == 0 ? context.referenceDate.day : day,
           hour,
           minute);
+
+      // If the constructed date is in the past, consider the next year (in case it's a future date)
+      if (candidate.isBefore(context.referenceDate)) {
+        candidate = DateTime(candidate.year + 1, candidate.month, candidate.day, hour, minute);
+      }
 
       results.add(ParsingResult(
           index: match.start, text: match.group(0)!, date: candidate));
@@ -368,6 +392,8 @@ class ZhTimeOnlyParser extends BaseParser {
     return results;
   }
 }
+
+
 
 class ChineseNumberParser {
   static int parse(String s) {
