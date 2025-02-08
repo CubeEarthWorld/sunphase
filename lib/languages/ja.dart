@@ -4,15 +4,31 @@ import '../core/result.dart';
 import '../core/parsing_context.dart';
 
 /// 日本語の相対表現解析パーサー
-/// （例：「今日」「明日」「明後日」「昨日」「来週火曜」「来週日曜11時」「2週間後」「5日以内」「三日以内」など）
+/// （例：「今日」「明日」「明後日」「昨日」「来週火曜」「2週間後火曜」「5日以内」「三日以内」「土曜」など）
 class JaRelativeParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
     DateTime ref = context.referenceDate;
 
-    // --- 「今日」「明日」「明後日」「昨日」＋任意の時刻指定の組み合わせ ---
-    RegExp combined = RegExp(r'(今日|明日|明後日|昨日)(?:(\d{1,2})時)?');
+    // ① 「X週間後Y曜」パターン（例：「2週間後火曜」）
+    RegExp regRelWeekday = RegExp(r'([0-9一二三四五六七八九十]+)週間後([月火水木金土日])曜');
+    RegExpMatch? mRelWeekday = regRelWeekday.firstMatch(text);
+    if (mRelWeekday != null) {
+      int weeks = _parseJapaneseNumber(mRelWeekday.group(1)!);
+      String wd = mRelWeekday.group(2)!; // 例："火"
+      Map<String, int> wdMap = {"日": 7, "月": 1, "火": 2, "水": 3, "木": 4, "金": 5, "土": 6};
+      DateTime base = ref.add(Duration(days: weeks * 7));
+      int currentWeekday = base.weekday; // Monday=1,...,Sunday=7
+      int target = wdMap[wd]!;
+      int diff = (target - currentWeekday + 7) % 7;
+      if (diff == 0) diff = 7;
+      DateTime candidate = DateTime(base.year, base.month, base.day).add(Duration(days: diff));
+      results.add(ParsingResult(index: mRelWeekday.start, text: mRelWeekday.group(0)!, date: candidate));
+    }
+
+    // ② 合成パターン：「今日／明日／明後日／昨日」＋任意時刻指定（例：「明後日12時」）
+    RegExp combined = RegExp(r'^(今日|明日|明後日|昨日)(?:\s*(\d{1,2})時)?$');
     RegExpMatch? mCombined = combined.firstMatch(text);
     if (mCombined != null) {
       String dayWord = mCombined.group(1)!;
@@ -31,36 +47,53 @@ class JaRelativeParser extends BaseParser {
       results.add(ParsingResult(index: mCombined.start, text: mCombined.group(0)!, date: candidate));
     }
 
-    // --- 「来週」＋曜日（任意時刻指定）の場合（例：「来週火曜」「来週日曜11時」） ---
+    // ③ 単独曜日（例：「土曜」）
+    String trimmed = text.trim();
+    if (trimmed == "月曜" || trimmed == "火曜" || trimmed == "水曜" ||
+        trimmed == "木曜" || trimmed == "金曜" || trimmed == "土曜" || trimmed == "日曜") {
+      Map<String, int> wdMap = {
+        "月曜": 1,
+        "火曜": 2,
+        "水曜": 3,
+        "木曜": 4,
+        "金曜": 5,
+        "土曜": 6,
+        "日曜": 7,
+      };
+      int target = wdMap[trimmed]!;
+      int diff = (target - ref.weekday + 7) % 7;
+      if (diff == 0) diff = 7;
+      DateTime candidate = DateTime(ref.year, ref.month, ref.day).add(Duration(days: diff));
+      results.add(ParsingResult(index: 0, text: trimmed, date: candidate));
+    }
+
+    // ④ 「来週」＋曜日（例：「来週火曜」および「来週日曜11時」）
     RegExp regNextWeekday = RegExp(r'来週([月火水木金土日]曜)(?:(\d{1,2})時)?');
     RegExpMatch? mNextWeekday = regNextWeekday.firstMatch(text);
     if (mNextWeekday != null) {
       String weekdayStr = mNextWeekday.group(1)!;
-      Map<String, int> weekdayMap = {
-        "日曜": 1,
-        "月曜": 2,
-        "火曜": 3,
-        "水曜": 4,
-        "木曜": 5,
-        "金曜": 6,
-        "土曜": 7,
+      // 曜日名を Dart の曜日番号（Monday=1 ～ Sunday=7）に対応
+      Map<String, int> wdMap = {
+        "月曜": 1,
+        "火曜": 2,
+        "水曜": 3,
+        "木曜": 4,
+        "金曜": 5,
+        "土曜": 6,
+        "日曜": 7,
       };
-      int targetDay = weekdayMap[weekdayStr]!;
-      // 日本語では週の始まりを日曜とする（ref.weekday は月曜=1～日曜=7 なので変換）
-      int currentJap = ((ref.weekday % 7) + 1);
-      int diff = (targetDay - currentJap + 7) % 7;
-      if (diff == 0) diff = 7;
-      DateTime candidate = ref.add(Duration(days: diff));
+      int target = wdMap[weekdayStr]!;
+      int offset = (target - ref.weekday + 7) % 7;
+      if (offset == 0) offset = 7;
+      DateTime candidate = DateTime(ref.year, ref.month, ref.day).add(Duration(days: offset));
       if (mNextWeekday.group(2) != null) {
         int hour = int.parse(mNextWeekday.group(2)!);
         candidate = DateTime(candidate.year, candidate.month, candidate.day, hour, 0, 0);
-      } else {
-        candidate = DateTime(candidate.year, candidate.month, candidate.day, 0, 0, 0);
       }
       results.add(ParsingResult(index: mNextWeekday.start, text: mNextWeekday.group(0)!, date: candidate));
     }
 
-    // --- 「X日以内」など range 表現の場合（今日を含むので rangeDays = X+1） ---
+    // ⑤ 「X日以内」→ range expression; ※rangeDays = X+1（今日を含む）
     RegExp withinDays = RegExp(r'([0-9一二三四五六七八九十]+)日以内');
     RegExpMatch? mWithin = withinDays.firstMatch(text);
     if (mWithin != null) {
@@ -72,7 +105,7 @@ class JaRelativeParser extends BaseParser {
           rangeDays: days + 1));
     }
 
-    // --- 数字を含む相対表現（例：「2週間後」「三日後」「4日後」「1ヶ月後」） ---
+    // ⑥ 数字を含む相対表現（例：「2週間後」「三日後」「4日後」「1ヶ月後」）
     RegExp regRelative = RegExp(r'([0-9一二三四五六七八九十]+)(日|週間|ヶ月)後');
     Iterable<RegExpMatch> matchesRel = regRelative.allMatches(text);
     for (var match in matchesRel) {
@@ -95,24 +128,21 @@ class JaRelativeParser extends BaseParser {
       results.add(ParsingResult(index: match.start, text: match.group(0)!, date: candidate));
     }
 
-    // --- 固定表現 ---
-    // 「来週」が単独の場合は、range_type = "week"（次週の初日から7日分）
+    // ⑦ 固定表現
     if (text.trim() == "来週") {
-      int daysToSunday = (8 - ((ref.weekday % 7) + 1)) % 7;
-      if (daysToSunday == 0) daysToSunday = 7;
-      DateTime startOfWeek =
-      DateTime(ref.year, ref.month, ref.day).add(Duration(days: daysToSunday));
+      int daysToNext = (7 - ref.weekday) % 7;
+      if (daysToNext == 0) daysToNext = 7;
+      DateTime nextWeekStart = DateTime(ref.year, ref.month, ref.day).add(Duration(days: daysToNext));
       results.add(ParsingResult(
           index: text.indexOf("来週"),
           text: "来週",
-          date: startOfWeek,
+          date: nextWeekStart,
           rangeType: "week"));
     }
     if (text.contains("先週")) {
       DateTime lastWeek = ref.subtract(Duration(days: 7));
       results.add(ParsingResult(index: text.indexOf("先週"), text: "先週", date: lastWeek));
     }
-    // 「来月」が単独の場合は、range_type = "month"（次月の1日からその月末まで）
     if (text.trim() == "来月") {
       DateTime nextMonthStart = DateTime(ref.year, ref.month + 1, 1);
       results.add(ParsingResult(
@@ -130,10 +160,7 @@ class JaRelativeParser extends BaseParser {
       results.add(ParsingResult(index: text.indexOf("来年"), text: "来年", date: nextYear));
     }
     if (text.contains("今年")) {
-      results.add(ParsingResult(
-          index: text.indexOf("今年"),
-          text: "今年",
-          date: DateTime(ref.year, ref.month, ref.day)));
+      results.add(ParsingResult(index: text.indexOf("今年"), text: "今年", date: DateTime(ref.year, ref.month, ref.day)));
     }
 
     return results;
@@ -168,8 +195,9 @@ class JaAbsoluteParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
-    // 阿拉伯数字形式：例 "4月26日4時8分"
-    RegExp regExp = RegExp(r'(?:(今年|来年|去年))?(\d{1,2})月(\d{1,2})日(?:\s*(\d{1,2})時(?:\s*(\d{1,2})分)?)?');
+    // アラビア数字形式：例 "4月26日4時8分"、"今年12月31日"
+    RegExp regExp =
+    RegExp(r'(?:(今年|来年|去年))?(\d{1,2})月(\d{1,2})日(?:\s*(\d{1,2})時(?:\s*(\d{1,2})分)?)?');
     Iterable<RegExpMatch> matches = regExp.allMatches(text);
     for (var match in matches) {
       int month = int.parse(match.group(2)!);
@@ -194,7 +222,7 @@ class JaAbsoluteParser extends BaseParser {
       } else {
         year = context.referenceDate.year;
         DateTime candidate = DateTime(year, month, day, hour, minute);
-        if (candidate.isBefore(context.referenceDate)) {
+        if (!candidate.isAfter(context.referenceDate)) {
           year += 1;
         }
       }
@@ -203,24 +231,39 @@ class JaAbsoluteParser extends BaseParser {
           text: match.group(0)!,
           date: DateTime(year, month, day, hour, minute)));
     }
-
-    // 漢数字形式：例 "三月四号" または "三月六号十一点"
-    RegExp regKanji = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[日号](?:(\d{1,2})時)?(?:(\d{1,2})分)?');
+    // 漢数字形式：例 "三月四号"
+    RegExp regKanji = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[日号]');
     Iterable<RegExpMatch> kanjiMatches = regKanji.allMatches(text);
     for (var match in kanjiMatches) {
       int month = _parseJapaneseNumber(match.group(1)!);
       int day = _parseJapaneseNumber(match.group(2)!);
-      int hour = match.group(3) != null ? int.parse(match.group(3)!) : 0;
-      int minute = match.group(4) != null ? int.parse(match.group(4)!) : 0;
       int year = context.referenceDate.year;
-      DateTime candidate = DateTime(year, month, day, hour, minute);
-      if (candidate.isBefore(context.referenceDate)) {
-        year += 1;
-        candidate = DateTime(year, month, day, hour, minute);
+      DateTime candidate = DateTime(year, month, day);
+      if (!candidate.isAfter(context.referenceDate)) {
+        candidate = DateTime(year + 1, month, day);
       }
       results.add(ParsingResult(index: match.start, text: match.group(0)!, date: candidate));
     }
-
+    // 日付のみの表現：例 "14日" や "六号"
+    RegExp dayOnly = RegExp(r'(?<![0-9月])\b([0-9一二三四五六七八九十]+)[日号]\b');
+    Iterable<RegExpMatch> dayOnlyMatches = dayOnly.allMatches(text);
+    for (var match in dayOnlyMatches) {
+      String numStr = match.group(1)!;
+      int day = int.tryParse(numStr) ?? _parseJapaneseNumber(numStr);
+      int month = context.referenceDate.month;
+      int year = context.referenceDate.year;
+      DateTime candidate = DateTime(year, month, day);
+      if (!candidate.isAfter(context.referenceDate)) {
+        int newMonth = month + 1;
+        int newYear = year;
+        if (newMonth > 12) {
+          newMonth = 1;
+          newYear += 1;
+        }
+        candidate = DateTime(newYear, newMonth, day);
+      }
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: candidate));
+    }
     return results;
   }
 
@@ -258,8 +301,7 @@ class JaTimeOnlyParser extends BaseParser {
     for (var match in matches) {
       int hour = int.parse(match.group(1)!);
       int minute = match.group(2) != null ? int.parse(match.group(2)!) : 0;
-      DateTime candidate = DateTime(context.referenceDate.year, context.referenceDate.month,
-          context.referenceDate.day, hour, minute);
+      DateTime candidate = DateTime(context.referenceDate.year, context.referenceDate.month, context.referenceDate.day, hour, minute);
       if (!candidate.isAfter(context.referenceDate)) {
         candidate = candidate.add(Duration(days: 1));
       }

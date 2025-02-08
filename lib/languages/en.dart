@@ -11,7 +11,7 @@ class EnRelativeParser extends BaseParser {
     String lowerText = text.toLowerCase().trim();
     DateTime ref = context.referenceDate;
 
-    // --- "in X days" を range 表現として処理（今日を含むので rangeDays = X+1） ---
+    // "in X days" → range expression; ※ここでは今日を含むため rangeDays = X+1
     RegExp inDays = RegExp(r'in\s+(\d+)\s+days');
     RegExpMatch? mInDays = inDays.firstMatch(lowerText);
     if (mInDays != null) {
@@ -23,10 +23,11 @@ class EnRelativeParser extends BaseParser {
           rangeDays: days + 1));
     }
 
-    // --- "next week" を range 表現として処理（次週の初日から7日分） ---
+    // "next week" → range expression; set rangeType = "week"
     if (lowerText == "next week") {
-      // 次の週の初日（ここでは単純に次の月曜日とする例）
-      int daysToNextMonday = (8 - ref.weekday);
+      // Define next week’s start as next Monday.
+      int daysToNextMonday = (8 - ref.weekday) % 7;
+      if (daysToNextMonday == 0) daysToNextMonday = 7;
       DateTime nextMonday = DateTime(ref.year, ref.month, ref.day)
           .add(Duration(days: daysToNextMonday));
       results.add(ParsingResult(
@@ -76,11 +77,10 @@ class EnRelativeParser extends BaseParser {
     };
     if (weekdayMap.containsKey(lowerText)) {
       int target = weekdayMap[lowerText]!;
-      int current = ref.weekday;
-      int addDays = (target - current + 7) % 7;
-      if (addDays == 0) addDays = 7;
-      DateTime targetDate = DateTime(ref.year, ref.month, ref.day)
-          .add(Duration(days: addDays));
+      int diff = (target - ref.weekday + 7) % 7;
+      if (diff == 0) diff = 7;
+      DateTime targetDate =
+      DateTime(ref.year, ref.month, ref.day).add(Duration(days: diff));
       results.add(ParsingResult(index: 0, text: lowerText, date: targetDate));
     }
 
@@ -93,8 +93,8 @@ class EnRelativeParser extends BaseParser {
         int target = entry.value;
         int daysToAdd = (target - current + 7) % 7;
         if (daysToAdd == 0) daysToAdd = 7;
-        DateTime targetDate = DateTime(ref.year, ref.month, ref.day)
-            .add(Duration(days: daysToAdd));
+        DateTime targetDate =
+        DateTime(ref.year, ref.month, ref.day).add(Duration(days: daysToAdd));
         results.add(ParsingResult(index: 0, text: nextPhrase, date: targetDate));
       }
       if (lowerText == lastPhrase) {
@@ -102,8 +102,8 @@ class EnRelativeParser extends BaseParser {
         int target = entry.value;
         int daysToSubtract = current - target;
         if (daysToSubtract <= 0) daysToSubtract += 7;
-        DateTime targetDate = DateTime(ref.year, ref.month, ref.day)
-            .subtract(Duration(days: daysToSubtract));
+        DateTime targetDate =
+        DateTime(ref.year, ref.month, ref.day).subtract(Duration(days: daysToSubtract));
         results.add(ParsingResult(index: 0, text: lastPhrase, date: targetDate));
       }
     }
@@ -129,8 +129,9 @@ class EnRelativeParser extends BaseParser {
       int value = int.tryParse(numStr) ?? (numberMap[numStr] ?? 0);
       String unit = match.group(2)!;
       String direction = match.group(3)!;
-      Duration delta =
-      unit.startsWith('day') ? Duration(days: value) : Duration(days: value * 7);
+      Duration delta = unit.startsWith('day')
+          ? Duration(days: value)
+          : Duration(days: value * 7);
       DateTime resultDate =
       (direction == 'ago') ? ref.subtract(delta) : ref.add(delta);
       results.add(ParsingResult(
@@ -179,7 +180,8 @@ class EnAbsoluteParser extends BaseParser {
       String possibleMonth = match.group(1)!;
       if (!monthMap.containsKey(possibleMonth.toLowerCase())) continue;
       String dateStr = match.group(0)!;
-      DateTime? parsedDate = _parseEnglishDate(dateStr, context, monthMap: monthMap);
+      DateTime? parsedDate =
+      _parseEnglishDate(dateStr, context, monthMap: monthMap);
       if (parsedDate != null) {
         results.add(ParsingResult(index: match.start, text: dateStr, date: parsedDate));
       }
@@ -202,7 +204,7 @@ class EnAbsoluteParser extends BaseParser {
       } else {
         year = context.referenceDate.year;
         DateTime candidate = DateTime(year, month!, day);
-        if (candidate.isBefore(context.referenceDate)) {
+        if (!candidate.isAfter(context.referenceDate)) {
           year += 1;
         }
       }
