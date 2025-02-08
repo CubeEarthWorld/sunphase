@@ -9,7 +9,7 @@ There is a sample project at https://github.com/CubeEarthWorld/sunphase_sample
 ## Features
 
 *   **Natural Language Parsing:** Extract dates from strings like "tomorrow", "next week", "last month", etc.
-*   **Multi-language Support:** Supports English, Japanese, and Chinese (More to come).
+*   **Multi-language Support:** Supports English, Japanese, and Chinese etc... (More to come).[Language](lib/languages)
 *   **Timezone Support:** Specify a timezone for date parsing.
 *   **Range Mode:** Extract date ranges (e.g., "next week" will return a list of dates for the next week).
 
