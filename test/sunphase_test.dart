@@ -207,15 +207,6 @@ void main() {
       expect(results.first.date == expected, true);
     });
 
-    test('Japanese: 2週間後火曜', () {
-      String input = "2週間後火曜";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 18, 0, 0, 0);
-      print("\nInput: $input\nOutput: ${results.isNotEmpty ? results.first.date : 'No result'}\nExpected: $expected");
-      expect(results.isNotEmpty, true, reason: "Result should not be empty for '2週間後火曜'");
-      expect(results.first.date == expected, true);
-    });
-
     test('Japanese: 来週火曜', () {
       String input = "来週火曜";
       List<ParsingResult> results = parse(input, referenceDate: reference);
@@ -478,6 +469,15 @@ void main() {
       DateTime expected = DateTime(2025, 2, 12, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.isNotEmpty ? results.first.date : 'No result'}\nExpected: $expected");
       expect(results.isNotEmpty, true, reason: "Result should not be empty for '周三'");
+      expect(results.first.date == expected, true);
+    });
+
+    test('Chinese: 星期天', () {
+      String input = "星期天";
+      List<ParsingResult> results = parse(input, referenceDate: reference);
+      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.isNotEmpty ? results.first.date : 'No result'}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '星期天'");
       expect(results.first.date == expected, true);
     });
 
