@@ -1,43 +1,72 @@
 // lib/core/result.dart
+/// 日付・時刻の各コンポーネントを保持するクラス
+class ParsedComponents {
+  int? year;
+  int? month;
+  int? day;
+  int? hour;
+  int? minute;
+  int? second;
+  int? timezoneOffset; // 分単位のUTCからのオフセット
 
-/// 解析結果のコンポーネント。日付情報に加えて、時刻情報が明示されているかどうかを [hasTime] で保持します。
-class ParsedComponent {
-  final DateTime date;
-  final bool hasTime; // 時刻情報が明示されている場合は true
+  ParsedComponents({
+    this.year,
+    this.month,
+    this.day,
+    this.hour,
+    this.minute,
+    this.second,
+    this.timezoneOffset,
+  });
 
-  ParsedComponent({required this.date, this.hasTime = false});
+  /// コンポーネントから DateTime オブジェクトを生成する。
+  /// timezoneOffset が指定されている場合はオフセット分調整する。
+  DateTime toDateTime(DateTime reference) {
+    int y = year ?? reference.year;
+    int m = month ?? reference.month;
+    int d = day ?? reference.day;
+    int h = hour ?? 0;
+    int min = minute ?? 0;
+    int sec = second ?? 0;
+    DateTime dt = DateTime(y, m, d, h, min, sec);
+    if (timezoneOffset != null) {
+      // 指定されたオフセット（分単位）をUTC基準に調整する
+      dt = dt.toUtc().add(Duration(minutes: timezoneOffset!));
+    }
+    return dt;
+  }
 
-  ParsedComponent copyWith({DateTime? date, bool? hasTime}) {
-    return ParsedComponent(
-      date: date ?? this.date,
-      hasTime: hasTime ?? this.hasTime,
-    );
+  @override
+  String toString() {
+    return 'ParsedComponents(year: $year, month: $month, day: $day, hour: $hour, minute: $minute, second: $second, timezoneOffset: $timezoneOffset)';
   }
 }
 
-/// 解析結果そのものを保持します。
+/// 解析結果を保持するクラス
 class ParsingResult {
   final int index;
   final String text;
-  final ParsedComponent component;
+  ParsedComponents start;
+  ParsedComponents? end;
+  final DateTime refDate;
 
   ParsingResult({
     required this.index,
     required this.text,
-    required this.component,
+    required this.start,
+    this.end,
+    required this.refDate,
   });
 
-  ParsingResult copyWith({DateTime? date, bool? hasTime}) {
-    return ParsingResult(
-      index: this.index,
-      text: this.text,
-      component: this.component.copyWith(date: date, hasTime: hasTime),
-    );
-  }
-
-  DateTime get date => component.date;
+  /// start のコンポーネントから DateTime を生成
+  DateTime get date => start.toDateTime(refDate);
 
   @override
-  String toString() =>
-      'ParsingResult(index: $index, text: "$text", date: $date, hasTime: ${component.hasTime})';
+  String toString() {
+    if (end != null) {
+      return 'ParsingResult(index: $index, text: "$text", start: $start, end: $end)';
+    } else {
+      return 'ParsingResult(index: $index, text: "$text", start: $start)';
+    }
+  }
 }
