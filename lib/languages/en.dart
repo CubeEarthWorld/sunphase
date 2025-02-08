@@ -9,10 +9,7 @@ class EnglishLanguage implements Language {
   String get code => 'en';
 
   @override
-  List<Parser> get parsers => [
-    EnglishDateParser(),
-    EnglishTimeParser(), // ★追加
-  ];
+  List<Parser> get parsers => [EnglishDateParser()];
 
   @override
   List<Refiner> get refiners => [EnglishRefiner()];
@@ -42,7 +39,6 @@ class EnglishDateParser implements Parser {
       } else {
         date = referenceDate;
       }
-      // デフォルトで時刻は 0:00 として扱う
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
@@ -51,7 +47,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // Weekdays ("next Monday", "last Tuesday", "this Friday", etc.)
+    // Weekdays ("next Monday", "last Tuesday", etc.)
     // ------------------------------
     final RegExp weekdayPattern = RegExp(
       r'\b(?:(next|last|this)\s+)?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b',
@@ -70,7 +66,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 絶対日付の表現 (月名+日付, YYYY-MM-DD, M/D/YYYY)
+    // 絶対日付の表現 (Month day, year / YYYY-MM-DD / M/D/YYYY)
     // ------------------------------
     final RegExp absoluteDatePattern = RegExp(
       r'\b(?:([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})|(\d{4})-(\d{2})-(\d{2})|(\d{1,2})/(\d{1,2})/(\d{4}))\b',
@@ -109,7 +105,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // "17 August 2013" のように日→月→年
+    // "17 August 2013" のような日→月→年の表現
     // ------------------------------
     final RegExp dayMonthYearPattern = RegExp(
       r'\b(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\b',
@@ -130,7 +126,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 相対期間 "next week", "last month", "this year" など
+    // 相対期間 (next week, last month, this year など)
     // ------------------------------
     final RegExp relativePeriodPattern =
     RegExp(r'\b(?:(next|last|this)\s+)(week|month|year)\b', caseSensitive: false);
@@ -146,7 +142,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // "5 days ago", "2 weeks from now" のように数字+unit+ago/from now
+    // "5 days ago", "2 weeks from now" のような相対期間
     // ------------------------------
     final RegExp relativeNumberPattern = RegExp(
       r'\b(?:(\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty))\s+(day|week|month|year)s?\s+(ago|from\s+now)\b',
@@ -156,7 +152,7 @@ class EnglishDateParser implements Parser {
       String numStr = match.group(1)!.toLowerCase();
       int number = _enNumberToInt(numStr);
       String unit = match.group(2)!.toLowerCase();
-      String direction = match.group(3)!.toLowerCase(); // ago or from now
+      String direction = match.group(3)!.toLowerCase();
       DateTime date = _calculateRelativeDate(referenceDate, number, unit, direction);
       results.add(ParsingResult(
         index: match.start,
@@ -166,7 +162,7 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 標準的な日付文字列 (ISO8601など) パース
+    // ISO8601 やその他標準的な日付文字列
     // ------------------------------
     try {
       final parsedDate = DateTime.parse(text.trim());
@@ -180,16 +176,14 @@ class EnglishDateParser implements Parser {
     }
 
     // ------------------------------
-    // 単独の "6th", "21st" など => 今月 or 来月の最も近い日
+    // 単独の "6th" など (今月または来月の最も近い日付として)
     // ------------------------------
     final RegExp singleDayPattern = RegExp(r'\b(\d{1,2})(?:st|nd|rd|th)\b', caseSensitive: false);
     for (final match in singleDayPattern.allMatches(text)) {
       int day = int.parse(match.group(1)!);
       DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
-
       DateTime candidate = DateTime(current.year, current.month, day);
       if (current.day > day) {
-        // もう過ぎているなら翌月
         int nextMonth = current.month + 1;
         int nextYear = current.year;
         if (nextMonth > 12) {
@@ -205,12 +199,65 @@ class EnglishDateParser implements Parser {
       ));
     }
 
+    // ------------------------------
+    // 相対日と時刻の組み合わせ (例: "tomorrow 17:41")
+    // ------------------------------
+    final RegExp relativeTimePattern = RegExp(
+      r'\b(today|tomorrow|yesterday)\s+(\d{1,2}):(\d{2})\b',
+      caseSensitive: false,
+    );
+    for (final match in relativeTimePattern.allMatches(text)) {
+      String dayWord = match.group(1)!.toLowerCase();
+      int hour = int.parse(match.group(2)!);
+      int minute = int.parse(match.group(3)!);
+      DateTime date;
+      if (dayWord == 'today') {
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
+      } else if (dayWord == 'tomorrow') {
+        DateTime base = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+            .add(Duration(days: 1));
+        date = DateTime(base.year, base.month, base.day, hour, minute);
+      } else if (dayWord == 'yesterday') {
+        DateTime base = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+            .subtract(Duration(days: 1));
+        date = DateTime(base.year, base.month, base.day, hour, minute);
+      } else {
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
+      }
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: date),
+      ));
+    }
+
+    // ------------------------------
+    // 時刻のみの表現 (例: "16:31")
+    // ------------------------------
+    final RegExp timeOnlyPattern = RegExp(
+      r'(?<!\d)(\d{1,2}):(\d{2})(?!\d)',
+    );
+    for (final match in timeOnlyPattern.allMatches(text)) {
+      int hour = int.parse(match.group(1)!);
+      int minute = int.parse(match.group(2)!);
+      DateTime candidate = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
+      // 指定時刻が過ぎていれば翌日にする
+      if (!candidate.isAfter(referenceDate)) {
+        candidate = candidate.add(Duration(days: 1));
+      }
+      results.add(ParsingResult(
+        index: match.start,
+        text: match.group(0)!,
+        component: ParsedComponent(date: candidate),
+      ));
+    }
+
     return results;
   }
 
-  // ---------------------------------------
-  // ユーティリティ
-  // ---------------------------------------
+  // ------------------------------
+  // 以下、ユーティリティ関数
+  // ------------------------------
   int _weekdayFromString(String weekday) {
     switch (weekday.toLowerCase()) {
       case 'monday':
@@ -325,10 +372,8 @@ class EnglishDateParser implements Parser {
     }
   }
 
-  DateTime _calculateRelativeDate(
-      DateTime reference, int number, String unit, String direction) {
+  DateTime _calculateRelativeDate(DateTime reference, int number, String unit, String direction) {
     bool isFuture = direction.contains('from now');
-
     int daysToAdd = 0;
     switch (unit) {
       case 'day':
@@ -351,11 +396,7 @@ class EnglishDateParser implements Parser {
         : reference.subtract(Duration(days: daysToAdd));
   }
 
-  // ------------------------------------------------
-  // 英単語を数値に変換するヘルパー関数
-  // ------------------------------------------------
   int _enNumberToInt(String word) {
-    // 数字そのままなら変換して返す
     if (RegExp(r'^\d+$').hasMatch(word)) {
       return int.parse(word);
     }
@@ -408,154 +449,9 @@ class EnglishDateParser implements Parser {
   }
 }
 
-///
-/// 時刻用のパーサー (追加)
-///
-class EnglishTimeParser implements Parser {
-  @override
-  List<ParsingResult> parse(String text, DateTime referenceDate) {
-    final results = <ParsingResult>[];
-
-    // シンプルに HH:MM(:SS)? (24時間/AMPM) を狙う
-    // 例: "16:24", "2:05 pm", "23:59:10" など
-    // AM/PM は簡易的に対応
-    final RegExp timePattern = RegExp(
-      r'\b(\d{1,2})(?::(\d{1,2})(?::(\d{1,2}))?)?\s*(am|pm)?\b',
-      caseSensitive: false,
-    );
-
-    for (final match in timePattern.allMatches(text)) {
-      int hour = int.parse(match.group(1)!);
-      int minute = match.group(2) != null ? int.parse(match.group(2)!) : 0;
-      int second = match.group(3) != null ? int.parse(match.group(3)!) : 0;
-      final ampm = match.group(4)?.toLowerCase(); // 'am' or 'pm' or null
-
-      if (ampm == 'am' && hour == 12) {
-        // 12 AM は 0 時
-        hour = 0;
-      } else if (ampm == 'pm' && hour != 12) {
-        // 1 PM～11 PM は +12
-        hour += 12;
-      }
-
-      // 日付指定がない場合、最も近い将来とする
-      // （単に "time only" と仮定して、referenceDate の日にちと比較）
-      final base = DateTime(
-        referenceDate.year,
-        referenceDate.month,
-        referenceDate.day,
-        hour,
-        minute,
-        second,
-      );
-      DateTime dateTime =
-      (base.isBefore(referenceDate)) ? base.add(const Duration(days: 1)) : base;
-
-      results.add(ParsingResult(
-        index: match.start,
-        text: match.group(0)!,
-        component: ParsedComponent(date: dateTime),
-      ));
-    }
-
-    return results;
-  }
-}
-
 class EnglishRefiner implements Refiner {
   @override
   List<ParsingResult> refine(List<ParsingResult> results, DateTime referenceDate) {
-    // ここでは、"日付のみ" と "時刻のみ" の結果が同じテキスト付近にあれば合体して
-    // 日付 + 時刻にする簡易ロジックを入れる例。
-    //
-    // ただし本サンプルコードでは、厳密な「テキスト上の近接」判断でなく、
-    // 「もし結果が2つあり、indexが同じか近いなら合体」という簡易実装。
-    // 実際の要件に合わせて拡張してください。
-    //
-    // また、複数日付や複数時刻がある場合の挙動は簡易的です。
-
-    final merged = <ParsingResult>[];
-    final used = <int>{};
-
-    for (int i = 0; i < results.length; i++) {
-      if (used.contains(i)) continue;
-
-      final r1 = results[i];
-      final date1 = r1.date;
-      bool mergedThis = false;
-
-      for (int j = i + 1; j < results.length; j++) {
-        if (used.contains(j)) continue;
-        final r2 = results[j];
-        // index が近ければ合体する単純例
-        if ((r2.index - r1.index).abs() < 10) {
-          // どちらかを日付とみなし、もう片方を時刻とみなす
-          // "日付" とは 0時0分近いかで判定… というのも雑なので、
-          // このサンプルでは、単に r1 が先に見つかった方を日付優先とする
-          final combined = _combineDateTime(r1, r2, referenceDate);
-          merged.add(combined);
-          used.add(i);
-          used.add(j);
-          mergedThis = true;
-          break;
-        }
-      }
-
-      if (!mergedThis) {
-        // そのまま
-        merged.add(r1);
-        used.add(i);
-      }
-    }
-
-    // ソートして返す
-    merged.sort((a, b) => a.index.compareTo(b.index));
-    return merged;
-  }
-
-  ParsingResult _combineDateTime(
-      ParsingResult a, ParsingResult b, DateTime referenceDate) {
-    // a の日付に b の時刻を合わせるか、その逆か。
-    // a.date, b.date のうち、"時分秒が00:00:00でないほう" を時刻とみなす簡易実装
-    // ※より洗練した方法は状況に応じて実装が必要
-    final aHasTime = (a.date.hour != 0 || a.date.minute != 0 || a.date.second != 0);
-    final bHasTime = (b.date.hour != 0 || b.date.minute != 0 || b.date.second != 0);
-
-    DateTime newDate;
-    if (aHasTime && !bHasTime) {
-      // aが時刻、bが日付
-      newDate = DateTime(
-        b.date.year,
-        b.date.month,
-        b.date.day,
-        a.date.hour,
-        a.date.minute,
-        a.date.second,
-      );
-      return ParsingResult(
-        index: a.index,
-        text: '${a.text} ${b.text}',
-        component: ParsedComponent(date: newDate),
-      );
-    } else if (!aHasTime && bHasTime) {
-      // bが時刻、aが日付
-      newDate = DateTime(
-        a.date.year,
-        a.date.month,
-        a.date.day,
-        b.date.hour,
-        b.date.minute,
-        b.date.second,
-      );
-      return ParsingResult(
-        index: a.index,
-        text: '${a.text} ${b.text}',
-        component: ParsedComponent(date: newDate),
-      );
-    } else {
-      // 両方とも時刻あり or 両方とも時刻なし
-      // シンプルに a を優先する (要件次第で調整)
-      return a;
-    }
+    return results;
   }
 }
