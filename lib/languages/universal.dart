@@ -1,13 +1,15 @@
 // lib/languages/universal.dart
+
 import '../core/base_parser.dart';
 import '../core/result.dart';
 import '../core/parsing_context.dart';
 
-/// Parser for language-independent date expressions (e.g., ISO formats).
+/// Parser for language-independent date expressions (e.g., ISO 8601).
 class UniversalParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
+
     // ISO 8601 format detection
     RegExp isoExp = RegExp(
         r'\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+\-]\d{2}:?\d{2})?');
@@ -18,12 +20,13 @@ class UniversalParser extends BaseParser {
         DateTime dt = DateTime.parse(dateStr);
         results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
       } catch (e) {
-        // ignore error
+        // Ignore
       }
     }
 
     // Alternative format: "Sat Aug 17 2013 18:40:39 GMT+0900 (JST)"
-    RegExp altExp = RegExp(r'\w{3}\s+\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT[+\-]\d{4}(?:\s*\(.*\))?');
+    RegExp altExp = RegExp(
+        r'\w{3}\s+\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT[+\-]\d{4}(?:\s*\(.*\))?');
     Iterable<RegExpMatch> altMatches = altExp.allMatches(text);
     for (var match in altMatches) {
       String dateStr = match.group(0)!;
@@ -31,7 +34,7 @@ class UniversalParser extends BaseParser {
         DateTime dt = DateTime.parse(dateStr);
         results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
       } catch (e) {
-        // ignore error
+        // ignore
       }
     }
 
@@ -49,7 +52,11 @@ class UniversalParser extends BaseParser {
         int diff = endDate.difference(startDate).inDays;
         for (int i = 0; i <= diff; i++) {
           DateTime d = startDate.add(Duration(days: i));
-          results.add(ParsingResult(index: match.start, text: "${match.group(0)} (Day ${i+1})", date: d));
+          // 例として、range全日を列挙する形でParsingResultに追加
+          results.add(ParsingResult(
+              index: match.start,
+              text: "${match.group(0)} (Day ${i + 1})",
+              date: d));
         }
       }
     }
@@ -57,6 +64,7 @@ class UniversalParser extends BaseParser {
     return results;
   }
 
+  /// "17 August 2013" 形式の英語日付を解析する簡易関数
   DateTime? _parseEnglishDate(String dateStr) {
     Map<String, int> monthMap = {
       'january': 1,
@@ -73,9 +81,8 @@ class UniversalParser extends BaseParser {
       'december': 12,
     };
     dateStr = dateStr.toLowerCase().trim();
-    RegExp pattern1 = RegExp(r'^(\d{1,2})\s*([a-z]+)\s*(\d{4})$');
-    RegExp pattern2 = RegExp(r'^([a-z]+)\s*(\d{1,2})\s*(\d{4})$');
-    RegExpMatch? m = pattern1.firstMatch(dateStr) ?? pattern2.firstMatch(dateStr);
+    RegExp pattern = RegExp(r'^(\d{1,2})\s*([a-z]+)\s*(\d{4})$');
+    RegExpMatch? m = pattern.firstMatch(dateStr);
     if (m != null) {
       int day = int.parse(m.group(1)!);
       String monthStr = m.group(2)!;

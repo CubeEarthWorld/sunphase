@@ -1,7 +1,6 @@
 // lib/sunphase.dart
 import 'core/result.dart';  // 内部で使用するため明示的にimport
 export 'core/result.dart'; // 利用者が「package:sunphase/sunphase.dart」でParsingResultを利用できるよう再エクスポート
-
 import 'core/parser_manager.dart';
 
 /// Parses natural language date expressions and returns a list of parsing results.
