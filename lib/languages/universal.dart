@@ -8,7 +8,7 @@ class UniversalParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
-    // ISO 8601 形式 (例: "2014-11-30T08:15:30-05:30") の検出
+    // ISO 8601 形式 (例: "2014-11-30T08:15:30-05:30")
     RegExp isoExp = RegExp(
         r'\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+\-]\d{2}:?\d{2})?');
     Iterable<RegExpMatch> isoMatches = isoExp.allMatches(text);
@@ -18,7 +18,7 @@ class UniversalParser extends BaseParser {
         DateTime dt = DateTime.parse(dateStr);
         results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
       } catch (e) {
-        // パースエラーの場合は無視
+        // エラーは無視
       }
     }
 
@@ -73,9 +73,9 @@ class UniversalParser extends BaseParser {
       'december': 12,
     };
     dateStr = dateStr.toLowerCase().trim();
-    RegExp pattern1 = RegExp(r'(\d{1,2})\s*([a-z]+)\s*(\d{4})');
-    RegExp pattern2 = RegExp(r'([a-z]+)\s*(\d{1,2})\s*(\d{4})');
-    RegExpMatch? m = pattern1.firstMatch(dateStr) ?? pattern2.firstMatch(dateStr);
+    RegExp pattern1 = RegExp(r'^(\d{1,2})\s*([a-z]+)\s*(\d{4})$');
+    RegExp pattern2 = RegExp(r'^([a-z]+)\s*(\d{1,2})\s*(\d{4})$');
+    RegExpMatch? m = pattern1.firstMatch(dateStr);
     if (m != null) {
       int day = int.parse(m.group(1)!);
       String monthStr = m.group(2)!;
@@ -83,6 +83,18 @@ class UniversalParser extends BaseParser {
       int year = int.parse(m.group(3)!);
       if (month != null) {
         return DateTime(year, month, day);
+      }
+    } else {
+      m = pattern2.firstMatch(dateStr);
+      if (m != null) {
+        // この場合、グループ1: 月, グループ2: 日, グループ3: 年
+        String monthStr = m.group(1)!;
+        int? month = monthMap[monthStr];
+        int day = int.parse(m.group(2)!);
+        int year = int.parse(m.group(3)!);
+        if (month != null) {
+          return DateTime(year, month, day);
+        }
       }
     }
     return null;

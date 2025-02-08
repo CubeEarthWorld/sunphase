@@ -2,7 +2,6 @@
 import '../core/base_parser.dart';
 import '../core/result.dart';
 import '../core/parsing_context.dart';
-import '../utils/date_utils.dart';
 
 /// 中国語の相対表現（例：「今天」「明天」「下周」など）に対応するパーサー。
 class ZhRelativeParser extends BaseParser {
@@ -90,7 +89,6 @@ class ZhAbsoluteParser extends BaseParser {
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
     List<ParsingResult> results = [];
-    // 正規表現で「4月26日」または「4月26日4时8分」形式を検出
     RegExp regExp = RegExp(r'(\d{1,2})月(\d{1,2})日(?:\s*(\d{1,2})[时:：](?:\s*(\d{1,2})[分]?)?)?');
     Iterable<RegExpMatch> matches = regExp.allMatches(text);
     for (var match in matches) {

@@ -2,7 +2,6 @@
 import '../core/base_parser.dart';
 import '../core/result.dart';
 import '../core/parsing_context.dart';
-import '../utils/date_utils.dart';
 
 /// 英語表現に対応する相対表現パーサー。
 class EnRelativeParser extends BaseParser {
@@ -79,11 +78,13 @@ class EnRelativeParser extends BaseParser {
     if (lowerText.contains("this friday")) {
       RegExp timeRegExp = RegExp(r'from\s*(\d{1,2}):(\d{2})');
       RegExpMatch? match = timeRegExp.firstMatch(lowerText);
+      int targetWeekday = 5; // Friday (ISO: Monday=1, Friday=5)
+      int daysUntilFriday = ref.weekday == targetWeekday
+          ? 0
+          : ((targetWeekday - ref.weekday + 7) % 7);
       if (match != null) {
         int hour = int.parse(match.group(1)!);
         int minute = int.parse(match.group(2)!);
-        // 簡単のため、"this friday" は reference 日付の次の金曜日とする
-        int daysUntilFriday = (5 - ref.weekday) % 7; // 金曜日は weekday==5 (ISO: Monday=1)
         DateTime thisFriday = DateTime(ref.year, ref.month, ref.day, hour, minute)
             .add(Duration(days: daysUntilFriday));
         results.add(ParsingResult(
@@ -142,7 +143,8 @@ class EnAbsoluteParser extends BaseParser {
     return results;
   }
 
-  /// 簡易的な英語日付文字列のパース（例："17 august 2013"）
+  /// 英語日付文字列のパース。
+  /// まずパターン1（例："17 august 2013"）を試し、マッチしなければパターン2（例："august 17 2013"）でグループ順を入れ替えて処理する。
   DateTime? _parseEnglishDate(String dateStr) {
     Map<String, int> monthMap = {
       'january': 1,
@@ -158,10 +160,10 @@ class EnAbsoluteParser extends BaseParser {
       'november': 11,
       'december': 12,
     };
-    dateStr = dateStr.toLowerCase();
-    RegExp pattern1 = RegExp(r'(\d{1,2})\s*([a-z]+)\s*(\d{4})');
-    RegExp pattern2 = RegExp(r'([a-z]+)\s*(\d{1,2})\s*(\d{4})');
-    RegExpMatch? m = pattern1.firstMatch(dateStr) ?? pattern2.firstMatch(dateStr);
+    dateStr = dateStr.toLowerCase().trim();
+    RegExp pattern1 = RegExp(r'^(\d{1,2})\s*([a-z]+)\s*(\d{4})$');
+    RegExp pattern2 = RegExp(r'^([a-z]+)\s*(\d{1,2})\s*(\d{4})$');
+    RegExpMatch? m = pattern1.firstMatch(dateStr);
     if (m != null) {
       int day = int.parse(m.group(1)!);
       String monthStr = m.group(2)!;
@@ -169,6 +171,18 @@ class EnAbsoluteParser extends BaseParser {
       int year = int.parse(m.group(3)!);
       if (month != null) {
         return DateTime(year, month, day);
+      }
+    } else {
+      m = pattern2.firstMatch(dateStr);
+      if (m != null) {
+        // この場合、グループ1: 月, グループ2: 日, グループ3: 年
+        String monthStr = m.group(1)!;
+        int? month = monthMap[monthStr];
+        int day = int.parse(m.group(2)!);
+        int year = int.parse(m.group(3)!);
+        if (month != null) {
+          return DateTime(year, month, day);
+        }
       }
     }
     return null;

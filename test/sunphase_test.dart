@@ -1,6 +1,5 @@
 // test/demo.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sunphase/core/result.dart';
 import 'package:sunphase/sunphase.dart';
 
 void main() {
@@ -26,6 +25,26 @@ void main() {
       DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
       print("Input: $input, Output: ${results.isNotEmpty ? results.first.date : 'No result'}, Expected: $expected");
       expect(results.isNotEmpty, true, reason: "Result should not be empty for 'Tomorrow'");
+      expect(results.first.date, expected);
+    });
+
+    test('Japanese: 明日', () {
+      String input = "明日";
+      List<ParsingResult> results = parse(input,
+          referenceDate: reference);
+      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
+      print("Input: $input, Output: ${results.isNotEmpty ? results.first.date : 'No result'}, Expected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '明日'");
+      expect(results.first.date, expected);
+    });
+
+    test('Japanese: 明日12時41分', () {
+      String input = "明日12時41分";
+      List<ParsingResult> results = parse(input,
+          referenceDate: reference);
+      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
+      print("Input: $input, Output: ${results.isNotEmpty ? results.first.date : 'No result'}, Expected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '明日'");
       expect(results.first.date, expected);
     });
 

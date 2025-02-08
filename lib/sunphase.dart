@@ -1,6 +1,8 @@
 // lib/sunphase.dart
+import 'core/result.dart';  // ここで明示的にimportする
+export 'core/result.dart'; // 外部向けに再エクスポートする
+
 import 'core/parser_manager.dart';
-import 'core/result.dart';
 
 /// テキストから日付情報を抽出し、解析結果のリストを返す。
 /// [text]：解析対象の文字列
@@ -13,7 +15,8 @@ List<ParsingResult> parse(String text,
       String? language,
       bool rangeMode = false,
       String? timezone}) {
-  return ParserManager.parse(text,
+  return ParserManager.parse(
+      text,
       referenceDate: referenceDate,
       language: language,
       rangeMode: rangeMode,

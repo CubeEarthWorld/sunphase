@@ -2,7 +2,6 @@
 import '../core/base_parser.dart';
 import '../core/result.dart';
 import '../core/parsing_context.dart';
-import '../utils/date_utils.dart';
 
 /// 日本語の相対表現（例：「今日」「明日」「来週」など）に対応するパーサー。
 class JaRelativeParser extends BaseParser {
