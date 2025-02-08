@@ -3,16 +3,16 @@ import '../core/result.dart';
 import '../core/parsing_context.dart';
 import '../utils/date_utils.dart';
 
-/// rangeMode が true の場合、特定の相対表現（例："next week", "来月"）に対して
+/// rangeMode が true の場合、特定の相対表現（例："next week", "next month"）に対して
 /// 日付の範囲（リスト）を生成するクラス。
 class RangeMode {
   /// 与えられた [results] の中で、範囲指定が必要な結果を拡張して日付リストを生成する。
   static List<ParsingResult> generate(List<ParsingResult> results, ParsingContext context) {
     List<ParsingResult> rangeResults = [];
     for (var result in results) {
-      // 「next week」または「来週」と判断
+      // 「next week」または「来週」と判断（小文字でチェック）
       if (_isNextWeek(result.text)) {
-        // 結果の日付から7日間分を生成
+        // 基準結果の日付を起点として7日分を生成
         for (int i = 0; i < 7; i++) {
           DateTime d = result.date.add(Duration(days: i));
           rangeResults.add(ParsingResult(

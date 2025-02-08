@@ -21,8 +21,9 @@ class UniversalParser extends BaseParser {
         // パースエラーの場合は無視
       }
     }
-    // 別形式 (例: "Sat Aug 17 2013 18:40:39 GMT+0900 (JST)") の検出
-    RegExp altExp = RegExp(r'\w{3}\s+\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT[+\-]\d{4}');
+
+    // Alternative format: "Sat Aug 17 2013 18:40:39 GMT+0900 (JST)"
+    RegExp altExp = RegExp(r'\w{3}\s+\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT[+\-]\d{4}(?:\s*\(.*\))?');
     Iterable<RegExpMatch> altMatches = altExp.allMatches(text);
     for (var match in altMatches) {
       String dateStr = match.group(0)!;
@@ -33,7 +34,58 @@ class UniversalParser extends BaseParser {
         // エラー無視
       }
     }
+
+    // 絶対日付の範囲表現を検出: 例 "17 August 2013 - 19 August 2013"
+    RegExp rangeExp = RegExp(
+        r'(\d{1,2}\s*(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[\s,]+\d{4})\s*-\s*(\d{1,2}\s*(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[\s,]+\d{4})',
+        caseSensitive: false);
+    Iterable<RegExpMatch> rangeMatches = rangeExp.allMatches(text);
+    for (var match in rangeMatches) {
+      String startStr = match.group(1)!;
+      String endStr = match.group(2)!;
+      DateTime? startDate = _parseEnglishDate(startStr);
+      DateTime? endDate = _parseEnglishDate(endStr);
+      if (startDate != null && endDate != null) {
+        int diff = endDate.difference(startDate).inDays;
+        for (int i = 0; i <= diff; i++) {
+          DateTime d = startDate.add(Duration(days: i));
+          results.add(ParsingResult(index: match.start, text: "${match.group(0)} (Day ${i+1})", date: d));
+        }
+      }
+    }
+
     return results;
+  }
+
+  DateTime? _parseEnglishDate(String dateStr) {
+    Map<String, int> monthMap = {
+      'january': 1,
+      'february': 2,
+      'march': 3,
+      'april': 4,
+      'may': 5,
+      'june': 6,
+      'july': 7,
+      'august': 8,
+      'september': 9,
+      'october': 10,
+      'november': 11,
+      'december': 12,
+    };
+    dateStr = dateStr.toLowerCase().trim();
+    RegExp pattern1 = RegExp(r'(\d{1,2})\s*([a-z]+)\s*(\d{4})');
+    RegExp pattern2 = RegExp(r'([a-z]+)\s*(\d{1,2})\s*(\d{4})');
+    RegExpMatch? m = pattern1.firstMatch(dateStr) ?? pattern2.firstMatch(dateStr);
+    if (m != null) {
+      int day = int.parse(m.group(1)!);
+      String monthStr = m.group(2)!;
+      int? month = monthMap[monthStr];
+      int year = int.parse(m.group(3)!);
+      if (month != null) {
+        return DateTime(year, month, day);
+      }
+    }
+    return null;
   }
 }
 

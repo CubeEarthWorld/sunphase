@@ -81,7 +81,6 @@ class JaRelativeParser extends BaseParser {
           text: "今年",
           date: DateTime(ref.year, ref.month, ref.day)));
     }
-
     return results;
   }
 }
@@ -99,7 +98,6 @@ class JaAbsoluteParser extends BaseParser {
       int day = int.parse(match.group(2)!);
       int hour = match.group(3) != null ? int.parse(match.group(3)!) : 0;
       int minute = match.group(4) != null ? int.parse(match.group(4)!) : 0;
-      // 年が指定されていない場合は基準年を使用。すでに過ぎていれば翌年とする。
       int year = context.referenceDate.year;
       DateTime parsedDate = DateTime(year, month, day, hour, minute);
       if (parsedDate.isBefore(context.referenceDate)) {
@@ -111,10 +109,31 @@ class JaAbsoluteParser extends BaseParser {
   }
 }
 
+/// 日本語の時刻のみの表現（例：「21時31分」「10時5分」）に対応するパーサー。
+class JaTimeOnlyParser extends BaseParser {
+  @override
+  List<ParsingResult> parse(String text, ParsingContext context) {
+    List<ParsingResult> results = [];
+    RegExp regExp = RegExp(r'(\d{1,2})時(?:\s*(\d{1,2})分)?');
+    Iterable<RegExpMatch> matches = regExp.allMatches(text);
+    for (var match in matches) {
+      int hour = int.parse(match.group(1)!);
+      int minute = match.group(2) != null ? int.parse(match.group(2)!) : 0;
+      DateTime candidate = DateTime(context.referenceDate.year, context.referenceDate.month, context.referenceDate.day, hour, minute);
+      if (candidate.isBefore(context.referenceDate)) {
+        candidate = candidate.add(Duration(days: 1));
+      }
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: candidate));
+    }
+    return results;
+  }
+}
+
 /// 日本語パーサー群をまとめたクラス。
 class JaParsers {
   static final List<BaseParser> parsers = [
     JaRelativeParser(),
     JaAbsoluteParser(),
+    JaTimeOnlyParser(),
   ];
 }

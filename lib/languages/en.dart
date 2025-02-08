@@ -67,7 +67,56 @@ class EnRelativeParser extends BaseParser {
           text: "Last month",
           date: lastMonth));
     }
-    // 追加の相対表現を必要に応じて実装可能
+    // "last friday"
+    if (lowerText.contains("last friday")) {
+      DateTime lastFriday = ref.subtract(Duration(days: 7));
+      results.add(ParsingResult(
+          index: lowerText.indexOf("last friday"),
+          text: "Last Friday",
+          date: lastFriday));
+    }
+    // "this friday" with time extraction
+    if (lowerText.contains("this friday")) {
+      RegExp timeRegExp = RegExp(r'from\s*(\d{1,2}):(\d{2})');
+      RegExpMatch? match = timeRegExp.firstMatch(lowerText);
+      if (match != null) {
+        int hour = int.parse(match.group(1)!);
+        int minute = int.parse(match.group(2)!);
+        // 簡単のため、"this friday" は reference 日付の次の金曜日とする
+        int daysUntilFriday = (5 - ref.weekday) % 7; // 金曜日は weekday==5 (ISO: Monday=1)
+        DateTime thisFriday = DateTime(ref.year, ref.month, ref.day, hour, minute)
+            .add(Duration(days: daysUntilFriday));
+        results.add(ParsingResult(
+            index: lowerText.indexOf("this friday"),
+            text: "This Friday from ${match.group(1)}:${match.group(2)}",
+            date: thisFriday));
+      }
+    }
+
+    // 相対表現パターン: "2 weeks from now", "4 days later", "5 days ago"
+    RegExp regExp = RegExp(r'(\d+)\s*(days|weeks)\s*(from now|later|ago)');
+    Iterable<RegExpMatch> matches = regExp.allMatches(lowerText);
+    for (var match in matches) {
+      int value = int.parse(match.group(1)!);
+      String unit = match.group(2)!;
+      String direction = match.group(3)!;
+      Duration delta;
+      if (unit.startsWith('day')) {
+        delta = Duration(days: value);
+      } else {
+        delta = Duration(days: value * 7);
+      }
+      DateTime resultDate;
+      if (direction == 'ago') {
+        resultDate = ref.subtract(delta);
+      } else {
+        resultDate = ref.add(delta);
+      }
+      results.add(ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          date: resultDate));
+    }
 
     return results;
   }
@@ -110,8 +159,8 @@ class EnAbsoluteParser extends BaseParser {
       'december': 12,
     };
     dateStr = dateStr.toLowerCase();
-    RegExp pattern1 = RegExp(r'(\d{1,2})\s*(\w+)\s*(\d{4})');
-    RegExp pattern2 = RegExp(r'(\w+)\s*(\d{1,2})\s*(\d{4})');
+    RegExp pattern1 = RegExp(r'(\d{1,2})\s*([a-z]+)\s*(\d{4})');
+    RegExp pattern2 = RegExp(r'([a-z]+)\s*(\d{1,2})\s*(\d{4})');
     RegExpMatch? m = pattern1.firstMatch(dateStr) ?? pattern2.firstMatch(dateStr);
     if (m != null) {
       int day = int.parse(m.group(1)!);

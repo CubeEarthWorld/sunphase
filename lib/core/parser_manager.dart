@@ -47,6 +47,15 @@ class ParserManager {
   }
 
   static List<BaseParser> _getParsersForLanguage(String? language) {
+    // 言語が指定されない場合は、すべてのパーサー群を統合して返す
+    if (language == null) {
+      return [
+        ...EnParsers.parsers,
+        ...JaParsers.parsers,
+        ...ZhParsers.parsers,
+        ...UniversalParsers.parsers,
+      ];
+    }
     switch (language) {
       case 'en':
         return EnParsers.parsers;
