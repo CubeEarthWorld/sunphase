@@ -179,7 +179,7 @@ class JapaneseDateParser implements Parser {
     }
 
     // 【9】時刻のみのパターン（例："16時24分"、"16時"）→ 参照日時より未来の最も近いその時刻
-    final RegExp timeOnlyPattern = RegExp(r'\b(\d{1,2})時(?:\s*(\d{1,2})分)?\b');
+    final RegExp timeOnlyPattern = RegExp(r'(\d{1,2})時(?:\s*(\d{1,2})分)?');
     for (final match in timeOnlyPattern.allMatches(text)) {
       int hour = int.parse(match.group(1)!);
       int minute = match.group(2) != null ? int.parse(match.group(2)!) : 0;
