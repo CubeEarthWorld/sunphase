@@ -9,20 +9,26 @@ class JapaneseLanguage implements Language {
   String get code => 'ja';
 
   @override
-  List<Parser> get parsers => [JapaneseDateParser()];
+  List<Parser> get parsers => [
+    JapaneseDateParser(),
+    JapaneseTimeParser(),
+  ];
 
   @override
   List<Refiner> get refiners => [JapaneseRefiner()];
 }
 
+// -------------------------------------------------------
+// 日付パーサ (日本語特有の「YYYY年M月D日」「今日/明日/昨日」など)
+//   - not_language と重複する数値日付 (YYYY-MM-DD など) は最初から実装されていないため
+//     変更不要
+// -------------------------------------------------------
 class JapaneseDateParser implements Parser {
   @override
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     List<ParsingResult> results = [];
 
-    // ------------------------------
     // 相対表現 (今日, 明日, 明後日, 明々後日, 昨日)
-    // ------------------------------
     final RegExp relativeDayPattern =
     RegExp(r'(今日(?!曜日)|明日(?!曜日)|明後日(?!曜日)|明々後日(?!曜日)|昨日(?!曜日))');
     for (final match in relativeDayPattern.allMatches(text)) {
@@ -52,11 +58,10 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
     // 曜日の表現 (来週 月曜日, 先週 火曜日, 今週 金曜日, etc.)
-    // ------------------------------
     final RegExp weekdayPattern = RegExp(
-        r'(来週|先週|今週)?\s*((?:月曜日|月曜|火曜日|火曜|水曜日|水曜|木曜日|木曜|金曜日|金曜|土曜日|土曜|日曜日|日曜))');
+      r'(来週|先週|今週)?\s*((?:月曜日|月曜|火曜日|火曜|水曜日|水曜|木曜日|木曜|金曜日|金曜|土曜日|土曜|日曜日|日曜))',
+    );
     for (final match in weekdayPattern.allMatches(text)) {
       String modifier = match.group(1) ?? '';
       String weekdayStr = match.group(2)!;
@@ -69,16 +74,15 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
     // 絶対日付 (YYYY年M月D日)
-    // ------------------------------
     final RegExp absoluteDatePattern = RegExp(r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日');
     for (final match in absoluteDatePattern.allMatches(text)) {
-      int year =
-      (match.group(1) != null) ? int.parse(match.group(1)!) : referenceDate.year;
+      int year = (match.group(1) != null)
+          ? int.parse(match.group(1)!)
+          : referenceDate.year;
       int month = int.parse(match.group(2)!);
       int day = int.parse(match.group(3)!);
-      DateTime date = DateTime(year, month, day);
+      final date = DateTime(year, month, day);
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
@@ -86,9 +90,7 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
     // 相対期間 (来週, 先週, 今週, 来月, 先月, 今月, 来年, 去年, 今年)
-    // ------------------------------
     final RegExp relativePeriodPattern =
     RegExp(r'(来週|先週|今週|来月|先月|今月|来年|去年|今年)');
     for (final match in relativePeriodPattern.allMatches(text)) {
@@ -101,16 +103,14 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
-    // 「X日前」「X日後」: 半角数字または漢数字 + "日(前|後)"
-    // ------------------------------
+    // 「X日前」「X日後」
     final RegExp relativeDayNumPattern = RegExp(r'([一二三四五六七八九十\d]+)日(前|後)');
     for (final match in relativeDayNumPattern.allMatches(text)) {
       String numStr = match.group(1)!;
       String direction = match.group(2)!; // 前 or 後
-      int number = _jaNumberToInt(numStr); // 漢数字→整数変換
+      int number = _jaNumberToInt(numStr);
       bool isFuture = (direction == '後');
-      DateTime date = isFuture
+      final date = isFuture
           ? referenceDate.add(Duration(days: number))
           : referenceDate.subtract(Duration(days: number));
       results.add(ParsingResult(
@@ -120,9 +120,7 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
-    // 「X週間前」「X週間後」「Xヶ月前」「Xヶ月後」など
-    // ------------------------------
+    // 「X週間前」「X週間後」
     final RegExp relativeWeekPattern = RegExp(r'([一二三四五六七八九十\d]+)週間(前|後)');
     for (final match in relativeWeekPattern.allMatches(text)) {
       String numStr = match.group(1)!;
@@ -130,7 +128,7 @@ class JapaneseDateParser implements Parser {
       String direction = match.group(2)!;
       bool isFuture = (direction == '後');
       int daysToMove = number * 7;
-      DateTime date = isFuture
+      final date = isFuture
           ? referenceDate.add(Duration(days: daysToMove))
           : referenceDate.subtract(Duration(days: daysToMove));
       results.add(ParsingResult(
@@ -140,13 +138,14 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
+    // 「Xヶ月前」「Xヶ月後」
     final RegExp relativeMonthPattern = RegExp(r'([一二三四五六七八九十\d]+)ヶ月(前|後)');
     for (final match in relativeMonthPattern.allMatches(text)) {
       String numStr = match.group(1)!;
       int number = _jaNumberToInt(numStr);
       String direction = match.group(2)!;
       bool isFuture = (direction == '後');
-      DateTime date = isFuture
+      final date = isFuture
           ? DateTime(referenceDate.year, referenceDate.month + number, referenceDate.day)
           : DateTime(referenceDate.year, referenceDate.month - number, referenceDate.day);
       results.add(ParsingResult(
@@ -156,17 +155,13 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ------------------------------
-    // 単独の「XX日」「XX号」(「月」が書かれていない) => 今月または来月の最も近いその日
-    // 漢数字表記にも対応
-    // ------------------------------
+    // 単独の「XX日」「XX号」(「月」が書かれていない)
     final RegExp singleDayPattern = RegExp(r'(?<!月)([一二三四五六七八九十\d]+)(日|号)');
     for (final match in singleDayPattern.allMatches(text)) {
       String numStr = match.group(1)!;
-      int day = _jaNumberToInt(numStr); // 漢数字→整数変換
-      if (day <= 0) {
-        continue;
-      }
+      int day = _jaNumberToInt(numStr);
+      if (day <= 0) continue;
+
       DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       DateTime candidate = DateTime(current.year, current.month, day);
       if (current.day > day) {
@@ -203,7 +198,7 @@ class JapaneseDateParser implements Parser {
   }
 
   DateTime _getDateForWeekday(DateTime reference, int targetWeekday, String modifier) {
-    DateTime current = DateTime(reference.year, reference.month, reference.day);
+    final current = DateTime(reference.year, reference.month, reference.day);
     int diff = targetWeekday - current.weekday;
     if (modifier.isEmpty || modifier == '今週') {
       if (diff <= 0) {
@@ -245,32 +240,22 @@ class JapaneseDateParser implements Parser {
     return reference;
   }
 
-  // ------------------------------------------------
-  // 漢数字を整数に変換する関数
-  // "一"～"三十一" まで対応する簡易実装
-  // ------------------------------------------------
   int _jaNumberToInt(String input) {
-    // すでに数字（半角）ならパースして返す
+    // 半角数字ならパース
     if (RegExp(r'^\d+$').hasMatch(input)) {
       final val = int.parse(input);
-      // 1～31 の範囲外は 0 として扱い無効化
       return (val >= 1 && val <= 31) ? val : 0;
     }
 
-    // 「三十一」など、最大 31 まで想定する簡易パース
-    // "十" を含むかどうかで分岐し、前後を処理
     int result = 0;
     if (input.contains('十')) {
-      // 例: "二十三" => "二" + "十三"? ただし split('十') だと "二" と "三"
-      //           => tens = 2, ones = 3 => 23
-      //      "三十一" => tens = 3, ones = 1 => 31
       final parts = input.split('十');
-      final front = parts[0];        // "三"
-      final back  = parts.length > 1 ? parts[1] : ''; // "一"
+      final front = parts[0];
+      final back = parts.length > 1 ? parts[1] : '';
 
       int tens = 0;
       if (front.isEmpty) {
-        tens = 1; // 例: "十" => 10
+        tens = 1;
       } else {
         tens = _singleKanjiDigit(front);
       }
@@ -279,23 +264,15 @@ class JapaneseDateParser implements Parser {
       for (int i = 0; i < back.length; i++) {
         ones += _singleKanjiDigit(back[i]);
       }
-
       result = tens * 10 + ones;
     } else {
-      // "八" "二" "三十一" のように "十" を含まない場合
-      // 例: "八" => 8, "十一" => 1+10? でも "十一" は本来 "10 + 1"
-      // ここでは "十一" は "十" を含むので本来は上の条件式に入る想定
-      // もし完全に "十" を含まないなら個別に合計
       for (int i = 0; i < input.length; i++) {
         result += _singleKanjiDigit(input[i]);
       }
     }
-
-    // 1～31 の範囲内なら result, そうでなければ 0
     return (result >= 1 && result <= 31) ? result : 0;
   }
 
-  // 1文字の漢数字(一～九,十)を数値に変換
   int _singleKanjiDigit(String ch) {
     switch (ch) {
       case '〇':
@@ -322,9 +299,50 @@ class JapaneseDateParser implements Parser {
       case '十':
         return 10;
       default:
-      // 対象外は0 (無効)
         return 0;
     }
+  }
+}
+
+// -------------------------------------------------------
+// 時刻パーサ
+//   - 「(\d{1,2}):(\d{1,2})」は not_language と重複するため削除
+//   - 「HH時MM分」は日本語特有なので残す
+// -------------------------------------------------------
+class JapaneseTimeParser implements Parser {
+  @override
+  List<ParsingResult> parse(String text, DateTime referenceDate) {
+    final results = <ParsingResult>[];
+    final now = referenceDate;
+
+    // 例: "16時24分", "16時"
+    // 分がなければ 00 とする
+    final RegExp timePatternKanji = RegExp(r'(\d{1,2})時(\d{1,2})?分?');
+    for (final match in timePatternKanji.allMatches(text)) {
+      final hourStr = match.group(1)!;
+      final minuteStr = match.group(2); // null or empty
+
+      final hour = int.parse(hourStr);
+      int minute = 0;
+      if (minuteStr != null && minuteStr.isNotEmpty) {
+        minute = int.parse(minuteStr);
+      }
+      if (hour > 23 || minute > 59) continue;
+
+      DateTime candidate = DateTime(now.year, now.month, now.day, hour, minute);
+      if (candidate.isBefore(now)) {
+        candidate = candidate.add(const Duration(days: 1));
+      }
+      results.add(
+        ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          component: ParsedComponent(date: candidate),
+        ),
+      );
+    }
+
+    return results;
   }
 }
 
