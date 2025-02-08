@@ -19,25 +19,28 @@ class ChineseLanguage implements Language {
 }
 
 // -------------------------------------------------------
-// 1) ChineseDateParser
-//    - "今天", "明天", "昨天", "2025年4月1日" など
+// 日付パーサ
+//   - "YYYY年M月D日"、"今天"、"明天"、"昨天" など中国語表現
+//   - 「YYYY-MM-DD」「YYYY/MM/DD」などは not_language に移譲するので最初から実装なし
 // -------------------------------------------------------
 class ChineseDateParser implements Parser {
   @override
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     final results = <ParsingResult>[];
 
-    // (例) "今天", "明天", "昨天"
+    // 相対日 "今天", "明天", "昨天"
     final RegExp relativeDayPattern = RegExp(r'(今天|明天|昨天)');
     for (final match in relativeDayPattern.allMatches(text)) {
-      final matched = match.group(0)!;
+      String matched = match.group(0)!;
       DateTime date;
       if (matched == '今天') {
         date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       } else if (matched == '明天') {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).add(const Duration(days: 1));
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+            .add(const Duration(days: 1));
       } else if (matched == '昨天') {
-        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day).subtract(const Duration(days: 1));
+        date = DateTime(referenceDate.year, referenceDate.month, referenceDate.day)
+            .subtract(const Duration(days: 1));
       } else {
         date = referenceDate;
       }
@@ -48,13 +51,15 @@ class ChineseDateParser implements Parser {
       ));
     }
 
-    // (例) "下周 星期一", "上周 周三", "本周 礼拜五"
-    final RegExp weekdayPattern = RegExp(r'(下周|上周|本周)?\s*(星期[一二三四五六日]|周[一二三四五六日]|礼拜[一二三四五六日])');
+    // 星期 (下周 星期一, 上周 周三, 本周 礼拜五 等)
+    final RegExp weekdayPattern = RegExp(
+      r'(下周|上周|本周)?\s*(星期[一二三四五六日]|周[一二三四五六日]|礼拜[一二三四五六日])',
+    );
     for (final match in weekdayPattern.allMatches(text)) {
-      final modifier = match.group(1) ?? '';
-      final weekdayStr = match.group(2)!;
-      final targetWeekday = _weekdayFromString(weekdayStr);
-      final date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
+      String modifier = match.group(1) ?? '';
+      String weekdayStr = match.group(2)!;
+      int targetWeekday = _weekdayFromString(weekdayStr);
+      DateTime date = _getDateForWeekday(referenceDate, targetWeekday, modifier);
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
@@ -62,15 +67,15 @@ class ChineseDateParser implements Parser {
       ));
     }
 
-    // (例) "2025年1月1日", "1月1日"
+    // 绝对日期 (YYYY年M月D日)
     final RegExp absoluteDatePattern = RegExp(r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日');
     for (final match in absoluteDatePattern.allMatches(text)) {
-      final year = (match.group(1) != null)
+      int year = (match.group(1) != null)
           ? int.parse(match.group(1)!)
           : referenceDate.year;
-      final month = int.parse(match.group(2)!);
-      final day = int.parse(match.group(3)!);
-      final date = DateTime(year, month, day);
+      int month = int.parse(match.group(2)!);
+      int day = int.parse(match.group(3)!);
+      DateTime date = DateTime(year, month, day);
       results.add(ParsingResult(
         index: match.start,
         text: match.group(0)!,
@@ -78,11 +83,12 @@ class ChineseDateParser implements Parser {
       ));
     }
 
-    // (例) "下周", "上周", "这个月", "明年"など
-    final RegExp relativePeriodPattern = RegExp(r'(下周|上周|本周|下个月|上个月|这个月|明年|去年|今年)');
+    // 相对时间段 (下周, 上个月, 这个月, 明年, 去年, 今年)
+    final RegExp relativePeriodPattern =
+    RegExp(r'(下周|上周|本周|下个月|上个月|这个月|明年|去年|今年)');
     for (final match in relativePeriodPattern.allMatches(text)) {
-      final matched = match.group(0)!;
-      final date = _getRelativePeriodDate(referenceDate, matched);
+      String matched = match.group(0)!;
+      DateTime date = _getRelativePeriodDate(referenceDate, matched);
       results.add(ParsingResult(
         index: match.start,
         text: matched,
@@ -90,14 +96,14 @@ class ChineseDateParser implements Parser {
       ));
     }
 
-    // (例) "X天前"/"X天后"
+    // (1) "X天前" / "X天后"
     final RegExp relativeDayNumPattern = RegExp(r'([一二三四五六七八九十\d]+)天(前|后)');
     for (final match in relativeDayNumPattern.allMatches(text)) {
-      final numStr = match.group(1)!;
-      final direction = match.group(2)!;
-      final number = _cnNumberToInt(numStr);
-      final isFuture = (direction == '后');
-      final date = isFuture
+      String numStr = match.group(1)!;
+      String direction = match.group(2)!;
+      int number = _cnNumberToInt(numStr);
+      bool isFuture = (direction == '后');
+      DateTime date = isFuture
           ? referenceDate.add(Duration(days: number))
           : referenceDate.subtract(Duration(days: number));
       results.add(ParsingResult(
@@ -107,14 +113,16 @@ class ChineseDateParser implements Parser {
       ));
     }
 
-    // (例) "5天" => 当月 or 下月の5日
-    final RegExp singleDayPatternForTian = RegExp(r'(?<!月)([一二三四五六七八九十\d]+)天(?!前|后)');
+    // (2) 单独 "X天" => 当月 or 下月の X日
+    final RegExp singleDayPatternForTian = RegExp(
+      r'(?<!月)([一二三四五六七八九十\d]+)天(?!前|后)',
+    );
     for (final match in singleDayPatternForTian.allMatches(text)) {
-      final numStr = match.group(1)!;
-      final day = _cnNumberToInt(numStr);
+      String numStr = match.group(1)!;
+      int day = _cnNumberToInt(numStr);
       if (day <= 0) continue;
 
-      final current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
+      DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       DateTime candidate = DateTime(current.year, current.month, day);
       if (candidate.isBefore(current)) {
         int nextMonth = current.month + 1;
@@ -132,14 +140,14 @@ class ChineseDateParser implements Parser {
       ));
     }
 
-    // (例) "X周"/"X个月"/"X年"(前/后)
+    // 残りの "周|个月|月|年" + (前|后) -> 相対
     final RegExp relativeNumPattern = RegExp(r'([一二三四五六七八九十\d]+)(周|个月|月|年)(前|后)?');
     for (final match in relativeNumPattern.allMatches(text)) {
-      final numStr = match.group(1)!;
-      final unit = match.group(2)!;
-      final direction = match.group(3);
-      final number = _cnNumberToInt(numStr);
-      final isFuture = (direction != '前');
+      String numStr = match.group(1)!;
+      String unit = match.group(2)!;
+      String? direction = match.group(3);
+      int number = _cnNumberToInt(numStr);
+      bool isFuture = (direction != '前'); // "前"なら過去
 
       int daysToMove = 0;
       if (unit.contains('周')) {
@@ -149,14 +157,16 @@ class ChineseDateParser implements Parser {
       } else if (unit.contains('年')) {
         daysToMove = number * 365;
       }
-      final date = isFuture
+      DateTime date = isFuture
           ? referenceDate.add(Duration(days: daysToMove))
           : referenceDate.subtract(Duration(days: daysToMove));
-      results.add(ParsingResult(
-        index: match.start,
-        text: match.group(0)!,
-        component: ParsedComponent(date: date),
-      ));
+      results.add(
+        ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          component: ParsedComponent(date: date),
+        ),
+      );
     }
 
     // ISO8601 など
@@ -171,14 +181,16 @@ class ChineseDateParser implements Parser {
       // ignore
     }
 
-    // (例) "5日", "10号"
-    final RegExp singleDayPattern = RegExp(r'(?<!月)([一二三四五六七八九十\d]+)(日|号)');
+    // 単独 "◯日" or "◯号" => 当月 or 来月
+    final RegExp singleDayPattern = RegExp(
+      r'(?<!月)([一二三四五六七八九十\d]+)(日|号)',
+    );
     for (final match in singleDayPattern.allMatches(text)) {
-      final numStr = match.group(1)!;
-      final day = _cnNumberToInt(numStr);
+      String numStr = match.group(1)!;
+      int day = _cnNumberToInt(numStr);
       if (day <= 0) continue;
 
-      final current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
+      DateTime current = DateTime(referenceDate.year, referenceDate.month, referenceDate.day);
       DateTime candidate = DateTime(current.year, current.month, day);
       if (candidate.isBefore(current)) {
         int nextMonth = current.month + 1;
@@ -189,17 +201,21 @@ class ChineseDateParser implements Parser {
         }
         candidate = DateTime(nextYear, nextMonth, day);
       }
-      results.add(ParsingResult(
-        index: match.start,
-        text: match.group(0)!,
-        component: ParsedComponent(date: candidate),
-      ));
+      results.add(
+        ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          component: ParsedComponent(date: candidate),
+        ),
+      );
     }
 
     return results;
   }
 
-  // -------------- utility -------------
+  // ---------------------------------------
+  // ユーティリティ
+  // ---------------------------------------
   int _weekdayFromString(String weekday) {
     if (weekday.contains("一")) return DateTime.monday;
     if (weekday.contains("二")) return DateTime.tuesday;
@@ -215,12 +231,18 @@ class ChineseDateParser implements Parser {
     final current = DateTime(reference.year, reference.month, reference.day);
     int diff = targetWeekday - current.weekday;
     if (modifier.isEmpty || modifier == '本周') {
-      if (diff <= 0) diff += 7;
+      if (diff <= 0) {
+        diff += 7;
+      }
     } else if (modifier == '下周') {
-      if (diff <= 0) diff += 7;
+      if (diff <= 0) {
+        diff += 7;
+      }
       diff += 7;
     } else if (modifier == '上周') {
-      if (diff >= 0) diff -= 7;
+      if (diff >= 0) {
+        diff -= 7;
+      }
     }
     return current.add(Duration(days: diff));
   }
@@ -249,16 +271,17 @@ class ChineseDateParser implements Parser {
   }
 
   int _cnNumberToInt(String cnNum) {
-    // 半角数字
+    // 半角数字ならそのまま
     if (RegExp(r'^\d+$').hasMatch(cnNum)) {
       final val = int.parse(cnNum);
       return (val >= 1 && val <= 31) ? val : 0;
     }
+
     int result = 0;
     if (cnNum.contains('十')) {
       final parts = cnNum.split('十');
       final front = parts[0];
-      final back = (parts.length > 1) ? parts[1] : '';
+      final back = parts.length > 1 ? parts[1] : '';
 
       int tens = 0;
       if (front.isEmpty) {
@@ -266,10 +289,12 @@ class ChineseDateParser implements Parser {
       } else {
         tens = _singleCnDigit(front);
       }
+
       int ones = 0;
       for (int i = 0; i < back.length; i++) {
         ones += _singleCnDigit(back[i]);
       }
+
       result = tens * 10 + ones;
     } else {
       for (int i = 0; i < cnNum.length; i++) {
@@ -303,45 +328,28 @@ class ChineseDateParser implements Parser {
         return 9;
       case '十':
         return 10;
+      default:
+        return 0;
     }
-    return 0;
   }
 }
 
 // -------------------------------------------------------
-// 2) ChineseTimeParser
-//   - "(\d{1,2}):(\d{1,2})" => 24h
-//   - "(\d{1,2})[点时]((\d{1,2})分)?" => 例 "16点24分", "16时"
-//   - "もっとも近い将来"ロジック
+// 時刻パーサ
+//   - "(\d{1,2}):(\d{1,2})" は not_language と重複するため削除
+//   - 「HH点MM分」「HH时MM分」などは中国語特有なので残す
 // -------------------------------------------------------
 class ChineseTimeParser implements Parser {
   @override
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     final results = <ParsingResult>[];
+    final now = referenceDate;
 
-    // A) コロン区切り
-    final RegExp colonPattern = RegExp(r'\b(\d{1,2}):(\d{1,2})\b');
-    for (final match in colonPattern.allMatches(text)) {
-      final hour = int.parse(match.group(1)!);
-      final minute = int.parse(match.group(2)!);
-      if (hour > 23 || minute > 59) continue;
-
-      var candidate = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
-      if (candidate.isBefore(referenceDate)) {
-        candidate = candidate.add(const Duration(days: 1));
-      }
-      results.add(ParsingResult(
-        index: match.start,
-        text: match.group(0)!,
-        component: ParsedComponent(date: candidate),
-      ));
-    }
-
-    // B) 中国語形式 "HH点MM分", "HH时" など
-    final RegExp timePattern = RegExp(r'(\d{1,2})[点时]((\d{1,2})分)?');
+    // 例: "16点24分", "16时24分", "16点", "16时"
+    final RegExp timePattern = RegExp(r'(\d{1,2})[点时](\d{1,2})?分?');
     for (final match in timePattern.allMatches(text)) {
       final hourStr = match.group(1)!;
-      final minuteStr = match.group(3);
+      final minuteStr = match.group(2);
 
       final hour = int.parse(hourStr);
       int minute = 0;
@@ -350,8 +358,8 @@ class ChineseTimeParser implements Parser {
       }
       if (hour > 23 || minute > 59) continue;
 
-      var candidate = DateTime(referenceDate.year, referenceDate.month, referenceDate.day, hour, minute);
-      if (candidate.isBefore(referenceDate)) {
+      DateTime candidate = DateTime(now.year, now.month, now.day, hour, minute);
+      if (candidate.isBefore(now)) {
         candidate = candidate.add(const Duration(days: 1));
       }
       results.add(
@@ -367,52 +375,9 @@ class ChineseTimeParser implements Parser {
   }
 }
 
-// -------------------------------------------------------
-// 3) ChineseRefiner
-//   - 日付専用 + 時刻専用 の2結果をマージ
-// -------------------------------------------------------
 class ChineseRefiner implements Refiner {
   @override
   List<ParsingResult> refine(List<ParsingResult> results, DateTime referenceDate) {
-    results.sort((a, b) => a.index.compareTo(b.index));
-
-    final merged = <ParsingResult>[];
-    int i = 0;
-    while (i < results.length) {
-      final current = results[i];
-      if (i < results.length - 1) {
-        final next = results[i + 1];
-        if (_isDateOnly(current) && _isTimeOnly(next)) {
-          final dt = DateTime(
-            current.date.year,
-            current.date.month,
-            current.date.day,
-            next.date.hour,
-            next.date.minute,
-            next.date.second,
-          );
-          final mergedText = current.text + next.text;
-          merged.add(ParsingResult(
-            index: current.index,
-            text: mergedText,
-            component: ParsedComponent(date: dt),
-          ));
-          i += 2;
-          continue;
-        }
-      }
-      merged.add(current);
-      i++;
-    }
-
-    return merged;
-  }
-
-  bool _isDateOnly(ParsingResult r) {
-    return (r.date.hour == 0 && r.date.minute == 0 && r.date.second == 0);
-  }
-
-  bool _isTimeOnly(ParsingResult r) {
-    return (r.date.hour != 0 || r.date.minute != 0);
+    return results;
   }
 }
