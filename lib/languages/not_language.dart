@@ -74,7 +74,8 @@ class NonLanguageDateTimeParser implements Parser {
       ));
     }
 
-    // ④ 時刻のみ（数字コロン形式）：例 "16:21" → 参照日の時刻として、もし過ぎていれば翌日
+    // ④ 時刻のみ（数字コロン形式）：例 "14:00" → 参照日の時刻として、もし過ぎていれば翌日
+    // ※ 単語境界は除去して柔軟にマッチさせます。
     RegExp timeOnlyNumeric = RegExp(r'(\d{1,2}):(\d{2})');
     for (final match in timeOnlyNumeric.allMatches(text)) {
       int hour   = int.parse(match.group(1)!);
@@ -92,7 +93,7 @@ class NonLanguageDateTimeParser implements Parser {
       ));
     }
 
-    // ⑤ 時刻のみ（日本語／中国語スタイル）：例 "16時41分" または "16時" → 参照日の最も近い将来の時刻
+    // ⑤ 時刻のみ（日本語／中国語スタイル）：例 "16時41分" または "16時"
     RegExp timeOnlyJP = RegExp(r'(\d{1,2})時(?:\s*(\d{1,2})分)?');
     for (final match in timeOnlyJP.allMatches(text)) {
       int hour   = int.parse(match.group(1)!);

@@ -20,7 +20,7 @@ class JapaneseDateParser implements Parser {
   List<ParsingResult> parse(String text, DateTime referenceDate) {
     List<ParsingResult> results = [];
 
-    // ① 相対表現＋時刻（例："明日12時21分"）
+    // ① 相対表現＋時刻（例："明日23時59分"）
     RegExp relativeDayPattern = RegExp(
         r'(今日|明日|明後日|明々後日|昨日)(?:\s*(\d{1,2})時(?:\s*(\d{1,2})分)?)?'
     );
@@ -73,7 +73,7 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ③ 絶対日付＋時刻（例："2024年2月14日19時31分"、"2月14日"の場合は時刻は0:00）
+    // ③ 絶対日付＋時刻（例："2024年2月14日19時31分"）
     RegExp absoluteDatePattern = RegExp(
         r'(?:(\d{1,4})年)?(\d{1,2})月(\d{1,2})日(?:\s*(\d{1,2})時(?:\s*(\d{1,2})分)?)?'
     );
@@ -121,7 +121,7 @@ class JapaneseDateParser implements Parser {
       ));
     }
 
-    // ⑥ 時刻のみのパターン（例："16時41分" または "16時"）→ 参照日時より未来の最も近いその時刻
+    // ⑥ 時刻のみのパターン（例："16時41分" または "16時"）
     RegExp timeOnlyPattern = RegExp(r'(\d{1,2})時(?:\s*(\d{1,2})分)?');
     for (final match in timeOnlyPattern.allMatches(text)) {
       int hour = int.parse(match.group(1)!);
@@ -138,8 +138,6 @@ class JapaneseDateParser implements Parser {
         component: ParsedComponent(date: candidate, hasTime: match.group(2) != null),
       ));
     }
-
-    // ※（必要に応じ、その他のパターンも追加可能）
 
     return results;
   }

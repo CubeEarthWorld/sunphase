@@ -188,7 +188,7 @@ class EnglishDateParser implements Parser {
       ));
     }
 
-    // ⑨ 追加：時刻のみのパターン（例："16:21"）
+    // ⑨ 追加：時刻のみのパターン（例："16:21"）→ 参照日時より未来の時刻
     RegExp timePattern = RegExp(r'(\d{1,2}):(\d{2})');
     for (final match in timePattern.allMatches(text)) {
       int hour = int.parse(match.group(1)!);
@@ -340,50 +340,28 @@ class EnglishDateParser implements Parser {
   int _enNumberToInt(String word) {
     if (RegExp(r'^\d+$').hasMatch(word)) return int.parse(word);
     switch (word) {
-      case 'zero':
-        return 0;
-      case 'one':
-        return 1;
-      case 'two':
-        return 2;
-      case 'three':
-        return 3;
-      case 'four':
-        return 4;
-      case 'five':
-        return 5;
-      case 'six':
-        return 6;
-      case 'seven':
-        return 7;
-      case 'eight':
-        return 8;
-      case 'nine':
-        return 9;
-      case 'ten':
-        return 10;
-      case 'eleven':
-        return 11;
-      case 'twelve':
-        return 12;
-      case 'thirteen':
-        return 13;
-      case 'fourteen':
-        return 14;
-      case 'fifteen':
-        return 15;
-      case 'sixteen':
-        return 16;
-      case 'seventeen':
-        return 17;
-      case 'eighteen':
-        return 18;
-      case 'nineteen':
-        return 19;
-      case 'twenty':
-        return 20;
-      default:
-        return 0;
+      case 'zero': return 0;
+      case 'one': return 1;
+      case 'two': return 2;
+      case 'three': return 3;
+      case 'four': return 4;
+      case 'five': return 5;
+      case 'six': return 6;
+      case 'seven': return 7;
+      case 'eight': return 8;
+      case 'nine': return 9;
+      case 'ten': return 10;
+      case 'eleven': return 11;
+      case 'twelve': return 12;
+      case 'thirteen': return 13;
+      case 'fourteen': return 14;
+      case 'fifteen': return 15;
+      case 'sixteen': return 16;
+      case 'seventeen': return 17;
+      case 'eighteen': return 18;
+      case 'nineteen': return 19;
+      case 'twenty': return 20;
+      default: return 0;
     }
   }
 }
