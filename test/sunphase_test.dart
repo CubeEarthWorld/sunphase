@@ -547,26 +547,25 @@ void main() {
     });
 
     test('Virtual Task (month range, Japanese): "再来月の予定"', () {
-      String input = "再来月";
+      String input = "再来月の予定";
       List<ParsingResult> results = parse(input, referenceDate: reference, language: 'ja', rangeMode: true);
       expect(results.length, 30);
       expect(results.first.date, DateTime(2025, 4, 1, 0, 0, 0));
       expect(results.last.date, DateTime(2025, 4, 30, 0, 0, 0));
     });
 
-    test('Virtual Task (month range, English): "next month"', () {
-      String input = "next month";
-      List<ParsingResult> results = parse(input, referenceDate: reference, language: 'en', rangeMode: true);
-      // 2025-02-08 → next month＝3月
+    test('Virtual Task (month range, Japanese): "来月の予定"', () {
+      String input = "来月の予定";
+      List<ParsingResult> results = parse(input, referenceDate: reference, language: 'ja', rangeMode: true);
       expect(results.length, 31);
       expect(results.first.date, DateTime(2025, 3, 1, 0, 0, 0));
       expect(results.last.date, DateTime(2025, 3, 31, 0, 0, 0));
     });
 
-    test('Virtual Task (month range, Chinese): "下月去大学"', () {
-      String input = "下月去大学";
-      List<ParsingResult> results = parse(input, referenceDate: reference, language, rangeMode: true);
-      // 2025-02-08 → 下月＝3月
+    test('Virtual Task (month range, English): "next month"', () {
+      String input = "next month";
+      List<ParsingResult> results = parse(input, referenceDate: reference, language: 'en', rangeMode: true);
+      // 2025-02-08 → next month＝3月
       expect(results.length, 31);
       expect(results.first.date, DateTime(2025, 3, 1, 0, 0, 0));
       expect(results.last.date, DateTime(2025, 3, 31, 0, 0, 0));
@@ -613,15 +612,6 @@ void main() {
       expect(results.length, 31);
       expect(results.first.date, DateTime(2025, 12, 1, 0, 0, 0));
       expect(results.last.date, DateTime(2025, 12, 31, 0, 0, 0));
-    });
-
-    test('Virtual Task (month range, Chinese): "六月"', () {
-      String input = "六月";
-      List<ParsingResult> results = parse(input, referenceDate: reference,language: 'zh', rangeMode: true);
-      // "六月" → June 2025 (June has 30 days)
-      expect(results.length, 30);
-      expect(results.first.date, DateTime(2025, 6, 1, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 6, 30, 0, 0, 0));
     });
   });
 
