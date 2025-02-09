@@ -10,7 +10,7 @@ void main() {
   group('Additional Sunphase Parser Tests', () {
 
     test('English: Today', () {
-      String input = "Today";
+      String input = "Today買い物をする";
       List<ParsingResult> results = parse(input, referenceDate: reference);
       DateTime expected = DateTime(2025, 2, 8, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.isNotEmpty ? results.first.date : 'No result'}\nExpected: $expected");
@@ -19,7 +19,7 @@ void main() {
     });
 
     test('English: Tomorrow', () {
-      String input = "Tomorrow";
+      String input = "Tomorrow学校に行く";
       List<ParsingResult> results = parse(input, referenceDate: reference);
       DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.isNotEmpty ? results.first.date : 'No result'}\nExpected: $expected");
@@ -46,7 +46,7 @@ void main() {
     });
 
     test('Japanese: 時刻のみ "21時31分"', () {
-      String input = "21時31分";
+      String input = "21時31分カフェでお茶をする";
       List<ParsingResult> results = parse(input, referenceDate: reference);
       DateTime expected = DateTime(2025, 2, 8, 21, 31, 0);
       print("\nInput: $input\nOutput: ${results.isNotEmpty ? results.first.date : 'No result'}\nExpected: $expected");
@@ -145,7 +145,7 @@ void main() {
     });
 
     test('Chinese: 今天', () {
-      String input = "今天";
+      String input = "今天看私服";
       List<ParsingResult> results = parse(input, referenceDate: reference);
       DateTime expected = DateTime(2025, 2, 8, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.isNotEmpty ? results.first.date : 'No result'}\nExpected: $expected");
