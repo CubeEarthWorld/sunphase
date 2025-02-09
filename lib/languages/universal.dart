@@ -9,7 +9,8 @@ class UniversalParser extends BaseParser {
     List<ParsingResult> results = [];
     // ISO 8601 format detection
     RegExp isoExp = RegExp(
-        r'\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+\-]\d{2}:?\d{2})?');
+        r'\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+\-]\d{2}:?\d{2})?'
+    );
     Iterable<RegExpMatch> isoMatches = isoExp.allMatches(text);
     for (var match in isoMatches) {
       String dateStr = match.group(0)!;
@@ -17,10 +18,9 @@ class UniversalParser extends BaseParser {
         DateTime dt = DateTime.parse(dateStr);
         results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
       } catch (e) {
-        // Ignore errors.
+        // エラーは無視
       }
     }
-
     // Alternative format: "Sat Aug 17 2013 18:40:39 GMT+0900 (JST)"
     RegExp altExp = RegExp(r'\w{3}\s+\w{3}\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\s+GMT[+\-]\d{4}(?:\s*\(.*\))?');
     Iterable<RegExpMatch> altMatches = altExp.allMatches(text);
@@ -30,10 +30,9 @@ class UniversalParser extends BaseParser {
         DateTime dt = DateTime.parse(dateStr);
         results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
       } catch (e) {
-        // Ignore.
+        // 無視
       }
     }
-
     // Range expression: e.g., "17 August 2013 - 19 August 2013"
     RegExp rangeExp = RegExp(
         r'(\d{1,2}\s*(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[\s,]+\d{4})\s*-\s*(\d{1,2}\s*(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[\s,]+\d{4})',
@@ -52,8 +51,7 @@ class UniversalParser extends BaseParser {
         }
       }
     }
-
-    // Add new regex for additional formats (2012-12-4 12:31:00, 4/7, 2041/7/1, etc.)
+    // Additional formats: e.g., "2012-12-4 12:31:00", "4/7", "2041/7/1", etc.
     RegExp dateFormats = RegExp(
         r'(\d{1,4}[/-]\d{1,2}[/-]\d{1,4})\s*(\d{1,2}:\d{2}(:\d{2})?)?',
         caseSensitive: false);
@@ -66,10 +64,9 @@ class UniversalParser extends BaseParser {
           results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
         }
       } catch (e) {
-        // Ignore errors.
+        // エラーは無視
       }
     }
-
     return results;
   }
 

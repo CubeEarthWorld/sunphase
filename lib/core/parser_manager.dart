@@ -1,12 +1,11 @@
 // lib/core/parser_manager.dart
-
 import 'base_parser.dart';
 import 'parsing_context.dart';
 import 'result.dart';
 import '../languages/en.dart';
 import '../languages/ja.dart';
 import '../languages/zh.dart';
-import '../languages/universal.dart';  // UniversalParsersを使うための import を追加
+import '../languages/universal.dart';  // UniversalParsers を利用するための import
 import '../modes/range_mode.dart';
 import '../utils/timezone_utils.dart';
 
@@ -36,29 +35,47 @@ class ParserManager {
       results.addAll(parser.parse(text, context));
     }
 
-    // rangeMode が true の場合、範囲指定の結果を生成
     if (rangeMode) {
-      results = RangeMode.generate(results, context);
+      // range_mode の場合、まず RangeMode.generate() で展開する
+      List<ParsingResult> rangeResults = RangeMode.generate(results, context);
+      if (rangeResults.isNotEmpty) {
+        // 同一の元結果（ここでは index でグループ化）ごとにグループ化し、
+        // グループ内の項目数が最大のグループを採用する
+        Map<int, List<ParsingResult>> groups = {};
+        for (var r in rangeResults) {
+          groups.putIfAbsent(r.index, () => []).add(r);
+        }
+        List<ParsingResult> selected = groups.values.reduce((a, b) =>
+        a.length >= b.length ? a : b);
+        results = selected;
+      } else {
+        results = rangeResults;
+      }
+    } else {
+      // range_mode が false の場合は、すでにマージ処理（認識テキストが最も長いものを採用）
+      // （前回のコード例などと同様の処理を行う）
+      if (results.isNotEmpty) {
+        ParsingResult merged = results.reduce(
+                (a, b) => a.text.length >= b.text.length ? a : b);
+        results = [merged];
+      }
     }
 
     // タイムゾーンの補正を適用
     results = TimezoneUtils.applyTimezone(results, context.timezoneOffset);
-
     return results;
   }
 
   /// 言語指定に応じて利用するパーサーを返す
   static List<BaseParser> _getParsersForLanguage(String? language) {
-    // 言語が指定されない場合は、すべてのパーサーを統合
     if (language == null) {
       return [
         ...EnParsers.parsers,
         ...JaParsers.parsers,
         ...ZhParsers.parsers,
-        ...UniversalParsers.parsers,  // Universalパーサーも併用
+        ...UniversalParsers.parsers,
       ];
     }
-
     switch (language) {
       case 'en':
         return EnParsers.parsers;
@@ -67,7 +84,6 @@ class ParserManager {
       case 'zh':
         return ZhParsers.parsers;
       default:
-      // サポート外言語の場合はUniversalのみ利用など、必要に応じて調整
         return UniversalParsers.parsers;
     }
   }
