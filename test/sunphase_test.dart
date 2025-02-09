@@ -19,6 +19,24 @@ void main() {
       expect(results.first.date, expected);
     });
 
+    test('Japanese: 明日', () {
+      String input = "明日買い物をする";
+      List<ParsingResult> results = parse(input, referenceDate: reference);
+      DateTime expected = DateTime(2025, 2, 8, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '明日'");
+      expect(results.first.date, expected);
+    });
+
+    test('Chiniese: 明天', () {
+      String input = "明天";
+      List<ParsingResult> results = parse(input, referenceDate: reference);
+      DateTime expected = DateTime(2025, 2, 8, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '明天'");
+      expect(results.first.date, expected);
+    });
+
     test('English: Tomorrow', () {
       String input = "Tomorrow学校に行く";
       List<ParsingResult> results = parse(input, referenceDate: reference);

@@ -60,28 +60,22 @@ class EnRelativeParser extends BaseParser {
   static final RegExp _relativePattern =
   RegExp(r'(\d+|[a-z]+)\s*(days|weeks)\s*(from now|later|ago)', caseSensitive: false);
 
-  // 新規：相対表現と時刻を同時に解析（例："tomorrow at 09:00"）
+  // Process expressions such as "tomorrow at 3:00"
   void _parseRelativeWithTime(String text, DateTime ref, List<ParsingResult> results) {
     final regex = RegExp(r'\b(tomorrow|today|yesterday)\s*(?:at\s*)?(\d{1,2})(?::(\d{2}))?\b', caseSensitive: false);
     for (final match in regex.allMatches(text)) {
-      String rel = match.group(1)!;
+      String word = match.group(1)!;
       int hour = int.parse(match.group(2)!);
       int minute = match.group(3) != null ? int.parse(match.group(3)!) : 0;
-      DateTime base;
-      switch (rel.toLowerCase()) {
-        case 'today':
-          base = DateTime(ref.year, ref.month, ref.day);
-          break;
-        case 'tomorrow':
-          base = DateTime(ref.year, ref.month, ref.day).add(Duration(days: 1));
-          break;
-        case 'yesterday':
-          base = DateTime(ref.year, ref.month, ref.day).subtract(Duration(days: 1));
-          break;
-        default:
-          base = ref;
-          break;
+      int offset;
+      if (word.toLowerCase() == 'tomorrow') {
+        offset = 1;
+      } else if (word.toLowerCase() == 'yesterday') {
+        offset = -1;
+      } else {
+        offset = 0;
       }
+      DateTime base = ref.add(Duration(days: offset));
       DateTime date = DateTime(base.year, base.month, base.day, hour, minute);
       results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date));
     }
@@ -138,10 +132,7 @@ class EnRelativeParser extends BaseParser {
       'next month': () {
         int month = ref.month + 1;
         int year = ref.year;
-        if (month > 12) {
-          month = 1;
-          year++;
-        }
+        if (month > 12) { month = 1; year++; }
         return DateTime(year, month, 1);
       },
     };
@@ -165,10 +156,7 @@ class EnRelativeParser extends BaseParser {
         if (diff == 0) diff = 7;
         final targetDate = DateTime(ref.year, ref.month, ref.day)
             .add(Duration(days: diff));
-        results.add(ParsingResult(
-            index: match.start,
-            text: match.group(0)!,
-            date: targetDate));
+        results.add(ParsingResult(index: match.start, text: match.group(0)!, date: targetDate));
       }
     });
     for (final entry in EnglishDateUtils.weekdayMap.entries) {
@@ -176,13 +164,11 @@ class EnRelativeParser extends BaseParser {
     }
   }
 
-  void _parseNextLastWeekday(String text, DateTime ref, String weekday,
-      int weekdayValue, List<ParsingResult> results) {
+  void _parseNextLastWeekday(String text, DateTime ref, String weekday, int weekdayValue, List<ParsingResult> results) {
     final nextPhrase = 'next ' + weekday;
     final lastPhrase = 'last ' + weekday;
     final regexNext = RegExp(r'\b' + RegExp.escape(nextPhrase) + r'\b', caseSensitive: false);
     final regexLast = RegExp(r'\b' + RegExp.escape(lastPhrase) + r'\b', caseSensitive: false);
-
     for (final match in regexNext.allMatches(text)) {
       int current = ref.weekday;
       int target = weekdayValue;
@@ -212,20 +198,12 @@ class EnRelativeParser extends BaseParser {
   void _parseRelativeExpressions(String text, DateTime ref, List<ParsingResult> results) {
     for (final match in _relativePattern.allMatches(text)) {
       final numStr = match.group(1)!;
-      final value = int.tryParse(numStr) ??
-          (EnglishDateUtils.numberWords[numStr] ?? 0);
+      final value = int.tryParse(numStr) ?? (EnglishDateUtils.numberWords[numStr] ?? 0);
       final unit = match.group(2)!;
       final direction = match.group(3)!;
-      final delta = unit.startsWith('day')
-          ? Duration(days: value)
-          : Duration(days: value * 7);
-      final resultDate = (direction == 'ago')
-          ? ref.subtract(delta)
-          : ref.add(delta);
-      results.add(ParsingResult(
-          index: match.start,
-          text: match.group(0)!,
-          date: resultDate));
+      final delta = unit.startsWith('day') ? Duration(days: value) : Duration(days: value * 7);
+      final resultDate = (direction == 'ago') ? ref.subtract(delta) : ref.add(delta);
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: resultDate));
     }
   }
 }
@@ -236,11 +214,19 @@ class EnAbsoluteParser extends BaseParser {
       r'([a-z]+)[\s,]+(\d{1,2})(?:st|nd|rd|th)?(?:[\s,]+(\d{4}))?',
       caseSensitive: false);
   static final RegExp _ordinalPattern = RegExp(
-      r'(\d{1,2})(?:st|nd|rd|th)(?:\s*,?\s*(\d{4}))?'
-  );
-  static final RegExp _slashDatePattern = RegExp(r'\b(\d{1,2})/(\d{1,2})(?:/(\d{2,4}))?\b');
-  static final RegExp _dmyPattern = RegExp(r'\b(\d{1,2})(?:st|nd|rd|th)\s+([a-z]+)\s+(\d{4})\b', caseSensitive: false);
-  static final RegExp _monthNamePattern = RegExp(r'\b(january|february|march|april|may|june|july|august|september|october|november|december)\b', caseSensitive: false);
+      r'(\d{1,2})(?:st|nd|rd|th)(?:\s*,?\s*(\d{4}))?',
+      caseSensitive: false);
+  // New regex for Y/M/D format (three parts)
+  static final RegExp _slashYMDPattern = RegExp(
+      r'\b(\d{1,4})[/-](\d{1,2})[/-](\d{1,4})(?:\s*(?:at\s*)?(\d{1,2}:\d{2}(?::\d{2})?))?\b',
+      caseSensitive: false);
+  // New regex for M/D format (two parts)
+  static final RegExp _slashMDPattern = RegExp(
+      r'\b(\d{1,2})[/-](\d{1,2})(?:\s*(?:at\s*)?(\d{1,2}:\d{2}(?::\d{2})?))?\b',
+      caseSensitive: false);
+  static final RegExp _dmyPattern = RegExp(
+      r'\b(\d{1,2})(?:st|nd|rd|th)?\s+([a-z]+)\s+(\d{4})(?:\s*(?:at)?\s*(\d{1,2}:\d{2}(?::\d{2})?))?\b',
+      caseSensitive: false);
 
   @override
   List<ParsingResult> parse(String text, ParsingContext context) {
@@ -249,14 +235,13 @@ class EnAbsoluteParser extends BaseParser {
     final ref = context.referenceDate;
     _parseFullDates(lowerText, text, context, results);
     _parseOrdinalDates(lowerText, text, context, results);
-    _parseSlashDates(text, context, results);
+    _parseSlashYMD(text, context, results);
+    _parseSlashMD(text, context, results);
     _parseDmyDates(text, context, results);
-    _parseMonthName(text, context, results);
     return results;
   }
 
-  void _parseFullDates(String lowerText, String originalText,
-      ParsingContext context, List<ParsingResult> results) {
+  void _parseFullDates(String lowerText, String originalText, ParsingContext context, List<ParsingResult> results) {
     for (final match in _fullDatePattern.allMatches(lowerText)) {
       final monthStr = match.group(1)!;
       if (!EnglishDateUtils.monthMap.containsKey(monthStr.toLowerCase())) continue;
@@ -264,40 +249,57 @@ class EnAbsoluteParser extends BaseParser {
       final parsedDate = _parseEnglishDate(dateStr, context);
       if (parsedDate != null) {
         final adjustedDate = EnglishDateUtils.adjustDateTimeWithTime(parsedDate, originalText);
-        results.add(ParsingResult(
-            index: match.start,
-            text: dateStr,
-            date: adjustedDate));
+        results.add(ParsingResult(index: match.start, text: dateStr, date: adjustedDate));
       }
     }
   }
 
-  void _parseOrdinalDates(String lowerText, String originalText,
-      ParsingContext context, List<ParsingResult> results) {
+  void _parseOrdinalDates(String lowerText, String originalText, ParsingContext context, List<ParsingResult> results) {
     for (final match in _ordinalPattern.allMatches(lowerText)) {
       final dateStr = match.group(0)!;
       final parsedDate = _parseEnglishDate(dateStr, context);
       if (parsedDate != null) {
         final adjustedDate = EnglishDateUtils.adjustDateTimeWithTime(parsedDate, originalText);
-        results.add(ParsingResult(
-            index: match.start,
-            text: dateStr,
-            date: adjustedDate));
+        results.add(ParsingResult(index: match.start, text: dateStr, date: adjustedDate));
       }
     }
   }
 
-  void _parseSlashDates(String text, ParsingContext context, List<ParsingResult> results) {
-    final ref = context.referenceDate;
-    for (final match in _slashDatePattern.allMatches(text)) {
+  void _parseSlashYMD(String text, ParsingContext context, List<ParsingResult> results) {
+    for (final match in _slashYMDPattern.allMatches(text)) {
+      int year = int.parse(match.group(1)!);
+      int month = int.parse(match.group(2)!);
+      int day = int.parse(match.group(3)!);
+      if (year < 100) year += 2000;
+      DateTime date = DateTime(year, month, day);
+      if (match.group(4) != null) {
+        List<String> timeParts = match.group(4)!.split(':');
+        int hour = int.parse(timeParts[0]);
+        int minute = int.parse(timeParts[1]);
+        date = DateTime(year, month, day, hour, minute);
+      }
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date));
+    }
+  }
+
+  void _parseSlashMD(String text, ParsingContext context, List<ParsingResult> results) {
+    for (final match in _slashMDPattern.allMatches(text)) {
+      // 過去のマッチと重複しないように判定
+      if (_slashYMDPattern.hasMatch(match.group(0)!)) continue;
       int month = int.parse(match.group(1)!);
       int day = int.parse(match.group(2)!);
-      int year = ref.year;
-      if (match.group(3) != null) {
-        year = int.parse(match.group(3)!);
-        if (year < 100) year += 2000;
+      int year = context.referenceDate.year;
+      DateTime date = DateTime(year, month, day);
+      if (!date.isAfter(context.referenceDate)) {
+        date = DateTime(year + 1, month, day);
       }
-      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: DateTime(year, month, day)));
+      if (match.group(3) != null) {
+        List<String> timeParts = match.group(3)!.split(':');
+        int hour = int.parse(timeParts[0]);
+        int minute = int.parse(timeParts[1]);
+        date = DateTime(date.year, date.month, date.day, hour, minute);
+      }
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date));
     }
   }
 
@@ -307,30 +309,23 @@ class EnAbsoluteParser extends BaseParser {
       String monthStr = match.group(2)!;
       int month = EnglishDateUtils.monthMap[monthStr.toLowerCase()]!;
       int year = int.parse(match.group(3)!);
-      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: DateTime(year, month, day)));
-    }
-  }
-
-  void _parseMonthName(String text, ParsingContext context, List<ParsingResult> results) {
-    final ref = context.referenceDate;
-    for (final match in _monthNamePattern.allMatches(text)) {
-      String monthStr = match.group(1)!;
-      int month = EnglishDateUtils.monthMap[monthStr.toLowerCase()]!;
-      int year = ref.month <= month ? ref.year : ref.year + 1;
-      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: DateTime(year, month, 1)));
+      DateTime date = DateTime(year, month, day);
+      if (match.group(4) != null) {
+        List<String> timeParts = match.group(4)!.split(':');
+        int hour = int.parse(timeParts[0]);
+        int minute = int.parse(timeParts[1]);
+        date = DateTime(year, month, day, hour, minute);
+      }
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date));
     }
   }
 
   DateTime? _parseEnglishDate(String dateStr, ParsingContext context) {
     final lowerDateStr = dateStr.toLowerCase().trim();
     final fullMatch = _fullDatePattern.firstMatch(lowerDateStr);
-    if (fullMatch != null) {
-      return _parseFullDateMatch(fullMatch, context);
-    }
+    if (fullMatch != null) return _parseFullDateMatch(fullMatch, context);
     final ordinalMatch = _ordinalPattern.firstMatch(lowerDateStr);
-    if (ordinalMatch != null) {
-      return _parseOrdinalMatch(ordinalMatch, context);
-    }
+    if (ordinalMatch != null) return _parseOrdinalMatch(ordinalMatch, context);
     return null;
   }
 
@@ -350,10 +345,7 @@ class EnAbsoluteParser extends BaseParser {
     var candidate = DateTime(year, month, day);
     if (candidate.isBefore(context.referenceDate)) {
       month++;
-      if (month > 12) {
-        month = 1;
-        year++;
-      }
+      if (month > 12) { month = 1; year++; }
       candidate = DateTime(year, month, day);
     }
     return candidate;

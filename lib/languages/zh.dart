@@ -60,9 +60,7 @@ abstract class ChineseParserBase extends BaseParser {
     if (period.contains("下午") || period.contains("晚上")) {
       return hour < 12 ? hour + 12 : hour;
     }
-    if (period.contains("中午")) {
-      return 12;
-    }
+    // 对于“中午”、“上午”、“早上”均认为为上午（hour不变）
     return hour;
   }
 
@@ -155,9 +153,8 @@ class ZhRelativeParser extends ChineseParserBase {
     return ParsingResult(index: match.start, text: match.group(0)!, date: date);
   }
 
-  // 新規：星期＋时刻の複合表現（例："周五下午3点"）
   void _parseWeekdayWithTime(String text, DateTime ref, List<ParsingResult> results) {
-    final regex = RegExp(r'[星期周]([一二三四五六天日])\s*(上午|中午|下午|晚上)?\s*(\d{1,2})(?:[点时])(?:\s*(\d{1,2})分)?', caseSensitive: false);
+    final regex = RegExp(r'[星期周]([一二三四五六天日])\s*(上午|中午|下午|晚上|早上)?\s*(\d{1,2})(?:[点时])(?:\s*(\d{1,2})分)?', caseSensitive: false);
     for (final match in regex.allMatches(text)) {
       int target = ChineseParserBase.weekdayMap[match.group(1)!]!;
       int diff = (target - ref.weekday + 7) % 7;
@@ -176,9 +173,9 @@ class ZhRelativeParser extends ChineseParserBase {
 
 /// Parser for absolute expressions in Chinese.
 class ZhAbsoluteParser extends ChineseParserBase {
-  // 更新：允许 [日号] のどちらも許容、かつ optionally period とコロン表記をサポート
+  // 更新：允许 "日" と "号" 両方、さらに optionally period とコロン表記をサポート
   static final RegExp _fullDatePattern = RegExp(
-      r'(?:(明年|去年|今年))?(\d{1,2})月(\d{1,2})[日号](?:\s*(上午|中午|下午|晚上)?\s*(\d{1,2})(?::(\d{2}))?(?:分)?)?'
+      r'(?:(明年|去年|今年))?(\d{1,2})月(\d{1,2})[日号](?:\s*(上午|中午|下午|晚上))?(?:\s*(\d{1,2})(?::(\d{2}))?(?:分)?)?'
   );
 
   @override
@@ -242,7 +239,7 @@ class ZhAbsoluteParser extends ChineseParserBase {
     if (match != null) {
       int day = int.parse(match.group(1)!);
       DateTime candidate = DateTime(ref.year, ref.month, day);
-      if (!candidate.isAfter(DateTime(ref.year, ref.month, ref.day, 0, 0, 0))) {
+      if (!candidate.isAfter(DateTime(ref.year, ref.month, ref.day))) {
         candidate = DateTime(ref.year, ref.month + 1, day);
         if (candidate.month == 13) candidate = DateTime(ref.year + 1, 1, day);
       }
@@ -255,7 +252,7 @@ class ZhAbsoluteParser extends ChineseParserBase {
 /// Parser for time-only expressions in Chinese.
 class ZhTimeOnlyParser extends ChineseParserBase {
   static final RegExp _timeReg = RegExp(
-      r'([一二三四五六七八九十]+月[一二三四五六七八九十]+号)?\s*(上午|中午|下午|晚上)?\s*(\d{1,2}|[一二三四五六七八九十]+)\s*[点时](?:\s*(\d{1,2}|[一二三四五六七八九十]+))?分?'
+      r'([一二三四五六七八九十]+月[一二三四五六七八九十]+号)?\s*(上午|中午|下午|晚上|早上)?\s*(\d{1,2}|[一二三四五六七八九十]+)\s*[点时](?:\s*(\d{1,2}|[一二三四五六七八九十]+))?分?'
   );
 
   @override
@@ -293,7 +290,6 @@ class ZhTimeOnlyParser extends ChineseParserBase {
   }
 }
 
-/// 中文解析器集合
 class ZhParsers {
   static final List<BaseParser> parsers = [
     ZhRelativeParser(),
