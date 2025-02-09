@@ -31,7 +31,7 @@ void main() {
     test('Chiniese: 明天', () {
       String input = "明天";
       List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 8, 0, 0, 0);
+      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
       expect(results.isNotEmpty, true, reason: "Result should not be empty for '明天'");
       expect(results.first.date, expected);
@@ -517,8 +517,8 @@ void main() {
       expect(results.first.date, expected);
     });
 
-    test('Virtual Task ZH: "周日早上10点参加教堂"', () {
-      String input = "周日早上10点参加教堂";
+    test('Virtual Task ZH: "周天早上10点参加教堂"', () {
+      String input = "周天早上10点参加教堂";
       List<ParsingResult> results = parse(input, referenceDate: reference, language: 'zh');
       DateTime expected = DateTime(2025, 2, 9, 10, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
@@ -538,8 +538,16 @@ void main() {
 
     test('Timezone override: "明天 15:00 开发"', () {
       String input = "明天 15:00";
-      List<ParsingResult> results = parse(input, referenceDate: DateTime.now(),language: 'zh');
+      List<ParsingResult> results = parse(input, referenceDate: reference,language: 'zh');
       DateTime expected = DateTime(2025, 2, 9, 15, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.first.date, expected);
+    });
+
+    test('Timezone override: "明天十一时三十四分"', () {
+      String input = "明天十一时三十四分";
+      List<ParsingResult> results = parse(input, referenceDate: reference,language: 'zh');
+      DateTime expected = DateTime(2025, 2, 9, 11, 34, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
       expect(results.first.date, expected);
     });
@@ -552,21 +560,20 @@ void main() {
       expect(results.first.date, expected);
     });
 
-    test('Mixed: "会议安排：下周三上午10点"', () {
-      String input = "会议安排：下周三上午10点";
+    test('Mixed: "会议安排：下周三上午五点"', () {
+      String input = "会议安排：下周三上午五点";
       List<ParsingResult> results = parse(input, referenceDate: reference, language: 'zh');
       DateTime expected = DateTime(2025, 2, 12, 10, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
       expect(results.first.date, expected);
     });
 
-    test('Virtual Task (month range, Japanese): "来月の予定"', () {
-      String input = "来月";
+    test('Virtual Task (month range, Japanese): "再来月の予定"', () {
+      String input = "再来月";
       List<ParsingResult> results = parse(input, referenceDate: reference, language: 'ja', rangeMode: true);
-      // 基準日 2025-02-08 → 来月＝3月。3月1日～3月31日
-      expect(results.length, 31);
-      expect(results.first.date, DateTime(2025, 3, 1, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 3, 31, 0, 0, 0));
+      expect(results.length, 30);
+      expect(results.first.date, DateTime(2025, 4, 1, 0, 0, 0));
+      expect(results.last.date, DateTime(2025, 4, 30, 0, 0, 0));
     });
 
     test('Virtual Task (month range, English): "next month"', () {

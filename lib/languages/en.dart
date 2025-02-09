@@ -206,21 +206,6 @@ class EnRelativeParser extends BaseParser {
       results.add(ParsingResult(index: match.start, text: match.group(0)!, date: resultDate));
     }
   }
-
-  // 新規：月名単体の表現（例："march"）
-  void _parseMonthNameOnly(String text, ParsingContext context, List<ParsingResult> results) {
-    final regex = RegExp(r'\b(january|february|march|april|may|june|july|august|september|october|november|december)\b', caseSensitive: false);
-    for (final match in regex.allMatches(text)) {
-      String monthStr = match.group(1)!;
-      int month = EnglishDateUtils.monthMap[monthStr.toLowerCase()]!;
-      int year = context.referenceDate.year;
-      if (month < context.referenceDate.month) {
-        year++;
-      }
-      DateTime date = DateTime(year, month, 1);
-      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date, rangeType: "month"));
-    }
-  }
 }
 
 /// Parser for absolute date expressions in English.
@@ -245,7 +230,6 @@ class EnAbsoluteParser extends BaseParser {
   List<ParsingResult> parse(String text, ParsingContext context) {
     final results = <ParsingResult>[];
     final lowerText = text.toLowerCase();
-    final ref = context.referenceDate;
     _parseFullDates(lowerText, text, context, results);
     _parseOrdinalDates(lowerText, text, context, results);
     _parseSlashYMD(text, context, results);

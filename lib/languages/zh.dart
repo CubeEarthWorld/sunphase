@@ -44,8 +44,7 @@ class ChineseNumberUtil {
 
 abstract class ChineseParserBase extends BaseParser {
   static const Map<String, int> weekdayMap = {
-    "一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6,
-    "日": 7, "天": 7,
+    "一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "天": 7,
   };
 
   DateTime adjustToFuture(DateTime date, DateTime reference) {
@@ -165,12 +164,12 @@ class ZhRelativeParser extends ChineseParserBase {
 
   List<ParsingResult> _parseWeekExpressions(String text, DateTime ref) {
     List<ParsingResult> results = [];
-    final nextWeekPattern = RegExp(r'下周[星期周]?([一二三四五六天日])');
+    final nextWeekPattern = RegExp(r'下周[星期周]?([一二三四五六天])');
     var nextWeekMatch = nextWeekPattern.firstMatch(text);
     if (nextWeekMatch != null) {
       results.add(_parseWeekdayExpression(nextWeekMatch, ref, true));
     }
-    final thisWeekPattern = RegExp(r'[星期周]([一二三四五六天日])');
+    final thisWeekPattern = RegExp(r'[星期周]([一二三四五六天])');
     var thisWeekMatch = thisWeekPattern.firstMatch(text);
     if (thisWeekMatch != null) {
       results.add(_parseWeekdayExpression(thisWeekMatch, ref, false));
@@ -190,7 +189,7 @@ class ZhRelativeParser extends ChineseParserBase {
   }
 
   void _parseWeekdayWithTime(String text, DateTime ref, List<ParsingResult> results) {
-    final regex = RegExp(r'[星期周]([一二三四五六天日])\s*(上午|中午|下午|晚上|早上)?\s*(\d{1,2})(?:[点时])(?:\s*(\d{1,2})分)?', caseSensitive: false);
+    final regex = RegExp(r'[星期周]([一二三四五六天])\s*(上午|中午|下午|晚上|早上)?\s*(\d{1,2})(?:[点时])(?:\s*(\d{1,2})分)?', caseSensitive: false);
     for (final match in regex.allMatches(text)) {
       int target = ChineseParserBase.weekdayMap[match.group(1)!]!;
       int diff = (target - ref.weekday + 7) % 7;
@@ -210,7 +209,7 @@ class ZhRelativeParser extends ChineseParserBase {
 /// Parser for absolute expressions in Chinese.
 class ZhAbsoluteParser extends ChineseParserBase {
   static final RegExp _fullDatePattern = RegExp(
-      r'(?:(明年|去年|今年))?(\d{1,2})月(\d{1,2})[日号](?:\s*(上午|中午|下午|晚上))?(?:\s*(\d{1,2})(?::(\d{2}))?(?:分)?)?'
+      r'(?:(明年|去年|今年))?(\d{1,2})月(\d{1,2})[号](?:\s*(上午|中午|下午|晚上))?(?:\s*(\d{1,2})(?::(\d{2}))?(?:分)?)?'
   );
 
   @override
@@ -222,7 +221,7 @@ class ZhAbsoluteParser extends ChineseParserBase {
     _parseRelativeMonthDay(text, ref, results);
     _parseDayOnly(text, ref, results);
     // 对于“◯月”（仅月数字）表达的支持，如 "2月"、"3月"
-    final RegExp monthOnly = RegExp(r'([0-9一二三四五六七八九十]+)月(?![日号])');
+    final RegExp monthOnly = RegExp(r'([0-9一二三四五六七八九十]+)月(?![号])');
     for (final match in monthOnly.allMatches(text)) {
       int month = ChineseNumberUtil.parse(match.group(1)!);
       int year = ref.year;
@@ -260,7 +259,7 @@ class ZhAbsoluteParser extends ChineseParserBase {
   }
 
   void _parseKanjiDates(String text, DateTime ref, List<ParsingResult> results) {
-    final pattern = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[日号]');
+    final pattern = RegExp(r'([一二三四五六七八九十]+)月([一二三四五六七八九十]+)[号]');
     for (final match in pattern.allMatches(text)) {
       int month = ChineseNumberUtil.parse(match.group(1)!);
       int day = ChineseNumberUtil.parse(match.group(2)!);
@@ -271,7 +270,7 @@ class ZhAbsoluteParser extends ChineseParserBase {
   }
 
   void _parseRelativeMonthDay(String text, DateTime ref, List<ParsingResult> results) {
-    final exp = RegExp(r'下个月(\d{1,2})[日号]');
+    final exp = RegExp(r'下个月(\d{1,2})[号]');
     RegExpMatch? match = exp.firstMatch(text);
     if (match != null) {
       int day = int.parse(match.group(1)!);
@@ -281,7 +280,7 @@ class ZhAbsoluteParser extends ChineseParserBase {
   }
 
   void _parseDayOnly(String text, DateTime ref, List<ParsingResult> results) {
-    final exp = RegExp(r'(\d{1,2})[日号]');
+    final exp = RegExp(r'(\d{1,2})[号]');
     RegExpMatch? match = exp.firstMatch(text);
     if (match != null) {
       int day = int.parse(match.group(1)!);

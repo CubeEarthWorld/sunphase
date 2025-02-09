@@ -24,56 +24,44 @@ void main() {
 
   // 日付を解析
   List<ParsingResult> results = parse('Today');
-  print(results);
+  print(results);//[[0] "today" -> 2025-02-09 00:00:00.000]
 
   // 時間を解析
   List<ParsingResult> results_time = parse('10:10');
-  print(results_time);
+  print(results_time);//[[0] "10:10" -> 2025-02-10 10:10:00.000]
 
   // 日時を解析
   List<ParsingResult> results_data = parse('march 7 10:10');
-  print(results_data);
+  print(results_data);//[[0] "march 7" -> 2025-03-07 10:10:00.000]
 
   // 日本語で日時を解析
   List<ParsingResult> results_data_ja = parse('明日12時14分');
-  print(results_data_ja);
+  print(results_data_ja);//[[0] "明日12時14分" -> 2025-02-10 12:14:00.000]
 
   // 中国語で日時を解析
   List<ParsingResult> results_data_zh = parse('三月七号上午九点');
-  print(results_data_zh);
+  print(results_data_zh);//[[0] "三月七号上午九点" -> 2025-03-07 09:00:00.000]
 
   // 英語で日付を解析
   List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
-  print(resultsEn);
+  print(resultsEn);//[[0] "tomorrow" -> 2025-02-10 00:00:00.000]
 
   // 中国語で日付を解析
   List<ParsingResult> resultsJa = parse('三天后', language: 'zh');
-  print(resultsJa);
+  print(resultsJa);//[[0] "三天后" -> 2025-02-12 21:13:33.382038]
 
   // 特定の基準日で日付を解析
   List<ParsingResult> resultsRef = parse('Next Tuesday', referenceDate: DateTime(2021, 2, 4));
-  print(resultsRef);
+  print(resultsRef);//[[0] "next tuesday" -> 2021-02-09 00:00:00.000]
 
   // 範囲モードで日付を解析
   List<ParsingResult> resultsRange = parse('Next week', rangeMode: true);
-  print(resultsRange);
+  print(resultsRange);//[[0] "next week" -> 2025-02-10 00:00:00.000, [0] "next week" -> 2025-02-11 00:00:00.000, [0] "next week" -> 2025-02-12 00:00:00.000, [0] "next week" -> 2025-02-13 00:00:00.000, [0] "next week" -> 2025-02-14 00:00:00.000, [0] "next week" -> 2025-02-15 00:00:00.000, [0] "next week" -> 2025-02-16 00:00:00.000]
 
   // 特定のタイムゾーンで日付を解析。タイムゾーンは、UTCからの分単位オフセットを表す文字列として指定する必要があります。例：UTC+8の場合は "480"。
   List<ParsingResult> resultsTimezone = parse('明天', timezone: '480');
-  print(resultsTimezone);
+  print(resultsTimezone);//[[0] "明天" -> 2025-02-10 08:00:00.000]
 }
-
-//2025-02-08 11:05:00.000に実行した場合
-//[[0] "today" -> 2025-02-09 00:00:00.000]
-//[[0] "10:10" -> 2025-02-09 10:10:00.000]
-//[[0] "march 7" -> 2025-03-07 10:10:00.000]
-//[[0] "明日12時14分" -> 2025-02-10 12:14:00.000, [0] "明日12時14分" -> 2025-02-10 12:14:00.000, [2] "12時14分" -> 2025-02-09 12:14:00.000]
-//[0] "三月七号" -> 2025-03-07 00:00:00.000, [2] "七号" -> 2025-03-07 00:00:00.000, [0] "三月七号上午九点" -> 2025-03-07 09:00:00.000]
-//[0] "tomorrow" -> 2025-02-10 00:00:00.000]
-//[0] "三天后" -> 2025-02-12 04:46:31.708556]
-//[0] "next tuesday" -> 2021-02-09 00:00:00.000]
-//[0] "next week" -> 2025-02-10 00:00:00.000, [0] "next week" -> 2025-02-11 00:00:00.000, [0] "next week" -> 2025-02-12 00:00:00.000, [0] "next week" -> 2025-02-13 00:00:00.000, [0] "next week" -> 2025-02-14 00:00:00.000, [0] "next week" -> 2025-02-15 00:00:00.000, [0] "next week" -> 2025-02-16 00:00:00.000]
-//[0] "明天" -> 2025-02-10 08:00:00.000]
 
 ```
 

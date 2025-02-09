@@ -8,7 +8,7 @@ class JaPatterns {
   static const Map<String, int> weekdayMap = {
     "月曜": 1, "火曜": 2, "水曜": 3, "木曜": 4,
     "金曜": 5, "土曜": 6, "日曜": 7,
-    "月": 1, "火": 2, "水": 3, "木": 4, "金": 5, "土": 6, "日": 7,
+    "月曜日": 1, "火曜日": 2, "水曜日": 3, "木曜日": 4, "金曜日": 5, "土曜日": 6, "日曜日": 7,
   };
 
   static const Map<String, int> kanjiNumbers = {
