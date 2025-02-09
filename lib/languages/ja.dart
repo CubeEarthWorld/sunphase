@@ -390,6 +390,10 @@ class JaRelativeParser extends BaseJaParser {
         if (diff == 0) diff = 7;
         return date.add(Duration(days: diff));
       },
+      // ここで「今週」を追加。ここでは週の始まり（月曜日）を返すようにしています。
+      "今週": (DateTime date) {
+        return date.subtract(Duration(days: date.weekday - 1));
+      },
       "先週": (DateTime date) => date.subtract(Duration(days: 7)),
       "来年": (DateTime date) => DateTime(date.year + 1, date.month, date.day),
       "今年": (DateTime date) => DateTime(date.year, date.month, date.day),
@@ -421,7 +425,8 @@ class JaRelativeParser extends BaseJaParser {
         if (expression == "来月" || expression == "先月" || expression == "再来月") {
           rangeType = "month";
         }
-        if (expression == "来週") rangeType = "week";
+        // 「来週」だけでなく「今週」も週範囲として扱う
+        if (expression == "来週" || expression == "今週") rangeType = "week";
         results.add(ParsingResult(
             index: match.start,
             text: match.group(0)!,
