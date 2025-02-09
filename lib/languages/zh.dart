@@ -108,6 +108,19 @@ class ZhRelativeParser extends ChineseParserBase {
           .add(Duration(days: dayOffsets[trimmed]!));
       return [ParsingResult(index: 0, text: trimmed, date: date)];
     }
+
+    if (trimmed == "这周" || trimmed == "本周") {
+      // 假设以周一作为一周的开始
+      int daysFromMonday = context.referenceDate.weekday - 1;
+      DateTime start = DateTime(
+        context.referenceDate.year,
+        context.referenceDate.month,
+        context.referenceDate.day,
+      ).subtract(Duration(days: daysFromMonday));
+      return [ParsingResult(index: 0, text: trimmed, date: start, rangeType: "week")];
+    }
+
+
     // 单体"下周"：返回下周整周的起始日期（range_type: week）
     if (trimmed == "下周") {
       int daysToNextMonday = (8 - context.referenceDate.weekday) % 7;
@@ -257,7 +270,7 @@ class ZhRelativeParser extends ChineseParserBase {
 
   List<ParsingResult> _parseWeekExpressions(String text, DateTime ref) {
     List<ParsingResult> results = [];
-    final weekPattern = RegExp(r'(下|上|本)周[星期周]?([一二三四五六天])');
+    final weekPattern = RegExp(r'(下|上|本|这)周[星期周]?([一二三四五六天])');
     for (var match in weekPattern.allMatches(text)) {
       bool isNext = match.group(1) == '下';
       bool isLast = match.group(1) == '上';

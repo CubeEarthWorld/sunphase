@@ -75,7 +75,7 @@ class EnglishDateUtils {
 /// Parser for relative expressions in English.
 class EnRelativeParser extends BaseParser {
   static final RegExp _inDaysPattern =
-      RegExp(r'in\s+(\d+)\s+days', caseSensitive: false);
+  RegExp(r'in\s+(\d+)\s+days', caseSensitive: false);
   static final RegExp _relativePattern = RegExp(
       r'(\d+|[a-z]+)\s*(days|weeks)\s*(from now|later|ago)',
       caseSensitive: false);
@@ -112,6 +112,8 @@ class EnRelativeParser extends BaseParser {
     final ref = context.referenceDate;
     _parseInDays(lowerText, ref, results);
     _parseNextWeek(lowerText, ref, results);
+    _parseThisWeek(lowerText, ref, results);   // <-- New: Handle "this week"
+    _parseLastWeek(lowerText, ref, results);     // <-- New: Handle "last week"
     _parseFixedExpressions(lowerText, ref, results);
     _parseWeekdays(lowerText, ref, results);
     _parseRelativeExpressions(lowerText, ref, results);
@@ -134,6 +136,7 @@ class EnRelativeParser extends BaseParser {
   void _parseNextWeek(String text, DateTime ref, List<ParsingResult> results) {
     final regex = RegExp(r'\bnext week\b', caseSensitive: false);
     for (final match in regex.allMatches(text)) {
+      // Calculate next Monday: add enough days to reach the next Monday.
       int daysToNextMonday = (8 - ref.weekday) % 7;
       if (daysToNextMonday == 0) daysToNextMonday = 7;
       final nextMonday = DateTime(ref.year, ref.month, ref.day)
@@ -142,6 +145,37 @@ class EnRelativeParser extends BaseParser {
           index: match.start,
           text: match.group(0)!,
           date: nextMonday,
+          rangeType: 'week'));
+    }
+  }
+
+  // New: Parse "this week" expressions.
+  void _parseThisWeek(String text, DateTime ref, List<ParsingResult> results) {
+    final regex = RegExp(r'\bthis week\b', caseSensitive: false);
+    for (final match in regex.allMatches(text)) {
+      // Calculate the Monday of the current week.
+      final monday = DateTime(ref.year, ref.month, ref.day)
+          .subtract(Duration(days: ref.weekday - 1));
+      results.add(ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          date: monday,
+          rangeType: 'week'));
+    }
+  }
+
+  // New: Parse "last week" expressions.
+  void _parseLastWeek(String text, DateTime ref, List<ParsingResult> results) {
+    final regex = RegExp(r'\blast week\b', caseSensitive: false);
+    for (final match in regex.allMatches(text)) {
+      // Calculate the Monday of the current week then subtract 7 days to get last week.
+      final mondayThisWeek = DateTime(ref.year, ref.month, ref.day)
+          .subtract(Duration(days: ref.weekday - 1));
+      final mondayLastWeek = mondayThisWeek.subtract(Duration(days: 7));
+      results.add(ParsingResult(
+          index: match.start,
+          text: match.group(0)!,
+          date: mondayLastWeek,
           rangeType: 'week'));
     }
   }
@@ -162,7 +196,7 @@ class EnRelativeParser extends BaseParser {
 
     fixedExpressions.forEach((key, valueFunc) {
       final regex =
-          RegExp(r'\b' + RegExp.escape(key) + r'\b', caseSensitive: false);
+      RegExp(r'\b' + RegExp.escape(key) + r'\b', caseSensitive: false);
       for (final match in regex.allMatches(text)) {
         results.add(ParsingResult(
             index: match.start,
@@ -211,7 +245,7 @@ class EnRelativeParser extends BaseParser {
         int diff = (weekdayValue - ref.weekday + 7) % 7;
         if (diff == 0) diff = 7;
         final targetDate =
-            DateTime(ref.year, ref.month, ref.day).add(Duration(days: diff));
+        DateTime(ref.year, ref.month, ref.day).add(Duration(days: diff));
         results.add(ParsingResult(
             index: match.start, text: match.group(0)!, date: targetDate));
       }
@@ -226,9 +260,9 @@ class EnRelativeParser extends BaseParser {
     final nextPhrase = 'next ' + weekday;
     final lastPhrase = 'last ' + weekday;
     final regexNext =
-        RegExp(r'\b' + RegExp.escape(nextPhrase) + r'\b', caseSensitive: false);
+    RegExp(r'\b' + RegExp.escape(nextPhrase) + r'\b', caseSensitive: false);
     final regexLast =
-        RegExp(r'\b' + RegExp.escape(lastPhrase) + r'\b', caseSensitive: false);
+    RegExp(r'\b' + RegExp.escape(lastPhrase) + r'\b', caseSensitive: false);
     for (final match in regexNext.allMatches(text)) {
       int current = ref.weekday;
       int target = weekdayValue;
@@ -263,14 +297,14 @@ class EnRelativeParser extends BaseParser {
           ? Duration(days: value)
           : Duration(days: value * 7);
       final resultDate =
-          (direction == 'ago') ? ref.subtract(delta) : ref.add(delta);
+      (direction == 'ago') ? ref.subtract(delta) : ref.add(delta);
       results.add(ParsingResult(
           index: match.start, text: match.group(0)!, date: resultDate));
     }
 
     // Handle "two weeks ago"
     final twoWeeksAgoRegex =
-        RegExp(r'(\d+)\s+weeks\s+ago', caseSensitive: false);
+    RegExp(r'(\d+)\s+weeks\s+ago', caseSensitive: false);
     for (final match in twoWeeksAgoRegex.allMatches(text)) {
       final weeks = int.parse(match.group(1)!);
       final resultDate = ref.subtract(Duration(days: weeks * 7));
@@ -325,7 +359,7 @@ class EnAbsoluteParser extends BaseParser {
       final parsedDate = _parseEnglishDate(dateStr, context);
       if (parsedDate != null) {
         final adjustedDate =
-            EnglishDateUtils.adjustDateTimeWithTime(parsedDate, originalText);
+        EnglishDateUtils.adjustDateTimeWithTime(parsedDate, originalText);
         results.add(ParsingResult(
             index: match.start, text: dateStr, date: adjustedDate));
       }
@@ -339,7 +373,7 @@ class EnAbsoluteParser extends BaseParser {
       final parsedDate = _parseEnglishDate(dateStr, context);
       if (parsedDate != null) {
         final adjustedDate =
-            EnglishDateUtils.adjustDateTimeWithTime(parsedDate, originalText);
+        EnglishDateUtils.adjustDateTimeWithTime(parsedDate, originalText);
         results.add(ParsingResult(
             index: match.start, text: dateStr, date: adjustedDate));
       }
@@ -475,11 +509,11 @@ class EnAbsoluteParser extends BaseParser {
 /// Parser for time-only expressions in English.
 class EnTimeOnlyParser extends BaseParser {
   static final RegExp _timePatternAmPm =
-      RegExp(r'(\d{1,2})(?::(\d{2}))?\s*(am|pm)', caseSensitive: false);
+  RegExp(r'(\d{1,2})(?::(\d{2}))?\s*(am|pm)', caseSensitive: false);
   static final RegExp _timePattern =
-      RegExp(r'(\d{1,2}):(\d{2})', caseSensitive: false);
+  RegExp(r'(\d{1,2}):(\d{2})', caseSensitive: false);
   static final RegExp _fixedTimePattern =
-      RegExp(r'\b(midnight|noon)\b', caseSensitive: false);
+  RegExp(r'\b(midnight|noon)\b', caseSensitive: false);
 
   void _parseFixedTime(String text, DateTime ref, List<ParsingResult> results) {
     for (final match in _fixedTimePattern.allMatches(text)) {
@@ -518,12 +552,12 @@ class EnTimeOnlyParser extends BaseParser {
 
     for (final match in _timePattern.allMatches(text)) {
       bool overlap = results.any((r) =>
-          match.start >= r.index && match.start < (r.index + r.text.length));
+      match.start >= r.index && match.start < (r.index + r.text.length));
       if (!overlap) {
         int hour = int.parse(match.group(1)!);
         int minute = int.parse(match.group(2)!);
         DateTime candidate =
-            DateTime(ref.year, ref.month, ref.day, hour, minute);
+        DateTime(ref.year, ref.month, ref.day, hour, minute);
         candidate = EnglishDateUtils.getNextOccurrence(ref, candidate);
         results.add(ParsingResult(
             index: match.start, text: match.group(0)!, date: candidate));

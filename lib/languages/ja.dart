@@ -64,6 +64,7 @@ abstract class BaseJaParser extends BaseParser {
     }
     return date;
   }
+
   int parseKanjiOrArabicNumber(String text) {
     return JaNumberConverter.parse(text);
   }
@@ -245,24 +246,22 @@ class JaRelativeParser extends BaseJaParser {
     }
   }
 
-// lib/languages/ja.dart 内 _parseRelativeWithTime の修正例
   void _parseRelativeWithTime(String text, DateTime ref, List<ParsingResult> results) {
-      // 分が必須の場合のみマッチさせる
-      final regex = RegExp(r'(明日|今日|明後日|昨日)\s*(\d{1,2})時\s*(\d{1,2})分', caseSensitive: false);
+    // 分が必須の場合のみマッチさせる
+    final regex = RegExp(r'(明日|今日|明後日|昨日)\s*(\d{1,2})時\s*(\d{1,2})分', caseSensitive: false);
     for (final match in regex.allMatches(text)) {
-       // 万が一分の部分がキャプチャされていなければスキップ
-       if (match.group(3) == null) continue;
-    String dayWord = match.group(1)!;
-    int hour = int.parse(match.group(2)!);
-    int minute = int.parse(match.group(3)!);
-       // このパーサー専用のマッピングがあれば利用（存在しなければスキップ）
-       if (!JaPatterns.relativeTimeOffsets.containsKey(dayWord)) continue;
-    int offset = JaPatterns.relativeTimeOffsets[dayWord]!;
-    DateTime base = ref.add(Duration(days: offset));
-    DateTime date = DateTime(base.year, base.month, base.day, hour, minute);
-    results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date));
+      if (match.group(3) == null) continue;
+      String dayWord = match.group(1)!;
+      int hour = int.parse(match.group(2)!);
+      int minute = int.parse(match.group(3)!);
+      if (!JaPatterns.relativeTimeOffsets.containsKey(dayWord)) continue;
+      int offset = JaPatterns.relativeTimeOffsets[dayWord]!;
+      DateTime base = ref.add(Duration(days: offset));
+      DateTime date = DateTime(base.year, base.month, base.day, hour, minute);
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date));
     }
   }
+
   void _parseRelativeWithHour(String text, DateTime ref, List<ParsingResult> results) {
     final regex = RegExp(r'(明日|今日|明後日|昨日)\s*(\d{1,2})時(?![0-9一二三四五六七八九十]*分)', caseSensitive: false);
     for (final match in regex.allMatches(text)) {
@@ -279,14 +278,12 @@ class JaRelativeParser extends BaseJaParser {
     final regex = RegExp(r'(月曜|火曜|水曜|木曜|金曜|土曜|日曜)(?:\s*(午前|午後))?\s*(\d{1,2})時(?:\s*(\d{1,2})分)?', caseSensitive: false);
     for (final match in regex.allMatches(text)) {
       String weekdayStr = match.group(1)!;
-      String? period = match.group(2); // "午前" または "午後" など
+      String? period = match.group(2);
       int hour = int.parse(match.group(3)!);
       int minute = match.group(4) != null ? int.parse(match.group(4)!) : 0;
-      // 午後指定の場合、12時未満なら12を加算
       if (period != null && period == "午後" && hour < 12) {
         hour += 12;
       }
-      // 以降、曜日から対象日を計算（既存の diff 計算ロジック）
       int targetWeekday = JaPatterns.weekdayMap[weekdayStr]!;
       int diff = (targetWeekday - ref.weekday + 7) % 7;
       if (diff == 0) diff = 7;
@@ -294,7 +291,6 @@ class JaRelativeParser extends BaseJaParser {
       DateTime date = DateTime(base.year, base.month, base.day, hour, minute);
       results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date));
     }
-
   }
 
   void _parseNextWeekday(String text, DateTime ref, List<ParsingResult> results) {
@@ -358,27 +354,11 @@ class JaRelativeParser extends BaseJaParser {
     }
   }
 
+  // 修正を適用した固定表現パーサー
   void _parseFixedExpressions(String text, DateTime ref, List<ParsingResult> results) {
-    final Map<String, Function(DateTime)> fixedExpressions = {
-      "来週": (date) {
-        int diff = (7 - date.weekday + 1) % 7;
-        if (diff == 0) diff = 7;
-        return date.add(Duration(days: diff));
-      },
-      "先週": (date) => date.subtract(Duration(days: 7)),
-      "来月": (date) {
-        int year = date.year;
-        int month = date.month + 1;
-        if (month > 12) { month = 1; year++; }
-        return DateTime(year, month, 1);
-      },
-      "先月": (date) {
-        int year = date.year;
-        int month = date.month - 1;
-        if (month < 1) { month = 12; year--; }
-        return DateTime(year, month, 1);
-      },
-      "再来月": (date) {
+    // 固定表現の定義（"再来月" を "来月" より前に定義）
+    final fixedExpressions = {
+      "再来月": (DateTime date) {
         int year = date.year;
         int month = date.month + 2;
         if (month > 12) {
@@ -387,18 +367,55 @@ class JaRelativeParser extends BaseJaParser {
         }
         return DateTime(year, month, 1);
       },
-      "来年": (date) => DateTime(date.year + 1, date.month, date.day),
-      "今年": (date) => DateTime(date.year, date.month, date.day),
-      "週末": (date) {
+      "来月": (DateTime date) {
+        int year = date.year;
+        int month = date.month + 1;
+        if (month > 12) {
+          month = 1;
+          year++;
+        }
+        return DateTime(year, month, 1);
+      },
+      "先月": (DateTime date) {
+        int year = date.year;
+        int month = date.month - 1;
+        if (month < 1) {
+          month = 12;
+          year--;
+        }
+        return DateTime(year, month, 1);
+      },
+      "来週": (DateTime date) {
+        int diff = (7 - date.weekday + 1) % 7;
+        if (diff == 0) diff = 7;
+        return date.add(Duration(days: diff));
+      },
+      "先週": (DateTime date) => date.subtract(Duration(days: 7)),
+      "来年": (DateTime date) => DateTime(date.year + 1, date.month, date.day),
+      "今年": (DateTime date) => DateTime(date.year, date.month, date.day),
+      "週末": (DateTime date) {
         int diff = (7 - date.weekday) % 7;
         if (diff == 0) diff = 7;
         return date.add(Duration(days: diff));
       },
     };
-    fixedExpressions.forEach((expression, dateCalculator) {
+
+    // キーを文字数の降順にソートして処理する
+    final expressions = fixedExpressions.keys.toList()
+      ..sort((a, b) => b.length.compareTo(a.length));
+
+    // 既にマッチ済みの領域を記録しておくリスト（重複マッチを防ぐため）
+    final List<_MatchedRegion> matchedRegions = [];
+
+    for (final expression in expressions) {
       final regex = RegExp(RegExp.escape(expression));
       for (final match in regex.allMatches(text)) {
-        DateTime calculatedDate = dateCalculator(ref);
+        // 既に長い表現でマッチ済みの領域と重なっていればスキップする
+        if (matchedRegions.any((region) => _overlap(region.start, region.end, match.start, match.end))) {
+          continue;
+        }
+        DateTime calculatedDate = fixedExpressions[expression]!(ref);
+        // 時刻は 0:00:00 に正規化
         calculatedDate = DateTime(calculatedDate.year, calculatedDate.month, calculatedDate.day, 0, 0, 0);
         String? rangeType;
         if (expression == "来月" || expression == "先月" || expression == "再来月") {
@@ -410,8 +427,14 @@ class JaRelativeParser extends BaseJaParser {
             text: match.group(0)!,
             date: calculatedDate,
             rangeType: rangeType));
+        // マッチ領域を記録
+        matchedRegions.add(_MatchedRegion(match.start, match.end));
       }
-    });
+    }
+  }
+
+  bool _overlap(int start1, int end1, int start2, int end2) {
+    return start1 < end2 && start2 < end1;
   }
 
   void _parseNextMonthWithTime(String text, ParsingContext context, List<ParsingResult> results) {
@@ -474,4 +497,11 @@ class JaParsers {
     JaRelativeParser(),
     JaTimeOnlyParser(),
   ];
+}
+
+/// 内部で使用する、マッチ済み領域を保持するクラス（ライブラリ内でのみ利用）
+class _MatchedRegion {
+  final int start;
+  final int end;
+  _MatchedRegion(this.start, this.end);
 }
