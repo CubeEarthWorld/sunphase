@@ -206,6 +206,21 @@ class EnRelativeParser extends BaseParser {
       results.add(ParsingResult(index: match.start, text: match.group(0)!, date: resultDate));
     }
   }
+
+  // 新規：月名単体の表現（例："march"）
+  void _parseMonthNameOnly(String text, ParsingContext context, List<ParsingResult> results) {
+    final regex = RegExp(r'\b(january|february|march|april|may|june|july|august|september|october|november|december)\b', caseSensitive: false);
+    for (final match in regex.allMatches(text)) {
+      String monthStr = match.group(1)!;
+      int month = EnglishDateUtils.monthMap[monthStr.toLowerCase()]!;
+      int year = context.referenceDate.year;
+      if (month < context.referenceDate.month) {
+        year++;
+      }
+      DateTime date = DateTime(year, month, 1);
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date, rangeType: "month"));
+    }
+  }
 }
 
 /// Parser for absolute date expressions in English.
@@ -216,11 +231,9 @@ class EnAbsoluteParser extends BaseParser {
   static final RegExp _ordinalPattern = RegExp(
       r'(\d{1,2})(?:st|nd|rd|th)(?:\s*,?\s*(\d{4}))?',
       caseSensitive: false);
-  // New regex for Y/M/D format (three parts)
   static final RegExp _slashYMDPattern = RegExp(
       r'\b(\d{1,4})[/-](\d{1,2})[/-](\d{1,4})(?:\s*(?:at\s*)?(\d{1,2}:\d{2}(?::\d{2})?))?\b',
       caseSensitive: false);
-  // New regex for M/D format (two parts)
   static final RegExp _slashMDPattern = RegExp(
       r'\b(\d{1,2})[/-](\d{1,2})(?:\s*(?:at\s*)?(\d{1,2}:\d{2}(?::\d{2})?))?\b',
       caseSensitive: false);
@@ -238,6 +251,8 @@ class EnAbsoluteParser extends BaseParser {
     _parseSlashYMD(text, context, results);
     _parseSlashMD(text, context, results);
     _parseDmyDates(text, context, results);
+    // 新規：月名単体の表現
+    _parseMonthNameOnly(text, context, results);
     return results;
   }
 
@@ -284,7 +299,6 @@ class EnAbsoluteParser extends BaseParser {
 
   void _parseSlashMD(String text, ParsingContext context, List<ParsingResult> results) {
     for (final match in _slashMDPattern.allMatches(text)) {
-      // 過去のマッチと重複しないように判定
       if (_slashYMDPattern.hasMatch(match.group(0)!)) continue;
       int month = int.parse(match.group(1)!);
       int day = int.parse(match.group(2)!);
@@ -317,6 +331,20 @@ class EnAbsoluteParser extends BaseParser {
         date = DateTime(year, month, day, hour, minute);
       }
       results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date));
+    }
+  }
+
+  void _parseMonthNameOnly(String text, ParsingContext context, List<ParsingResult> results) {
+    final regex = RegExp(r'\b(january|february|march|april|may|june|july|august|september|october|november|december)\b', caseSensitive: false);
+    for (final match in regex.allMatches(text)) {
+      String monthStr = match.group(1)!;
+      int month = EnglishDateUtils.monthMap[monthStr.toLowerCase()]!;
+      int year = context.referenceDate.year;
+      if (month < context.referenceDate.month) {
+        year++;
+      }
+      DateTime date = DateTime(year, month, 1);
+      results.add(ParsingResult(index: match.start, text: match.group(0)!, date: date, rangeType: "month"));
     }
   }
 
