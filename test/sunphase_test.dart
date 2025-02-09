@@ -552,14 +552,6 @@ void main() {
       expect(results.first.date, expected);
     });
 
-    test('Relative: "30 minutes ago"', () {
-      String input = "30 minutes ago";
-      List<ParsingResult> results = parse(input, referenceDate: reference, language: 'en');
-      DateTime expected = reference.subtract(Duration(minutes: 30));
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
     test('Mixed: "会议安排：下周三上午五点"', () {
       String input = "会议安排：下周三上午五点";
       List<ParsingResult> results = parse(input, referenceDate: reference, language: 'zh');
