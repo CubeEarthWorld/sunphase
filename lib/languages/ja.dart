@@ -128,7 +128,7 @@ class JaRelativeParser extends BaseJaParser {
 
     // 例：文中の相対語（明日、今日等）をすべて抽出（既存処理）
     RegExp relativeWordRegex =
-        RegExp(r'(明日|今日|明後日|明々後日|昨日)', caseSensitive: false);
+    RegExp(r'(明日|今日|明後日|明々後日|昨日)', caseSensitive: false);
     for (final match in relativeWordRegex.allMatches(text)) {
       String token = match.group(0)!;
       if (JaPatterns.relativeTimeOffsets.containsKey(token)) {
@@ -186,7 +186,7 @@ class JaRelativeParser extends BaseJaParser {
       DateTime firstDay = DateTime(year, month, 1);
       // 翌月1日から1日引くことで対象月の最終日を取得
       DateTime lastDay =
-          DateTime(year, month + 1, 1).subtract(Duration(days: 1));
+      DateTime(year, month + 1, 1).subtract(Duration(days: 1));
       int rangeDays = lastDay.day;
       results.add(ParsingResult(
         index: m.start,
@@ -210,6 +210,7 @@ class JaRelativeParser extends BaseJaParser {
     _parseRelativeWithTime(text, context.referenceDate, results);
     _parseRelativeWithHour(text, context.referenceDate, results);
     _parseWeekdayWithTime(text, context.referenceDate, results);
+    _parseNextNextWeekday(text, context.referenceDate, results); // ← 追加：再来週処理
     _parseNextWeekday(text, context.referenceDate, results);
     _parseSingleWeekday(text, context.referenceDate, results);
     _parseWithinDays(text, context.referenceDate, results);
@@ -232,6 +233,31 @@ class JaRelativeParser extends BaseJaParser {
     }
   }
 
+  // 修正：正規表現を変更し、オプショナルな「来年」「去年」「今年」を許容する
+  void _parseMonthDay(String text, ParsingContext context, List<ParsingResult> results) {
+    final monthDay = RegExp(r'(?:\s*(来年|去年|今年))?\s*([0-9一二三四五六七八九十]+)月([0-9一二三四五六七八九十]+)[日号]');
+    for (var match in monthDay.allMatches(text)) {
+      int month = JaNumberConverter.parse(match.group(2)!);
+      int day = JaNumberConverter.parse(match.group(3)!);
+      int year = context.referenceDate.year;
+      if (match.group(1) != null) {
+        String prefix = match.group(1)!;
+        if (prefix == "来年") {
+          year++;
+        } else if (prefix == "去年") {
+          year--;
+        }
+        // 「今年」はそのまま
+      }
+      DateTime date = DateTime(year, month, day, 0, 0, 0);
+      if (match.group(1) == null) {
+        date = adjustForPastDate(date, context);
+      }
+      results.add(
+          ParsingResult(index: match.start, text: match.group(0)!, date: date));
+    }
+  }
+
   void _parseMonthDayTime(
       String text, ParsingContext context, List<ParsingResult> results) {
     final pattern = RegExp(
@@ -242,20 +268,7 @@ class JaRelativeParser extends BaseJaParser {
       int hour = int.parse(match.group(3)!);
       int minute = int.parse(match.group(4)!);
       DateTime date =
-          DateTime(context.referenceDate.year, month, day, hour, minute);
-      date = adjustForPastDate(date, context);
-      results.add(
-          ParsingResult(index: match.start, text: match.group(0)!, date: date));
-    }
-  }
-
-  void _parseMonthDay(
-      String text, ParsingContext context, List<ParsingResult> results) {
-    final monthDay = RegExp(r'([0-9一二三四五六七八九十]+)月([0-9一二三四五六七八九十]+)[日号]');
-    for (var match in monthDay.allMatches(text)) {
-      int month = JaNumberConverter.parse(match.group(1)!);
-      int day = JaNumberConverter.parse(match.group(2)!);
-      DateTime date = DateTime(context.referenceDate.year, month, day, 0, 0, 0);
+      DateTime(context.referenceDate.year, month, day, hour, minute);
       date = adjustForPastDate(date, context);
       results.add(
           ParsingResult(index: match.start, text: match.group(0)!, date: date));
@@ -303,10 +316,10 @@ class JaRelativeParser extends BaseJaParser {
     }
   }
 
+  // 修正：正規表現に「明々後日」を追加
   void _parseRelativeWithTime(
       String text, DateTime ref, List<ParsingResult> results) {
-    // 分が必須の場合のみマッチさせる
-    final regex = RegExp(r'(明日|今日|明後日|昨日)\s*(\d{1,2})時\s*(\d{1,2})分',
+    final regex = RegExp(r'(明日|今日|明後日|明々後日|昨日)\s*(\d{1,2})時\s*(\d{1,2})分',
         caseSensitive: false);
     for (final match in regex.allMatches(text)) {
       if (match.group(3) == null) continue;
@@ -360,10 +373,31 @@ class JaRelativeParser extends BaseJaParser {
     }
   }
 
+  // 追加：再来週表現 "再来週[曜日](時)?" を処理する
+  void _parseNextNextWeekday(String text, DateTime ref, List<ParsingResult> results) {
+    final regex = RegExp(r'再来週([月火水木金土日]曜)(?:(\d{1,2})時)?', caseSensitive: false);
+    for (final match in regex.allMatches(text)) {
+      String weekdayStr = match.group(1)!;
+      int target = JaPatterns.weekdayMap[weekdayStr]!;
+      int diff = (target - ref.weekday + 7) % 7;
+      if (diff == 0) diff = 7;
+      DateTime candidate = ref.add(Duration(days: diff + 7));
+      if (match.group(2) != null) {
+        int hour = int.parse(match.group(2)!);
+        candidate = DateTime(candidate.year, candidate.month, candidate.day, hour, 0, 0);
+      } else {
+        // 時刻指定がなければ、正規化して0時にする
+        candidate = DateTime(candidate.year, candidate.month, candidate.day, 0, 0, 0);
+      }
+      results.add(ParsingResult(
+          index: match.start, text: match.group(0)!, date: candidate, rangeType: 'week'));
+    }
+  }
+
   void _parseNextWeekday(
       String text, DateTime ref, List<ParsingResult> results) {
     final regex =
-        RegExp(r'来週([月火水木金土日]曜)(?:(\d{1,2})時)?', caseSensitive: false);
+    RegExp(r'来週([月火水木金土日]曜)(?:(\d{1,2})時)?', caseSensitive: false);
     RegExpMatch? match = regex.firstMatch(text);
     if (match != null) {
       String weekdayStr = match.group(1)!;

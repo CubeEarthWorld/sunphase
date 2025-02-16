@@ -319,8 +319,9 @@ class EnRelativeParser extends BaseParser {
 
 /// Parser for absolute date expressions in English.
 class EnAbsoluteParser extends BaseParser {
+  // ★ 修正：時刻部分 (例: "11:44") をオプションでキャプチャするように変更
   static final RegExp _fullDatePattern = RegExp(
-      r'([a-z]+)[\s,]+(\d{1,2})(?:st|nd|rd|th)?(?:[\s,]+(\d{4}))?',
+      r'([a-z]+)[\s,]+(\d{1,2})(?:st|nd|rd|th)?(?:[\s,]+(\d{4}))?(?:\s+(\d{1,2}:\d{2}(?::\d{2})?))?',
       caseSensitive: false);
   static final RegExp _ordinalPattern = RegExp(
       r'(\d{1,2})(?:st|nd|rd|th)(?:\s*,?\s*(\d{4}))?',
@@ -358,10 +359,12 @@ class EnAbsoluteParser extends BaseParser {
       final dateStr = match.group(0)!;
       final parsedDate = _parseEnglishDate(dateStr, context);
       if (parsedDate != null) {
+        // adjustDateTimeWithTime を呼ぶ際、originalText ではなく match.group(0) を使用することで
+        // マッチ部分全体（例: "march 7 11:44"）が反映される
         final adjustedDate =
-        EnglishDateUtils.adjustDateTimeWithTime(parsedDate, originalText);
+        EnglishDateUtils.adjustDateTimeWithTime(parsedDate, match.group(0)!);
         results.add(ParsingResult(
-            index: match.start, text: dateStr, date: adjustedDate));
+            index: match.start, text: match.group(0)!, date: adjustedDate));
       }
     }
   }
@@ -470,6 +473,7 @@ class EnAbsoluteParser extends BaseParser {
     return null;
   }
 
+  // ★ 修正：グループ4に時刻が存在する場合、日時に反映する
   DateTime? _parseFullDateMatch(RegExpMatch match, ParsingContext context) {
     final monthStr = match.group(1)!;
     final month = EnglishDateUtils.monthMap[monthStr];
@@ -478,7 +482,15 @@ class EnAbsoluteParser extends BaseParser {
     final year = match.group(3) != null
         ? int.parse(match.group(3)!)
         : _inferYear(context.referenceDate, month, day);
-    return DateTime(year, month, day);
+    DateTime date = DateTime(year, month, day);
+    if (match.group(4) != null) {
+      final timeStr = match.group(4)!;
+      List<String> parts = timeStr.split(':');
+      int hour = int.parse(parts[0]);
+      int minute = int.parse(parts[1]);
+      date = DateTime(year, month, day, hour, minute);
+    }
+    return date;
   }
 
   DateTime? _parseOrdinalMatch(RegExpMatch match, ParsingContext context) {

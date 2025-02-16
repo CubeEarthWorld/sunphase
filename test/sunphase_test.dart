@@ -280,6 +280,54 @@ void main() {
       expect(results.first.date, expected);
     });
 
+    test('Test: "再来週土曜" (日本語)', () {
+      String input = "再来週土曜";
+      List<ParsingResult> results =
+      parse(input, referenceDate: reference, language: 'ja');
+      DateTime expected = DateTime(2025, 2, 22, 0, 0, 0);
+      print(
+          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true,
+          reason: "Result should not be empty for '再来週土曜'");
+      expect(results.first.date, expected);
+    });
+
+    test('Test: "明日5時" (日本語)', () {
+      String input = "明日5時";
+      List<ParsingResult> results =
+      parse(input, referenceDate: reference, language: 'ja');
+      DateTime expected = DateTime(2025, 2, 9, 5, 0, 0);
+      print(
+          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true,
+          reason: "Result should not be empty for '明日5時'");
+      expect(results.first.date, expected);
+    });
+
+    test('Test: "march 7 11:44" (English)', () {
+    String input = "march 7 11:44";
+    List<ParsingResult> results =
+    parse(input, referenceDate: reference, language: 'en');
+    DateTime expected = DateTime(2025, 3, 7, 11, 44, 0);
+    print(
+    "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+    expect(results.isNotEmpty, true,
+    reason: "Result should not be empty for 'march 7 11:44'");
+    expect(results.first.date, expected);
+    });
+
+    test('Test: 来年五月十二日" (日本語)', () {
+      String input = "来年五月十二日";
+      List<ParsingResult> results =
+      parse(input, referenceDate: reference, language: 'ja');
+      DateTime expected = DateTime(2026, 5, 12, 0, 0, 0);
+      print(
+          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true,
+          reason: "Result should not be empty for '来年五月十二日'");
+      expect(results.first.date, expected);
+    });
+
     test('Test: "三月七号上午九点" (中国語)', () {
       String input = "三月七号上午九点";
       List<ParsingResult> results =
@@ -578,6 +626,8 @@ void main() {
       expect(results.first.date, DateTime(2025, 2, 10, 0, 0, 0));
       expect(results.last.date, DateTime(2025, 2, 16, 0, 0, 0));
     });
+
+
 
     test('Virtual Task (month range, Chinese): "来週大学に行く"', () {
       String input = "来週大学に行く";
