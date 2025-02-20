@@ -43,11 +43,11 @@ void main() {
   print(results_data_zh);//[[0] "三月七号上午九点" -> 2025-03-07 09:00:00.000]
 
   // 英語で日付を解析
-  List<ParsingResult> resultsEn = parse('Tomorrow', language: ['en']);
+  List<ParsingResult> resultsEn = parse('Tomorrow', languages: ['en']);
   print(resultsEn);//[[0] "tomorrow" -> 2025-02-10 00:00:00.000]
 
   // 中国語で日付を解析
-  List<ParsingResult> resultsJa = parse('三天后', language: ['zh']);
+  List<ParsingResult> resultsJa = parse('三天后', languages: ['zh']);
   print(resultsJa);//[[0] "三天后" -> 2025-02-12 21:13:33.382038]
 
   // 特定の基準日で日付を解析
