@@ -12,13 +12,13 @@ import 'core/parser_manager.dart';
 /// [timezone]: The timezone offset in minutes as a string (e.g., "540").
 List<ParsingResult> parse(String text,
     {DateTime? referenceDate,
-      String? language,
+      List<String>? languages,
       bool rangeMode = false,
       String? timezone}) {
   return ParserManager.parse(
       text,
       referenceDate: referenceDate,
-      language: language,
+      languages: languages,
       rangeMode: rangeMode,
       timezone: timezone);
 }

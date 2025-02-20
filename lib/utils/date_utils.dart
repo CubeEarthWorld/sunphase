@@ -1,4 +1,3 @@
-// lib/utils/date_utils.dart
 /// 日付計算や補正などの共通処理を提供するユーティリティクラス。
 class DateUtils {
   /// 指定された [date] が [reference] より過去の場合、翌日などに補正して返す。
@@ -17,6 +16,25 @@ class DateUtils {
     // 次月の初日から1日引くことで最終日を算出
     DateTime lastDay = DateTime(date.year, date.month + 1, 0);
     return {'start': firstDay, 'end': lastDay};
+  }
+
+  /// 文字列中の "hh:mm" 形式の時刻部分を抽出し、与えられた [date] に反映する。
+  static DateTime adjustDateTimeWithTime(DateTime date, String text) {
+    final timeRegExp = RegExp(r'(\d{1,2}):(\d{2})');
+    final timeMatch = timeRegExp.firstMatch(text);
+    if (timeMatch != null) {
+      final hour = int.parse(timeMatch.group(1)!);
+      final minute = int.parse(timeMatch.group(2)!);
+      return DateTime(date.year, date.month, date.day, hour, minute);
+    }
+    return date;
+  }
+
+  /// [candidate] が [reference] より過去の場合、翌日の日付を返す（そうでなければそのまま）。
+  static DateTime getNextOccurrence(DateTime reference, DateTime candidate) {
+    return candidate.isBefore(reference)
+        ? candidate.add(Duration(days: 1))
+        : candidate;
   }
 
   /// 文字列が数値として有効かどうかを判定する

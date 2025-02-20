@@ -40,11 +40,11 @@ List<ParsingResult> results_data_zh = parse('三月七号上午九点');
 print(results_data_zh);//[[0] "三月七号上午九点" -> 2025-03-07 09:00:00.000]
 
 // Parse the date in English
-List<ParsingResult> resultsEn = parse('Tomorrow', language: 'en');
+List<ParsingResult> resultsEn = parse('Tomorrow', language: ['en']);
 print(resultsEn);//[[0] "tomorrow" -> 2025-02-10 00:00:00.000]
 
 // Parse the date in Chinese
-List<ParsingResult> resultsJa = parse('三天后', language: 'zh');
+List<ParsingResult> resultsJa = parse('三天后', language: ['zh']);
 print(resultsJa);//[[0] "三天后" -> 2025-02-12 21:13:33.382038]
 
 // Parse the date based on a reference date

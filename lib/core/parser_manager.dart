@@ -5,7 +5,7 @@ import 'result.dart';
 import '../languages/en.dart';
 import '../languages/ja.dart';
 import '../languages/zh.dart';
-import '../languages/universal.dart';  // UniversalParsers を利用するための import
+import '../languages/universal.dart';  // UniversalParsers を利用
 import '../modes/range_mode.dart';
 import '../utils/timezone_utils.dart';
 
@@ -14,20 +14,20 @@ import '../utils/timezone_utils.dart';
 class ParserManager {
   static List<ParsingResult> parse(String text,
       {DateTime? referenceDate,
-        String? language,
+        List<String>? languages, // ここを String? から List<String>? に変更
         bool rangeMode = false,
         String? timezone}) {
-    // 基準日時、タイムゾーン、言語などの情報を ParsingContext にまとめる
+    // 基準日時、タイムゾーンなどの情報を ParsingContext にまとめる
     ParsingContext context = ParsingContext(
       referenceDate: referenceDate ?? DateTime.now(),
       timezoneOffset: timezone != null
           ? TimezoneUtils.offsetFromString(timezone)
           : Duration.zero,
-      language: language,
+      // language フィールドは利用しない（各パーサーは個別に処理）
     );
 
-    // 言語指定に応じたパーサー群を取得
-    List<BaseParser> parsers = _getParsersForLanguage(context.language);
+    // 指定された各言語のパーサーを取得し、常に UniversalParsers も追加する
+    List<BaseParser> parsers = _getParsersForLanguages(languages);
 
     // 各パーサーを実行して解析結果を収集する
     List<ParsingResult> results = [];
@@ -36,11 +36,9 @@ class ParserManager {
     }
 
     if (rangeMode) {
-      // range_mode の場合、まず RangeMode.generate() で展開する
+      // range_mode の場合、RangeMode.generate() で展開する
       List<ParsingResult> rangeResults = RangeMode.generate(results, context);
       if (rangeResults.isNotEmpty) {
-        // 同一の元結果（ここでは index でグループ化）ごとにグループ化し、
-        // グループ内の項目数が最大のグループを採用する
         Map<int, List<ParsingResult>> groups = {};
         for (var r in rangeResults) {
           groups.putIfAbsent(r.index, () => []).add(r);
@@ -52,8 +50,6 @@ class ParserManager {
         results = rangeResults;
       }
     } else {
-      // range_mode が false の場合は、すでにマージ処理（認識テキストが最も長いものを採用）
-      // （前回のコード例などと同様の処理を行う）
       if (results.isNotEmpty) {
         ParsingResult merged = results.reduce(
                 (a, b) => a.text.length >= b.text.length ? a : b);
@@ -66,25 +62,37 @@ class ParserManager {
     return results;
   }
 
-  /// 言語指定に応じて利用するパーサーを返す
-  static List<BaseParser> _getParsersForLanguage(String? language) {
-    if (language == null) {
-      return [
-        ...EnParsers.parsers,
-        ...JaParsers.parsers,
-        ...ZhParsers.parsers,
-        ...UniversalParsers.parsers,
-      ];
+  /// 複数の言語指定に応じて利用するパーサーを返す
+  /// 指定がなければ全言語（en, ja, zh）のパーサーを利用し、常に UniversalParsers も追加する
+  static List<BaseParser> _getParsersForLanguages(List<String>? languages) {
+    List<BaseParser> parsers = [];
+
+    if (languages == null || languages.isEmpty) {
+      // 言語指定がない場合は、全言語のパーサーを利用
+      parsers.addAll(EnParsers.parsers);
+      parsers.addAll(JaParsers.parsers);
+      parsers.addAll(ZhParsers.parsers);
+    } else {
+      // 指定された各言語のパーサーを追加
+      for (String lang in languages) {
+        switch (lang) {
+          case 'en':
+            parsers.addAll(EnParsers.parsers);
+            break;
+          case 'ja':
+            parsers.addAll(JaParsers.parsers);
+            break;
+          case 'zh':
+            parsers.addAll(ZhParsers.parsers);
+            break;
+          default:
+          // 対応していない言語の場合は、ここで何らかの処理を行う（例: ログ出力など）
+            break;
+        }
+      }
     }
-    switch (language) {
-      case 'en':
-        return EnParsers.parsers;
-      case 'ja':
-        return JaParsers.parsers;
-      case 'zh':
-        return ZhParsers.parsers;
-      default:
-        return UniversalParsers.parsers;
-    }
+    // universal.dart のパーサーは常に追加する
+    parsers.addAll(UniversalParsers.parsers);
+    return parsers;
   }
 }
