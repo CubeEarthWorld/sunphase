@@ -1,44 +1,100 @@
-/// 日付計算や補正などの共通処理を提供するユーティリティクラス。
+// lib/utils/date_utils.dart
 class DateUtils {
-  /// 指定された [date] が [reference] より過去の場合、翌日などに補正して返す。
-  /// ※シンプルな実装として、[date] が過去なら1日加算する。
   static DateTime adjustIfPast(DateTime date, DateTime reference) {
-    if (date.isBefore(reference)) {
-      return date.add(Duration(days: 1));
-    }
-    return date;
+    return date.isBefore(reference) ? date.add(Duration(days: 1)) : date;
   }
 
-  /// [date] の属する月の初日と最終日を返す。
-  /// 戻り値は {'start': 初日, 'end': 最終日} の形式。
   static Map<String, DateTime> getMonthRange(DateTime date) {
-    DateTime firstDay = DateTime(date.year, date.month, 1);
-    // 次月の初日から1日引くことで最終日を算出
+    DateTime firstDay = firstDayOfMonth(date);
     DateTime lastDay = DateTime(date.year, date.month + 1, 0);
     return {'start': firstDay, 'end': lastDay};
   }
 
-  /// 文字列中の "hh:mm" 形式の時刻部分を抽出し、与えられた [date] に反映する。
-  static DateTime adjustDateTimeWithTime(DateTime date, String text) {
-    final timeRegExp = RegExp(r'(\d{1,2}):(\d{2})');
-    final timeMatch = timeRegExp.firstMatch(text);
-    if (timeMatch != null) {
-      final hour = int.parse(timeMatch.group(1)!);
-      final minute = int.parse(timeMatch.group(2)!);
-      return DateTime(date.year, date.month, date.day, hour, minute);
-    }
-    return date;
-  }
-
-  /// [candidate] が [reference] より過去の場合、翌日の日付を返す（そうでなければそのまま）。
-  static DateTime getNextOccurrence(DateTime reference, DateTime candidate) {
-    return candidate.isBefore(reference)
-        ? candidate.add(Duration(days: 1))
-        : candidate;
-  }
-
-  /// 文字列が数値として有効かどうかを判定する
   static bool isNumeric(String s) {
     return double.tryParse(s) != null;
+  }
+
+  static DateTime addMonths(DateTime date, int months) {
+    int year = date.year;
+    int month = date.month + months;
+    while (month > 12) {
+      month -= 12;
+      year++;
+    }
+    while (month < 1) {
+      month += 12;
+      year--;
+    }
+    int day = date.day;
+    int lastDay = getMonthRange(DateTime(year, month, 1))['end']!.day;
+    if (day > lastDay) {
+      day = lastDay;
+    }
+    return DateTime(year, month, day, date.hour, date.minute, date.second);
+  }
+
+  static DateTime firstDayOfMonth(DateTime date) => DateTime(date.year, date.month, 1);
+
+  static DateTime firstDayOfNextMonth(DateTime date) => firstDayOfMonth(addMonths(date, 1));
+
+  static DateTime firstDayOfPreviousMonth(DateTime date) => firstDayOfMonth(addMonths(date, -1));
+
+  static DateTime nextWeekday(DateTime date, int targetWeekday) {
+    int diff = (targetWeekday - date.weekday + 7) % 7;
+    if (diff == 0) diff = 7;
+    return date.add(Duration(days: diff));
+  }
+
+  static DateTime firstDayOfWeek(DateTime date, {int startWeekday = 1}) {
+    return date.subtract(Duration(days: date.weekday - startWeekday));
+  }
+
+  static DateTime nextOccurrenceTime(DateTime reference, int hour, int minute) {
+    DateTime candidate = DateTime(reference.year, reference.month, reference.day, hour, minute);
+    return candidate.isAfter(reference) ? candidate : candidate.add(Duration(days: 1));
+  }
+
+  static DateTime parseTimeFromMatch(
+      RegExpMatch match,
+      DateTime reference,
+      int hourGroup,
+      int? minuteGroup, {
+        int minuteDefault = 0,
+      }) {
+    int hour = int.parse(match.group(hourGroup)!);
+    int minute = minuteGroup != null && match.group(minuteGroup) != null
+        ? int.parse(match.group(minuteGroup)!)
+        : minuteDefault;
+    return nextOccurrenceTime(reference, hour, minute);
+  }
+
+  static DateTime? parseDate(String dateStr, {DateTime? reference}) {
+    DateTime ref = reference ?? DateTime.now();
+    final universalPattern =
+    RegExp(r'(\d{4})[-/](\d{1,2})[-/](\d{1,2})');
+    final universalMatch = universalPattern.firstMatch(dateStr);
+    if (universalMatch != null) {
+      final year = int.parse(universalMatch.group(1)!);
+      final month = int.parse(universalMatch.group(2)!);
+      final day = int.parse(universalMatch.group(3)!);
+      return DateTime(year, month, day);
+    }
+    final jaPattern = RegExp(r'(\d{4})年(\d{1,2})月(\d{1,2})日');
+    final jaMatch = jaPattern.firstMatch(dateStr);
+    if (jaMatch != null) {
+      final year = int.parse(jaMatch.group(1)!);
+      final month = int.parse(jaMatch.group(2)!);
+      final day = int.parse(jaMatch.group(3)!);
+      return DateTime(year, month, day);
+    }
+    final zhPattern = RegExp(r'(\d{4})年(\d{1,2})月(\d{1,2})号');
+    final zhMatch = zhPattern.firstMatch(dateStr);
+    if (zhMatch != null) {
+      final year = int.parse(zhMatch.group(1)!);
+      final month = int.parse(zhMatch.group(2)!);
+      final day = int.parse(zhMatch.group(3)!);
+      return DateTime(year, month, day);
+    }
+    return null;
   }
 }

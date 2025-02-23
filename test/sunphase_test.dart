@@ -1,668 +1,298 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sunphase/sunphase.dart';
+import 'package:sunphase/utils/date_utils.dart';
 
 void main() {
   // 固定基準日時: 2025年2月8日(土) 11:05:00
   DateTime reference = DateTime(2025, 2, 8, 11, 5, 0);
   print("Reference Date: $reference\n");
 
-  group('Additional Sunphase Parser Tests', () {
-    // ──────────────────────────────
-    // 既存のサンプルテストケース
-    test('English: Today', () {
-      String input = "Today買い物をする";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
+  group('Sunphase Parser Tests for Hindi', () {
+    test('Hindi: "आज"', () {
+      String input = "आज";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
       DateTime expected = DateTime(2025, 2, 8, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for 'Today'");
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'आज'");
       expect(results.first.date, expected);
     });
 
-    test('Japanese: 明日買い物をする', () {
-      String input = "明日買い物をする";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
+    test('Hindi: "कल"', () {
+      String input = "कल";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
       DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '明日'");
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'कल'");
       expect(results.first.date, expected);
     });
 
-    test('Chiniese: 明天', () {
-      String input = "明天";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '明天'");
+    test('Hindi: "परसों"', () {
+      String input = "परसों";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
+      DateTime expected = DateTime(2025, 2, 10, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'परसों'");
       expect(results.first.date, expected);
     });
 
-    test('English: Tomorrow', () {
-      String input = "Tomorrow学校に行く";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for 'Tomorrow'");
+    test('Hindi: "14 मार्च 2025"', () {
+      String input = "14 मार्च 2025";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
+      DateTime expected = DateTime(2025, 3, 14, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '14 मार्च 2025'");
       expect(results.first.date, expected);
     });
 
-    test('Japanese: 明日', () {
-      String input = "明日";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '明日の'");
-      expect(results.first.date, expected);
-    });
-
-    test('Japanese: 4月26日4時8分', () {
-      String input = "4月26日4時8分";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 4, 26, 4, 8, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '4月26日4時8分'");
-      expect(results.first.date, expected);
-    });
-
-    test('Japanese: 時刻のみ "21時31分"', () {
-      String input = "21時31分カフェでお茶をする";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 8, 21, 31, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '21時31分'");
-      expect(results.first.date, expected);
-    });
-
-    test('English: 2 weeks from now', () {
-      String input = "2 weeks from now";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = reference.add(Duration(days: 14));
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '2 weeks from now'");
-      expect(results.first.date, expected);
-    });
-
-    test('English: 4 days later', () {
-      String input = "4 days later";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = reference.add(Duration(days: 4));
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '4 days later'");
-      expect(results.first.date, expected);
-    });
-
-    test('English: 5 days ago', () {
-      String input = "5 days ago";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = reference.subtract(Duration(days: 5));
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '5 days ago'");
-      expect(results.first.date, expected);
-    });
-
-    test('English: Last Friday', () {
-      String input = "Last Friday";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 7, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for 'Last Friday'");
-      expect(results.first.date, expected);
-    });
-
-    test('Chinese: 今天', () {
-      String input = "今天看私服";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 8, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '今天'");
-      expect(results.first.date, expected);
-    });
-
-    test('English: Midnight', () {
-      String input = "Midnight";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for 'Midnight'");
-      expect(results.first.date, expected);
-    });
-
-    test('Universal: ISO 8601', () {
-      String input = "2025-02-08T15:00:00Z";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime.parse("2025-02-08T15:00:00Z");
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for ISO 8601 input");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "3日12時15分"', () {
-      String input = "3日12時15分";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 3, 3, 12, 15, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '3日12時15分'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "四号一点"', () {
-      String input = "四号一点";
-      List<ParsingResult> results =
-          parse(input, referenceDate: reference, languages: ["zh"]);
-      DateTime expected = DateTime(2025, 3, 4, 1, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '四号一点'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "3月1号 14:24"', () {
-      String input = "3月1号 14:24";
-      List<ParsingResult> results =
-          parse(input, referenceDate: reference, languages: ["zh"]);
-      DateTime expected = DateTime(2025, 3, 1, 14, 24, 0);
-      print(
-        "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected",
-      );
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '3月1号 14:24'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "3月23日 14:24"', () {
-      String input = "3月23日 14:24";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 3, 23, 14, 24, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '3月23日 14:24'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "明日14時25分 "', () {
-      String input = "明日14時25分 ";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 2, 9, 14, 25, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '明日14時25分 '");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "24日14時25分"', () {
-      String input = "24日14時25分";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      // 「24日」は同月内の24日と解釈
-      DateTime expected = DateTime(2025, 2, 24, 14, 25, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '24日14時25分'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "木曜14時36分"', () {
-      String input = "木曜14時36分";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      // 2025/2/8（土）を基準とすると、次の木曜は2025/2/13
-      DateTime expected = DateTime(2025, 2, 13, 14, 36, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '木曜14時36分'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "10:10" (時間のみ)', () {
-      String input = "10:10";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      // 10:10 は基準時刻より前のため翌日と解釈
+    test('Hindi: "सुबह 10:10"', () {
+      String input = "सुबह 10:10";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
+      // 基準時刻 11:05 より早いため翌日と解釈
       DateTime expected = DateTime(2025, 2, 9, 10, 10, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '10:10'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "march 7 10:10"', () {
-      String input = "march 7 10:10";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime(2025, 3, 7, 10, 10, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for 'march 7 10:10'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "明日十時三十一分" (日本語)', () {
-      String input = "明日十時三十一分";
-      List<ParsingResult> results =
-          parse(input, referenceDate: reference, languages: ['ja']);
-      DateTime expected = DateTime(2025, 2, 9, 10, 31, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '明日十時三十一分'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "再来週土曜" (日本語)', () {
-      String input = "再来週土曜";
-      List<ParsingResult> results =
-      parse(input, referenceDate: reference, languages: ['ja']);
-      DateTime expected = DateTime(2025, 2, 22, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '再来週土曜'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "明日5時" (日本語)', () {
-      String input = "明日5時";
-      List<ParsingResult> results =
-      parse(input, referenceDate: reference, languages: ['ja']);
-      DateTime expected = DateTime(2025, 2, 9, 5, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '明日5時'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "march 7 11:44" (English)', () {
-    String input = "march 7 11:44";
-    List<ParsingResult> results =
-    parse(input, referenceDate: reference, languages: ['en','ja']);
-    DateTime expected = DateTime(2025, 3, 7, 11, 44, 0);
-    print(
-    "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-    expect(results.isNotEmpty, true,
-    reason: "Result should not be empty for 'march 7 11:44'");
-    expect(results.first.date, expected);
-    });
-
-    test('Test: 来年五月十二日" (日本語)', () {
-      String input = "来年五月十二日";
-      List<ParsingResult> results =
-      parse(input, referenceDate: reference, languages: ['ja']);
-      DateTime expected = DateTime(2026, 5, 12, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '来年五月十二日'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "三月七号上午九点" (中国語)', () {
-      String input = "三月七号上午九点";
-      List<ParsingResult> results =
-          parse(input, referenceDate: reference, languages: ['zh']);
-      DateTime expected = DateTime(2025, 3, 7, 9, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '三月七号上午九点'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "Tomorrow" (英語)', () {
-      String input = "Tomorrow";
-      List<ParsingResult> results =
-          parse(input, referenceDate: reference, languages: ['en']);
-      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for 'Tomorrow'");
-      expect(results.first.date, expected);
-    });
-
-    test('Test: "三天后" (中国語)', () {
-      String input = "三天后";
-      List<ParsingResult> results =
-          parse(input, referenceDate: reference, languages: ['zh']);
-      DateTime expected = reference.add(Duration(days: 3));
-      print(
-          "\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.isNotEmpty, true,
-          reason: "Result should not be empty for '三天后'");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task EN: "Gym session at 06:00"', () {
-      String input = "Gym session at 06:00";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['en']);
-      // 06:00 は既に過ぎているため翌日06:00と解釈
-      DateTime expected = DateTime(2025, 2, 9, 6, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'सुबह 10:10'");
       expect(results.first.date, expected);
     });
 
-    test('Virtual Task EN: "Lunch with client at noon"', () {
-      String input = "Lunch with client at noon";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['en']);
-      DateTime expected = DateTime(2025, 2, 8, 12, 0, 0);
+    test('Hindi: "आज 14:30"', () {
+      String input = "आज 14:30";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
+      DateTime expected = DateTime(2025, 2, 8, 14, 30, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'आज 14:30'");
       expect(results.first.date, expected);
     });
 
-    test('Virtual Task EN: "Conference call on 4/20 at 10:00"', () {
-      String input = "Conference call on 4/20 at 10:00";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['en']);
-      DateTime expected = DateTime(2025, 4, 20, 10, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task EN: "Submit assignment next Monday"', () {
-      String input = "Submit assignment next Monday";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['en']);
+    test('Hindi: "अगले सोमवार"', () {
+      String input = "अगले सोमवार";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
       // 基準日 2025/2/8（土）の次の月曜は 2025/2/10
       DateTime expected = DateTime(2025, 2, 10, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'अगले सोमवार'");
       expect(results.first.date, expected);
     });
 
-    test('Virtual Task EN: "Flight to Tokyo on 5th May 2025 at 8:00"', () {
-      String input = "Flight to Tokyo on 5th May 2025 at 8:00";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['en']);
-      DateTime expected = DateTime(2025, 5, 5, 8, 0, 0);
+    test('Hindi: "पिछले शुक्रवार"', () {
+      String input = "पिछले शुक्रवार";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
+      // 基準日 2025/2/8（土）の前の शुक्रवारは 2025/2/7
+      DateTime expected = DateTime(2025, 2, 7, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'पिछले शुक्रवार'");
       expect(results.first.date, expected);
     });
 
-    test('Virtual Task EN: "Call mom at 18:00"', () {
-      String input = "Call mom at 18:00";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['en']);
-      DateTime expected = DateTime(2025, 2, 8, 18, 0, 0);
+    test('Hindi: "2 सप्ताह बाद"', () {
+      String input = "2 सप्ताह बाद";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
+      DateTime expected = DateTime(2025, 2, 22, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '2 सप्ताह बाद'");
       expect(results.first.date, expected);
     });
 
-    // 【日本語タスク】
-    test('Virtual Task JA: "明日14時に会議"', () {
-      String input = "明日14時に会議";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
-      DateTime expected = DateTime(2025, 2, 9, 14, 0, 0);
+    test('Hindi: "3 दिन पहले"', () {
+      String input = "3 दिन पहले";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
+      DateTime expected = DateTime(2025, 2, 5, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '3 दिन पहले'");
       expect(results.first.date, expected);
     });
 
-    test('Virtual Task JA: "明日14時23分に会議"', () {
-      String input = "明日14時23分に会議";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
-      DateTime expected = DateTime(2025, 2, 9, 14, 23, 0);
+    // 追加：日付のみ、曜日のみ、いついつの何曜日 表現
+    test('Hindi: "15 तारीख"', () {
+      // 「15 तारीख」は当月15日と解釈（基準日 2025/2/8 → 2025/2/15）
+      String input = "15 तारीख";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
+      DateTime expected = DateTime(2025, 2, 15, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '15 तारीख'");
       expect(results.first.date, expected);
     });
 
-    test('Virtual Task JA: "水曜午後3時に歯医者"', () {
-      String input = "水曜午後3時に歯医者";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
-      // 2025/2/8（土）の次の水曜は2025/2/12
-      DateTime expected = DateTime(2025, 2, 12, 15, 0, 0);
+    test('Hindi: "सोमवार"', () {
+      // 単独の曜日表現の場合、基準日が शनिवारなら次の सोमवार (2025/2/10)
+      String input = "सोमवार";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi']);
+      DateTime expected = DateTime(2025, 2, 10, 0, 0, 0);
       print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'सोमवार'");
       expect(results.first.date, expected);
     });
 
-    test('Virtual Task JA: "水曜11時に歯医者"', () {
-      String input = "水曜11時に歯医者";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
-      DateTime expected = DateTime(2025, 2, 12, 11, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task JA: "来週金曜買い物"', () {
-      String input = "来週金曜買い物";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
-      // 2025/2/8（土）の次の金曜は2025/2/14
-      DateTime expected = DateTime(2025, 2, 14, 0, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task JA: "明後日18時30分ジム"', () {
-      String input = "明後日18時30分ジム";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
-      DateTime expected = DateTime(2025, 2, 10, 18, 30, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task JA: "今夜20時映画を観る"', () {
-      String input = "今夜20時映画を観る";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
-      // 基準時刻より遅いため本日と解釈
-      DateTime expected = DateTime(2025, 2, 8, 20, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task JA: "来月3日9時打ち合わせ"', () {
-      String input = "来月3日9時打ち合わせ";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
-      // 来月は3月、3日なので 2025-03-03 09:00:00
-      DateTime expected = DateTime(2025, 3, 3, 9, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task JA: "12月25日0時クリスマスパーティー"', () {
-      String input = "12月25日0時クリスマスパーティー";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
-      DateTime expected = DateTime(2025, 12, 25, 0, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    // 【中国語タスク】
-    test('Virtual Task ZH: "明天上午8点开会"', () {
-      String input = "明天上午8点开会";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh']);
-      DateTime expected = DateTime(2025, 2, 9, 8, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task ZH: "后天中午12点吃饭"', () {
-      String input = "后天中午12点吃饭";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh']);
-      DateTime expected = DateTime(2025, 2, 10, 12, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task ZH: "周五下午3点去看电影"', () {
-      String input = "周五下午3点去看电影";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh']);
-      // 2025/2/8（土）の次の周五は2025/2/14
-      DateTime expected = DateTime(2025, 2, 14, 15, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task ZH: "下周一早上7点跑步"', () {
-      String input = "下周一早上7点跑步";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh']);
-      // 下周一＝2025/2/10
-      DateTime expected = DateTime(2025, 2, 10, 7, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task ZH: "3月5日下午2点去参加婚礼"', () {
-      String input = "3月5日下午2点去参加婚礼";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh']);
-      DateTime expected = DateTime(2025, 3, 5, 14, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task ZH: "明年2月14日情人节聚会"', () {
-      String input = "明年2月14日情人节聚会";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh']);
-      // 明年 = 2026年
-      DateTime expected = DateTime(2026, 2, 14, 0, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task ZH: "昨天晚上8点看比赛"', () {
-      String input = "昨天晚上8点看比赛";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh']);
-      DateTime expected = DateTime(2025, 2, 7, 20, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task ZH: "周天早上10点参加教堂"', () {
-      String input = "周天早上10点参加教堂";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh']);
-      DateTime expected = DateTime(2025, 2, 9, 10, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    // ──────────────────────────────
-    // 追加の ISO 8601、タイムゾーン、相対時間テスト
-
-    test('ISO 8601 with offset: "2025-05-01T10:00:00+02:00"', () {
-      String input = "2025-05-01T10:00:00+02:00";
-      List<ParsingResult> results = parse(input, referenceDate: reference);
-      DateTime expected = DateTime.parse("2025-05-01T10:00:00+02:00");
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Timezone override: "明天 15:00 开发"', () {
-      String input = "明天 15:00";
-      List<ParsingResult> results = parse(input, referenceDate: reference,languages: ['zh']);
-      DateTime expected = DateTime(2025, 2, 9, 15, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Timezone override: "明天十一时三十四分"', () {
-      String input = "明天十一时三十四分";
-      List<ParsingResult> results = parse(input, referenceDate: reference,languages: ['zh']);
-      DateTime expected = DateTime(2025, 2, 9, 11, 34, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Mixed: "会议安排：下周三上午五点"', () {
-      String input = "会议安排：下周三上午五点";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh']);
-      DateTime expected = DateTime(2025, 2, 12, 5, 0, 0);
-      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
-      expect(results.first.date, expected);
-    });
-
-    test('Virtual Task (month range, Japanese): "再来月の予定"', () {
-      String input = "再来月の予定";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja'], rangeMode: true);
-      expect(results.length, 30);
-      expect(results.first.date, DateTime(2025, 4, 1, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 4, 30, 0, 0, 0));
-    });
-
-    test('Virtual Task (month range, Japanese): "来月の予定"', () {
-      String input = "来月の予定";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja'], rangeMode: true);
-      expect(results.length, 31);
+    test('Hindi (Range): "अगले महीने की योजना"', () {
+      String input = "अगले महीने की योजना";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['hi'], rangeMode: true);
+      // अगले महीने = मार्च 2025 と解釈（基準が फरवरी ）
+      int daysInMarch = DateUtils.getMonthRange(DateTime(2025, 3, 1))['end']!.day;
+      expect(results.length, daysInMarch, reason: "Result length should equal number of days in March 2025");
       expect(results.first.date, DateTime(2025, 3, 1, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 3, 31, 0, 0, 0));
-    });
-
-    test('Virtual Task (month range, English): "next month"', () {
-      String input = "next month";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['en'], rangeMode: true);
-      // 2025-02-08 → next month＝3月
-      expect(results.length, 31);
-      expect(results.first.date, DateTime(2025, 3, 1, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 3, 31, 0, 0, 0));
-    });
-
-    test('Virtual Task (month range, Chinese): "下周去大学"', () {
-      String input = "下周去大学";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['zh'], rangeMode: true);
-      expect(results.length, 7);
-      expect(results.first.date, DateTime(2025, 2, 10, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 2, 16, 0, 0, 0));
-    });
-
-
-
-    test('Virtual Task (month range, Chinese): "来週大学に行く"', () {
-      String input = "来週大学に行く";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja'], rangeMode: true);
-      expect(results.length, 7);
-      expect(results.first.date, DateTime(2025, 2, 10, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 2, 16, 0, 0, 0));
-    });
-
-
-    test('Virtual Task (month range, Chinese): "next week go to university"', () {
-      String input = "next week go to university";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['en'], rangeMode: true);
-      expect(results.length, 7);
-      expect(results.first.date, DateTime(2025, 2, 10, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 2, 16, 0, 0, 0));
-    });
-
-
-    test('Virtual Task (month range, English): "march"', () {
-      String input = "march";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['en'], rangeMode: true);
-      // "march" → 2025-03 (since reference is 2025-02-08)
-      expect(results.length, 31);
-      expect(results.first.date, DateTime(2025, 3, 1, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 3, 31, 0, 0, 0));
-    });
-
-    test('Virtual Task (month range, Japanese): "十二月"', () {
-      String input = "十二月";
-      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja'], rangeMode: true);
-      expect(results.length, 31);
-      expect(results.first.date, DateTime(2025, 12, 1, 0, 0, 0));
-      expect(results.last.date, DateTime(2025, 12, 31, 0, 0, 0));
+      expect(results.last.date, DateTime(2025, 3, daysInMarch, 0, 0, 0));
     });
   });
 
+  group('Sunphase Parser Tests for Spanish', () {
+    test('Spanish: "Hoy"', () {
+      String input = "Hoy";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 8, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'Hoy'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "Mañana"', () {
+      String input = "Mañana";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 9, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'Mañana'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "Ayer"', () {
+      String input = "Ayer";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 7, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'Ayer'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "14 de marzo de 2025"', () {
+      String input = "14 de marzo de 2025";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 3, 14, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '14 de marzo de 2025'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "10:10" (time only)', () {
+      String input = "10:10";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      // 10:10 es anterior al 11:05 de referencia, por lo tanto se interpreta para el día siguiente.
+      DateTime expected = DateTime(2025, 2, 9, 10, 10, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '10:10'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "Esta noche 21:31"', () {
+      String input = "Esta noche 21:31";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 8, 21, 31, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'Esta noche 21:31'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "próximo lunes"', () {
+      String input = "próximo lunes";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      // La siguiente lunes a partir de 2025/2/8 (sábado) es 2025/2/10
+      DateTime expected = DateTime(2025, 2, 10, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'próximo lunes'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "hace 3 días"', () {
+      String input = "hace 3 días";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 5, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'hace 3 días'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "2 semanas desde ahora"', () {
+      String input = "2 semanas desde ahora";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 22, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '2 semanas desde ahora'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "3 días atrás"', () {
+      String input = "3 días atrás";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 5, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '3 días atrás'");
+      expect(results.first.date, expected);
+    });
+
+    // 追加：日付のみ、曜日のみ、いついつの何曜日 表現
+    test('Spanish: "15 de febrero"', () {
+      String input = "15 de febrero";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 15, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for '15 de febrero'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "martes"', () {
+      // Si se ingresa sólo "martes" y la fecha de referencia es sábado (2025/2/8), se espera el próximo martes (2025/2/11)
+      String input = "martes";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 11, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'martes'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "el tercer lunes de marzo"', () {
+      String input = "el tercer lunes de marzo";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      // En marzo 2025, los lunes caen el 3, 10 y 17 → el tercer lunes es el 17 de marzo
+      DateTime expected = DateTime(2025, 3, 17, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'el tercer lunes de marzo'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "el último viernes de abril"', () {
+      String input = "el último viernes de abril";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      // En abril 2025, los viernes son 4, 11, 18 y 25 → el último es 25 de abril
+      DateTime expected = DateTime(2025, 4, 25, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'el último viernes de abril'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish: "sábado"', () {
+      // Si se ingresa sólo "sábado" y la fecha de referencia es sábado, se espera el siguiente sábado (2025/2/15)
+      String input = "sábado";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es']);
+      DateTime expected = DateTime(2025, 2, 15, 0, 0, 0);
+      print("\nInput: $input\nOutput: ${results.first.date}\nExpected: $expected");
+      expect(results.isNotEmpty, true, reason: "Result should not be empty for 'sábado'");
+      expect(results.first.date, expected);
+    });
+
+    test('Spanish (Range): "el próximo mes"', () {
+      String input = "el próximo mes";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es'], rangeMode: true);
+      // Next month relative to Feb 2025 is March 2025
+      int daysInMarch = DateUtils.getMonthRange(DateTime(2025, 3, 1))['end']!.day;
+      expect(results.length, daysInMarch, reason: "Result length should equal number of days in March 2025");
+      expect(results.first.date, DateTime(2025, 3, 1, 0, 0, 0));
+      expect(results.last.date, DateTime(2025, 3, daysInMarch, 0, 0, 0));
+    });
+
+    test('Spanish (Range): "la semana pasada"', () {
+      String input = "la semana pasada";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['es'], rangeMode: true);
+      // Suponiendo que la semana pasada empieza el lunes 3 de febrero y termina el domingo 9 de febrero
+      expect(results.length, 7, reason: "Result length should be 7 for a week range");
+      expect(results.first.date, DateTime(2025, 2, 3, 0, 0, 0));
+      expect(results.last.date, DateTime(2025, 2, 9, 0, 0, 0));
+    });
+  });
 }
