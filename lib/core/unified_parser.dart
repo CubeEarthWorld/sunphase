@@ -9,6 +9,8 @@ import '../languages/zh_def.dart';
 import '../languages/en_def.dart';
 import '../languages/es_def.dart';
 import '../languages/hi_def.dart';
+import '../languages/ko_def.dart';
+import '../languages/ru_def.dart';
 
 class UnifiedParser {
   static final Map<String, LanguageDefinition> languages = {
@@ -17,6 +19,8 @@ class UnifiedParser {
     'en': EnDefinitions.definition,
     'es': EsDefinitions.definition,
     'hi': HiDefinitions.definition,
+    'ko': KoDefinitions.definition,
+    'ru': RuDefinitions.definition,
   };
 
   final List<String> languageCodes;

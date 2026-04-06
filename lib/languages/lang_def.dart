@@ -95,3 +95,19 @@ class LanguageDefinition {
     required this.patterns,
   });
 }
+
+/// Universal patterns that can be shared across languages
+class UniversalPatterns {
+  // Time colon format: HH:MM (used by most languages)
+  static final timeColon = PatternDef(
+    name: 'universal_timeColon',
+    regex: RegExp(r'(\d{1,2}):(\d{2})'),
+    extract: (match, np, ref) => RawMatch(
+      startIndex: match.start,
+      endIndex: match.end,
+      text: match.group(0)!,
+      hour: int.parse(match.group(1)!),
+      minute: int.parse(match.group(2)!),
+    ),
+  );
+}

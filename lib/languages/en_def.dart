@@ -3,6 +3,7 @@ import '../core/number_parser.dart';
 import 'lang_def.dart';
 
 class EnDefinitions {
+  static const arabicParser = ArabicNumberParser();
   static const Map<String, int> months = {
     'january': 1, 'jan': 1, 'february': 2, 'feb': 2, 'march': 3, 'mar': 3,
     'april': 4, 'apr': 4, 'may': 5, 'june': 6, 'jun': 6, 'july': 7, 'jul': 7,
@@ -19,9 +20,9 @@ class EnDefinitions {
     'today': 0, 'tomorrow': 1, 'yesterday': -1,
   };
 
-  static const arabicParser = ArabicNumberParser();
-
   static final patterns = [
+    // Universal pattern: time colon (HH:MM)
+    UniversalPatterns.timeColon,
     // In X days: "in \d+ days"
     PatternDef(
       name: 'en_inDays',
@@ -264,20 +265,6 @@ class EnDefinitions {
         final period = match.group(3)!.toLowerCase();
         if (period == 'pm' && hour < 12) hour += 12;
         if (period == 'am' && hour == 12) hour = 0;
-        return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          hour: hour, minute: minute,
-        );
-      },
-    ),
-
-    // Time: HH:MM
-    PatternDef(
-      name: 'en_timeColon',
-      regex: RegExp(r'(\d{1,2}):(\d{2})'),
-      extract: (match, np, ref) {
-        final hour = int.parse(match.group(1)!);
-        final minute = int.parse(match.group(2)!);
         return RawMatch(
           startIndex: match.start, endIndex: match.end, text: match.group(0)!,
           hour: hour, minute: minute,

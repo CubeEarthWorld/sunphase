@@ -28,6 +28,9 @@ class ZhDefinitions {
   static final numberParser = CJKNumberParser(chineseDigits);
 
   static final patterns = [
+    // Universal pattern: time colon (HH:MM)
+    UniversalPatterns.timeColon,
+
     // YYYY年MM月DD日: "明年2月14日"
     PatternDef(
       name: 'zh_yearMonthDay',
@@ -427,23 +430,6 @@ class ZhDefinitions {
           endIndex: match.end,
           text: word,
           weekday: weekdays[word] ?? 1,
-        );
-      },
-    ),
-
-    // Time colon: HH:MM
-    PatternDef(
-      name: 'zh_timeColon',
-      regex: RegExp(r'(\d{1,2}):(\d{2})'),
-      extract: (match, np, ref) {
-        int hour = int.parse(match.group(1)!);
-        int minute = int.parse(match.group(2)!);
-        return RawMatch(
-          startIndex: match.start,
-          endIndex: match.end,
-          text: match.group(0)!,
-          hour: hour,
-          minute: minute,
         );
       },
     ),

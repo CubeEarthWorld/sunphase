@@ -34,6 +34,9 @@ class EsDefinitions {
   }
 
   static final patterns = [
+    // Universal pattern: time colon (HH:MM)
+    UniversalPatterns.timeColon,
+
     // el día NN a las HH:MM
     PatternDef(
       name: 'es_elDiaTime',
@@ -212,16 +215,6 @@ class EsDefinitions {
           weekday: weekdays[day] ?? 1,
         );
       },
-    ),
-
-    // Time: HH:MM
-    PatternDef(
-      name: 'es_timeColon',
-      regex: RegExp(r'(\d{1,2}):(\d{2})'),
-      extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-        hour: int.parse(match.group(1)!), minute: int.parse(match.group(2)!),
-      ),
     ),
 
     // Esta noche HH:MM
