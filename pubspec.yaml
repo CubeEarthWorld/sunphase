@@ -3,8 +3,8 @@ description: "A natural language date parser."
 version: 0.0.1
 
 environment:
-  sdk: ^3.6.1
-  flutter: ">=1.17.0"
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
 
 dependencies:
   flutter:
@@ -13,4 +13,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  test: ^1.25.8
+  test: any

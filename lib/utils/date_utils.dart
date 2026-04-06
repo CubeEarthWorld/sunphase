@@ -33,11 +33,14 @@ class DateUtils {
     return DateTime(year, month, day, date.hour, date.minute, date.second);
   }
 
-  static DateTime firstDayOfMonth(DateTime date) => DateTime(date.year, date.month, 1);
+  static DateTime firstDayOfMonth(DateTime date) =>
+      DateTime(date.year, date.month, 1);
 
-  static DateTime firstDayOfNextMonth(DateTime date) => firstDayOfMonth(addMonths(date, 1));
+  static DateTime firstDayOfNextMonth(DateTime date) =>
+      firstDayOfMonth(addMonths(date, 1));
 
-  static DateTime firstDayOfPreviousMonth(DateTime date) => firstDayOfMonth(addMonths(date, -1));
+  static DateTime firstDayOfPreviousMonth(DateTime date) =>
+      firstDayOfMonth(addMonths(date, -1));
 
   static DateTime nextWeekday(DateTime date, int targetWeekday) {
     int diff = (targetWeekday - date.weekday + 7) % 7;
@@ -50,17 +53,25 @@ class DateUtils {
   }
 
   static DateTime nextOccurrenceTime(DateTime reference, int hour, int minute) {
-    DateTime candidate = DateTime(reference.year, reference.month, reference.day, hour, minute);
-    return candidate.isAfter(reference) ? candidate : candidate.add(Duration(days: 1));
+    DateTime candidate = DateTime(
+      reference.year,
+      reference.month,
+      reference.day,
+      hour,
+      minute,
+    );
+    return candidate.isAfter(reference)
+        ? candidate
+        : candidate.add(Duration(days: 1));
   }
 
   static DateTime parseTimeFromMatch(
-      RegExpMatch match,
-      DateTime reference,
-      int hourGroup,
-      int? minuteGroup, {
-        int minuteDefault = 0,
-      }) {
+    RegExpMatch match,
+    DateTime reference,
+    int hourGroup,
+    int? minuteGroup, {
+    int minuteDefault = 0,
+  }) {
     int hour = int.parse(match.group(hourGroup)!);
     int minute = minuteGroup != null && match.group(minuteGroup) != null
         ? int.parse(match.group(minuteGroup)!)
@@ -69,9 +80,7 @@ class DateUtils {
   }
 
   static DateTime? parseDate(String dateStr, {DateTime? reference}) {
-    DateTime ref = reference ?? DateTime.now();
-    final universalPattern =
-    RegExp(r'(\d{4})[-/](\d{1,2})[-/](\d{1,2})');
+    final universalPattern = RegExp(r'(\d{4})[-/](\d{1,2})[-/](\d{1,2})');
     final universalMatch = universalPattern.firstMatch(dateStr);
     if (universalMatch != null) {
       final year = int.parse(universalMatch.group(1)!);
