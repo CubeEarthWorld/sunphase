@@ -31,6 +31,11 @@ When only a **time** is given (e.g. `"10:10"`) and no date context is present, t
 import 'package:sunphase/sunphase.dart';
 
 void main() {
+  // NOTE: All examples below assume the current date/time is
+  //   2025-02-09 21:13:33 (local time, no timezone specified).
+  // When no `referenceDate` is provided, DateTime.now() is used
+  // as the anchor. Your actual output will differ accordingly.
+
   // Parse a relative day — reference date defaults to DateTime.now()
   List<ParsingResult> results = parse('Today');
   print(results); // [[0] "today" -> 2025-02-09 00:00:00.000]
