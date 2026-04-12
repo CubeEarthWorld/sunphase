@@ -1,4 +1,19 @@
 // lib/languages/ja_def.dart
+//
+// Japanese language definition for Sunphase.
+//
+// Recognised expression types:
+//   - Absolute dates     : 2025年3月7日, 3月7日, 7日
+//   - Relative days      : 今日, 明日, 明後日, 昨日, 一昨日
+//   - Relative offsets   : 3日後, 2週間後, 1ヶ月後, 来年
+//   - Named weekdays     : 月曜日, 火曜, 土 (with 来週/先週 prefix)
+//   - Week expressions   : 今週, 来週, 先週, 週末
+//   - Month expressions  : 来月, 先月
+//   - Time expressions   : 午前10時30分, 午後3時, 22時, 10:30
+//   - Special            : 野獣先輩 (easter egg — resolves to Aug 10 11:45:14)
+//
+// Supports kanji digits (一二三…十) via `CJKNumberParser`.
+
 import '../core/number_parser.dart';
 import 'lang_def.dart';
 

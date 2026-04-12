@@ -1,22 +1,38 @@
 // lib/core/ranker.dart
+//
+// Overlap filtering and result ranking for raw matches.
+//
+// When multiple patterns match overlapping substrings of the input (e.g.
+// "March 7 10:10" triggers both a full-date pattern and a bare-time
+// pattern), we need to pick the most informative non-overlapping subset.
+// `ResultRanker.filterOverlapping` does this by ranking on specificity
+// first, text length second.
+
 import 'result.dart';
 
-/// Specificity-based result ranking (replaces naive longest-match)
+/// Utility methods for choosing the best set of parse matches.
 class ResultRanker {
-  /// Select the best non-overlapping results.
-  /// In non-range mode: returns the single best result.
-  /// For overlapping matches: prefers higher specificity, then longer text.
-  static List<ParsingResult> rank(List<ParsingResult> results, {bool rangeMode = false}) {
+  /// Returns the single best `ParsingResult` in point-in-time mode, or
+  /// the full list unchanged in range mode.
+  ///
+  /// "Best" is a proxy for specificity: we prefer the match whose
+  /// matched text is longest (longer match ≈ more context consumed ≈
+  /// more date fields populated). The `DateResolver` already picks the
+  /// best `RawMatch` before creating `ParsingResult`s, so this is
+  /// mostly a safety net.
+  static List<ParsingResult> rank(
+    List<ParsingResult> results, {
+    bool rangeMode = false,
+  }) {
     if (results.isEmpty) return [];
 
     if (rangeMode) {
-      // In range mode, keep all results for RangeMode expansion
+      // Keep everything so that `RangeMode` can expand them later.
       return results;
     }
 
-    // Sort by: specificity-proxy (text length as primary), then index
-    // We use text length as a proxy since ParsingResult doesn't carry specificity.
-    // The resolver should have already selected the best raw matches.
+    // Primary sort: longer matched text → richer expression.
+    // Secondary sort: earlier start index → appears first in the input.
     results.sort((a, b) {
       int cmp = b.text.length.compareTo(a.text.length);
       if (cmp != 0) return cmp;
@@ -26,8 +42,16 @@ class ResultRanker {
     return [results.first];
   }
 
-  /// Select best RawMatch-level results before resolution.
-  /// Removes overlapping matches, keeping higher specificity ones.
+  /// Filters a list of matches, removing any that overlap with a
+  /// higher-priority match.
+  ///
+  /// Priority is determined first by [getSpecificity] (number of date
+  /// fields populated), then by [getLength] (raw character span). A
+  /// match is kept only if no already-accepted match shares at least
+  /// one character position with it.
+  ///
+  /// This is a generic method so it can operate on `RawMatch` objects
+  /// (before resolution) as well as on any other type.
   static List<T> filterOverlapping<T>(
     List<T> matches,
     int Function(T) getStart,
@@ -37,7 +61,8 @@ class ResultRanker {
   ) {
     if (matches.isEmpty) return [];
 
-    // Sort by specificity (desc), then length (desc)
+    // Sort best candidates first so that greedily accepting the first
+    // non-overlapping match gives the right result.
     matches.sort((a, b) {
       int cmp = getSpecificity(b).compareTo(getSpecificity(a));
       if (cmp != 0) return cmp;
@@ -46,6 +71,8 @@ class ResultRanker {
 
     List<T> selected = [];
     for (var m in matches) {
+      // An overlap exists when two character ranges share at least one
+      // position: [s1, e1) ∩ [s2, e2) is non-empty iff s1 < e2 && s2 < e1.
       bool overlaps = selected.any((s) =>
           getStart(m) < getEnd(s) && getStart(s) < getEnd(m));
       if (!overlaps) {

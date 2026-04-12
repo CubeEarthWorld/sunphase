@@ -1,4 +1,19 @@
 // lib/languages/ko_def.dart
+//
+// Korean language definition for Sunphase.
+//
+// Recognised expression types:
+//   - Absolute dates     : 2025년 3월 7일
+//   - Relative days      : 오늘 (today), 내일 (tomorrow), 어제 (yesterday),
+//                          모레 (day after tomorrow), 그저께 (day before yesterday)
+//   - Relative offsets   : 3일 후, 2주 후, 1개월 후, 내년
+//   - Named weekdays     : 월요일, 화요일, … (with 다음/지난 prefix)
+//   - Week expressions   : 이번 주, 다음 주, 지난 주, 주말
+//   - Month expressions  : 다음 달, 지난 달
+//   - Time expressions   : 오전 9시, 오후 3시 30분, 10:30
+//
+// Uses plain ASCII digit parsing.
+
 import '../core/number_parser.dart';
 import 'lang_def.dart';
 

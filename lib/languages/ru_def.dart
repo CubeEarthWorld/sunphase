@@ -1,4 +1,18 @@
 // lib/languages/ru_def.dart
+//
+// Russian language definition for Sunphase.
+//
+// Recognised expression types:
+//   - Relative days      : сегодня (today), завтра (tomorrow),
+//                          вчера (yesterday), послезавтра (day after tomorrow)
+//   - Relative offsets   : через 3 дня, 2 недели назад, в следующем месяце
+//   - Named weekdays     : понедельник, вторник, … (with следующий/прошлый prefix)
+//   - Week expressions   : на этой неделе, на следующей неделе, на прошлой неделе
+//   - Month expressions  : январь, февраль, … следующий месяц, прошлый месяц
+//   - Time expressions   : 10:30, в 9 утра, в 3 вечера
+//
+// Uses plain ASCII digit parsing.
+
 import '../core/number_parser.dart';
 import 'lang_def.dart';
 

@@ -1,4 +1,18 @@
 // lib/languages/zh_def.dart
+//
+// Chinese (Simplified) language definition for Sunphase.
+//
+// Recognised expression types:
+//   - Absolute dates     : 2025年3月7号, 3月7号, 7号
+//   - Relative days      : 今天, 明天, 后天, 昨天, 前天
+//   - Relative offsets   : 3天后, 2周后, 1个月后, 明年
+//   - Named weekdays     : 星期一, 周三, 礼拜五 (with 下周/上周 prefix)
+//   - Week expressions   : 本周, 下周, 上周, 周末
+//   - Month expressions  : 下个月, 上个月
+//   - Time expressions   : 上午9点, 下午3点半, 凌晨2点, 10:30
+//
+// Supports Chinese digit characters (一二三…十) via `CJKNumberParser`.
+
 import '../core/number_parser.dart';
 import 'lang_def.dart';
 

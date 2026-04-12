@@ -1,4 +1,17 @@
 // lib/languages/es_def.dart
+//
+// Spanish language definition for Sunphase.
+//
+// Recognised expression types:
+//   - Relative days      : hoy (today), mañana (tomorrow), ayer (yesterday)
+//   - Relative offsets   : en 3 días, hace 2 semanas, próxima semana
+//   - Named weekdays     : lunes, martes, … (with próximo/pasado prefix)
+//   - Week expressions   : esta semana, próxima semana, semana pasada
+//   - Month expressions  : enero, febrero, … próximo mes, mes pasado
+//   - Time expressions   : 10:30, 3 de la tarde, mediodía, medianoche
+//
+// Uses plain ASCII digit parsing.
+
 import '../core/number_parser.dart';
 import '../utils/date_utils.dart';
 import 'lang_def.dart';

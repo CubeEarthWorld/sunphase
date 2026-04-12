@@ -1,11 +1,31 @@
 // lib/core/resolver.dart
+//
+// Translates a `RawMatch` (the intermediate, partially-resolved output
+// of a language pattern) into a final `ParsingResult` with a concrete
+// `DateTime`.
+//
+// The resolver is the single place where the "inference rules" for
+// incomplete expressions live:
+//   * bare times roll forward to their next occurrence
+//   * a weekday name without a qualifier resolves to the *next* one
+//   * a month+day without a year resolves with a future bias
+//   * etc.
+//
+// Keeping these rules centralized means every language pattern can stay
+// focused on extraction and let the resolver decide what the extracted
+// fields actually mean in calendar terms.
+
 import '../languages/lang_def.dart';
 import '../utils/date_utils.dart';
 import 'result.dart';
 
-/// Centralized date resolution: converts RawMatch → ParsingResult
+/// Centralized date resolution: converts `RawMatch` -> `ParsingResult`.
 class DateResolver {
+  /// Resolves a single [m] into a [ParsingResult] using [ref] as the
+  /// anchor for every relative field.
   static ParsingResult resolve(RawMatch m, DateTime ref) {
+    // Extract time first so each date branch below only has to worry
+    // about the year/month/day components.
     int hour = m.hour ?? 0;
     int minute = m.minute ?? 0;
     if (m.pmFlag && hour < 12) hour += 12;
@@ -14,25 +34,42 @@ class DateResolver {
     DateTime date;
 
     if (!m.hasDateInfo && hasTime) {
-      // Time only → next occurrence
+      // Time-only expression (e.g. "10:10"): roll forward to the next
+      // time this clock reading occurs.
       date = DateUtils.nextOccurrenceTime(ref, hour, minute);
     } else if (m.dayOffset != null) {
-      // Relative day (today, tomorrow, yesterday, etc.)
-      DateTime base =
-          DateTime(ref.year, ref.month, ref.day).add(Duration(days: m.dayOffset!));
+      // Relative day ("today", "tomorrow", "yesterday", "in 3 days").
+      DateTime base = DateTime(ref.year, ref.month, ref.day)
+          .add(Duration(days: m.dayOffset!));
       date = DateTime(base.year, base.month, base.day, hour, minute);
-    } else if (m.weekOffset != null && m.weekday != null && m.month == null && m.day == null && m.monthOffset == null) {
-      // Weekday with week offset
+    } else if (m.weekOffset != null &&
+        m.weekday != null &&
+        m.month == null &&
+        m.day == null &&
+        m.monthOffset == null) {
+      // "next Monday", "last Friday" — weekday combined with a
+      // week-level offset.
       date = _resolveWeekday(m, ref, hour, minute);
-    } else if (m.weekOffset != null && m.weekday == null && m.month == null && m.day == null && m.dayOffset == null) {
-      // Week offset without weekday → convert to day offset
+    } else if (m.weekOffset != null &&
+        m.weekday == null &&
+        m.month == null &&
+        m.day == null &&
+        m.dayOffset == null) {
+      // Week offset without a weekday ("2 weeks from now"): treat it
+      // as a day offset of `weekOffset * 7`.
       int dayOffset = m.weekOffset! * 7;
-      DateTime base = DateTime(ref.year, ref.month, ref.day).add(Duration(days: dayOffset));
+      DateTime base = DateTime(ref.year, ref.month, ref.day)
+          .add(Duration(days: dayOffset));
       date = DateTime(base.year, base.month, base.day, hour, minute);
-    } else if (m.weekday != null && m.month == null && m.day == null && m.monthOffset == null) {
-      // Weekday resolution
+    } else if (m.weekday != null &&
+        m.month == null &&
+        m.day == null &&
+        m.monthOffset == null) {
+      // Bare weekday ("Monday") — resolves to the next occurrence.
       date = _resolveWeekday(m, ref, hour, minute);
     } else {
+      // Everything else is a calendar-date expression with at least
+      // one of year/month/day set.
       date = _resolveCalendarDate(m, ref, hour, minute, hasTime);
     }
 
@@ -45,19 +82,29 @@ class DateResolver {
     );
   }
 
-  static DateTime _resolveWeekday(RawMatch m, DateTime ref, int hour, int minute) {
+  /// Resolves a weekday expression, honoring an optional week offset.
+  static DateTime _resolveWeekday(
+    RawMatch m,
+    DateTime ref,
+    int hour,
+    int minute,
+  ) {
     int weekOffset = m.weekOffset ?? 0;
     DateTime base;
 
     if (weekOffset == 0) {
+      // No offset — pick the next occurrence of the weekday.
       base = DateUtils.nextWeekday(ref, m.weekday!);
     } else if (weekOffset < 0) {
-      // Negative week offset (past)
-      // For "last Friday" with weekOffset=-7, find the previous Friday
+      // Past reference ("last Friday"): find the most recent matching
+      // weekday strictly before `ref`.
       int diff = (ref.weekday - m.weekday! + 7) % 7;
       diff = diff == 0 ? 7 : diff;
       base = ref.subtract(Duration(days: diff));
     } else {
+      // Future reference. weekOffset == 1 is the same as "next".
+      // For larger values ("in 3 weeks on Monday") we first jump to
+      // the next matching weekday and then add full weeks.
       base = DateUtils.nextWeekday(ref, m.weekday!);
       if (weekOffset > 1) {
         base = base.add(Duration(days: (weekOffset - 1) * 7));
@@ -66,38 +113,53 @@ class DateResolver {
     return DateTime(base.year, base.month, base.day, hour, minute);
   }
 
+  /// Resolves a calendar-date expression (has at least one of
+  /// year/month/day and/or month/year offsets).
   static DateTime _resolveCalendarDate(
-      RawMatch m, DateTime ref, int hour, int minute, bool hasTime) {
+    RawMatch m,
+    DateTime ref,
+    int hour,
+    int minute,
+    bool hasTime,
+  ) {
     int year = ref.year;
     int month = ref.month;
     int day = m.day ?? 1;
 
-    // Year offset (来年, next year, etc.)
+    // Year offset ("next year", "来年"): shift from the reference.
     if (m.yearOffset != null) {
       year = ref.year + m.yearOffset!;
     }
 
-    // Month offset (来月, next month, etc.)
+    // Month offset ("next month", "来月"): move the month pointer
+    // before we apply any explicit month/day below.
     if (m.monthOffset != null) {
-      DateTime base = DateUtils.addMonths(DateTime(ref.year, ref.month, 1), m.monthOffset!);
+      DateTime base = DateUtils.addMonths(
+        DateTime(ref.year, ref.month, 1),
+        m.monthOffset!,
+      );
       year = base.year;
       month = base.month;
       if (m.day == null) day = 1;
     }
 
-    // Explicit month
+    // Explicit month takes precedence over the offset-derived one.
     if (m.month != null) {
       month = m.month!;
     }
 
-    // Explicit year (overrides offset)
+    // Explicit year trumps every inference rule below.
     if (m.year != null) {
       year = m.year!;
       return DateTime(year, month, day, hour, minute);
     }
 
-    // Infer year for month+day (future bias)
-    if (m.month != null && m.day != null && m.yearOffset == null && m.monthOffset == null) {
+    // Month + day with no year: apply a "future bias" so that a date
+    // that has already passed this year is interpreted as next year.
+    if (m.month != null &&
+        m.day != null &&
+        m.yearOffset == null &&
+        m.monthOffset == null) {
       DateTime candidate = DateTime(year, month, day);
       if (candidate.isBefore(DateTime(ref.year, ref.month, ref.day))) {
         if (month < ref.month || (month == ref.month && day < ref.day)) {
@@ -107,16 +169,23 @@ class DateResolver {
       return DateTime(year, month, day, hour, minute);
     }
 
-    // Day-only: infer month (future bias)
-    if (m.day != null && m.month == null && m.monthOffset == null && m.yearOffset == null) {
-      // First check if day is valid for current month
-      int lastDayOfCurrentMonth = DateUtils.getMonthRange(DateTime(year, month, 1))['end']!.day;
+    // Day-only expression ("the 20th"): infer the nearest future month
+    // that actually contains that day.
+    if (m.day != null &&
+        m.month == null &&
+        m.monthOffset == null &&
+        m.yearOffset == null) {
+      // If the requested day doesn't even exist this month (e.g. "the
+      // 31st" in April), jump straight to the next month.
+      int lastDayOfCurrentMonth =
+          DateUtils.getMonthRange(DateTime(year, month, 1))['end']!.day;
       if (day > lastDayOfCurrentMonth) {
-        // Day exceeds current month, go to next month
         DateTime next = DateUtils.addMonths(DateTime(year, month, 1), 1);
         year = next.year;
         month = next.month;
       } else {
+        // Otherwise keep the current month only if the resulting date
+        // is strictly in the future; else roll into next month.
         DateTime candidate = DateTime(year, month, day);
         if (!candidate.isAfter(DateTime(ref.year, ref.month, ref.day))) {
           DateTime next = DateUtils.addMonths(DateTime(year, month, 1), 1);
@@ -127,24 +196,34 @@ class DateResolver {
       return DateTime(year, month, day, hour, minute);
     }
 
-    // Range expressions (month/week modifiers without day)
+    // Range-type expressions that didn't carry a concrete day. These
+    // are handled by anchoring to the first day of the relevant week
+    // or month; `RangeMode` later expands them into per-day results.
     if (m.rangeType != null && m.day == null && m.dayOffset == null) {
       if (m.rangeType == "week") {
-        // Week ranges resolved via weekOffset
         if (m.weekOffset != null) {
           if (m.weekOffset == 0) {
+            // "this week" — Monday of the current week.
             DateTime base = DateUtils.firstDayOfWeek(ref);
             return DateTime(base.year, base.month, base.day);
           } else if (m.weekOffset == 1) {
-            // Next week: Monday of the week after the current week
+            // "next week" — Monday one week after the current week.
             DateTime thisWeekMonday = DateUtils.firstDayOfWeek(ref);
-            DateTime nextWeekMonday = thisWeekMonday.add(Duration(days: 7));
-            return DateTime(nextWeekMonday.year, nextWeekMonday.month, nextWeekMonday.day);
+            DateTime nextWeekMonday =
+                thisWeekMonday.add(Duration(days: 7));
+            return DateTime(
+              nextWeekMonday.year,
+              nextWeekMonday.month,
+              nextWeekMonday.day,
+            );
           } else if (m.weekOffset == -1) {
-            DateTime base = DateUtils.firstDayOfWeek(ref).subtract(Duration(days: 7));
+            // "last week" — Monday of the previous week.
+            DateTime base =
+                DateUtils.firstDayOfWeek(ref).subtract(Duration(days: 7));
             return DateTime(base.year, base.month, base.day);
           } else if (m.weekOffset == -7) {
-            // 週末: next Sunday
+            // Special sentinel used by Japanese "週末" (weekend):
+            // resolves to the next upcoming Sunday.
             int diff = (7 - ref.weekday) % 7;
             diff = diff == 0 ? 7 : diff;
             DateTime base = ref.add(Duration(days: diff));

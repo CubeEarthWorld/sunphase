@@ -1,4 +1,20 @@
 // lib/languages/en_def.dart
+//
+// English language definition for Sunphase.
+//
+// Recognised expression types (case-insensitive):
+//   - Relative days      : today, tomorrow, yesterday
+//   - Relative offsets   : in 3 days, 2 weeks from now, 5 days ago
+//   - Named weekdays     : Monday, Tue, next Friday, last Sunday
+//   - Week expressions   : this week, next week, last week
+//   - Month expressions  : March, next month, last month
+//   - Full calendar dates: March 14, March 14 2025, 2025/03/14, MM/DD/YYYY
+//   - Ordinals           : 16th, the 3rd, on the 20th at 3pm
+//   - Time expressions   : 10:30, 3pm, 3:30 AM, midnight, noon
+//   - Year expressions   : next year, last year
+//
+// Uses plain ASCII digit parsing — no special number vocabulary needed.
+
 import '../core/number_parser.dart';
 import 'lang_def.dart';
 

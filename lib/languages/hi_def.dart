@@ -1,4 +1,18 @@
 // lib/languages/hi_def.dart
+//
+// Hindi language definition for Sunphase.
+//
+// Recognised expression types:
+//   - Relative days      : आज (today), कल (tomorrow/yesterday by context),
+//                          परसों (day after tomorrow / day before yesterday)
+//   - Relative offsets   : 3 दिन बाद, 2 हफ्ते बाद, अगले महीने
+//   - Named weekdays     : सोमवार, मंगलवार, … (with अगले/पिछले prefix)
+//   - Week expressions   : इस हफ्ते, अगले हफ्ते, पिछले हफ्ते
+//   - Month expressions  : जनवरी, फरवरी, … अगला महीना, पिछला महीना
+//   - Time expressions   : 10:30, सुबह 9 बजे, शाम 3 बजे
+//
+// Uses plain ASCII digit parsing.
+
 import '../core/number_parser.dart';
 import 'lang_def.dart';
 
