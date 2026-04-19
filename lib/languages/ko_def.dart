@@ -82,6 +82,29 @@ class KoDefinitions {
       },
     ),
 
+    // Full datetime: YYYY년MM월DD일HH시MM분
+    PatternDef(
+      name: 'ko_fullDateTime',
+      regex: RegExp(r'(\d{4})년' + _n + r'월' + _n + r'일\s*' + _n + r'시(?:\s*' + _n + r'분)?'),
+      extract: (match, np, ref) {
+        final year = int.parse(match.group(1)!);
+        final month = np.tryParse(match.group(2)!) ?? 1;
+        final day = np.tryParse(match.group(3)!) ?? 1;
+        final hour = np.tryParse(match.group(4)!) ?? 0;
+        final minute = match.group(5) != null ? (np.tryParse(match.group(5)!) ?? 0) : 0;
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          year: year,
+          month: month,
+          day: day,
+          hour: hour,
+          minute: minute,
+        );
+      },
+    ),
+
     // YYYY년MM월DD일: 2025년2월14일
     PatternDef(
       name: 'ko_fullDate',

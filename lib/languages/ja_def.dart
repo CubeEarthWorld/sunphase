@@ -59,6 +59,29 @@ class JaDefinitions {
       },
     ),
 
+    // Full datetime: YYYY年MM月DD日HH時MM分
+    PatternDef(
+      name: 'ja_fullDateTime',
+      regex: RegExp(r'(\d{4})年' + _n + r'月' + _n + r'[日号]\s*' + _n + r'時' + _n + r'分'),
+      extract: (match, np, ref) {
+        int year = int.parse(match.group(1)!);
+        int month = np.tryParse(match.group(2)!) ?? 1;
+        int day = np.tryParse(match.group(3)!) ?? 1;
+        int hour = np.tryParse(match.group(4)!) ?? 0;
+        int minute = np.tryParse(match.group(5)!) ?? 0;
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          year: year,
+          month: month,
+          day: day,
+          hour: hour,
+          minute: minute,
+        );
+      },
+    ),
+
     // Full date: YYYY年MM月DD日
     PatternDef(
       name: 'ja_fullDate',

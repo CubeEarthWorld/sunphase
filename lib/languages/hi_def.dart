@@ -57,6 +57,36 @@ class HiDefinitions {
       },
     ),
 
+    // Full datetime: DD month YYYY (period) HH:MM
+    PatternDef(
+      name: 'hi_fullDateTime',
+      regex: RegExp(r'(\d{1,2})\s+([^\s\d]+)\s+(\d{4})\s*(?:को)?\s*(सुबह|दोपहर|शाम|रात)?\s*(\d{1,2}):(\d{2})'),
+      extract: (match, np, ref) {
+        final day = int.parse(match.group(1)!);
+        final monthStr = match.group(2)!;
+        final month = months[monthStr];
+        if (month == null) return null;
+        final year = int.parse(match.group(3)!);
+        final period = match.group(4);
+        var hour = int.parse(match.group(5)!);
+        final minute = int.parse(match.group(6)!);
+        if (period != null && timePeriods.containsKey(period)) {
+          final offset = timePeriods[period]!;
+          if (offset == 12 && hour < 12) hour += 12;
+        }
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          year: year,
+          month: month,
+          day: day,
+          hour: hour,
+          minute: minute,
+        );
+      },
+    ),
+
     // DD MM (YYYY) - "14 मार्च 2025" or "14 मार्च"
     PatternDef(
       name: 'hi_dayMonth',

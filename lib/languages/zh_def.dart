@@ -148,6 +148,35 @@ class ZhDefinitions {
       },
     ),
 
+    // Full datetime: YYYY年MM月DD日HH时MM分
+    PatternDef(
+      name: 'zh_fullDateTime',
+      regex: RegExp(r'(\d{4})年' + _n + r'月' + _n + r'[号日]\s*(上午|中午|下午|晚上|早上)?\s*' + _n + r'(?:点|时)(?:\s*' + _n + r'分)?'),
+      extract: (match, np, ref) {
+        int year = int.parse(match.group(1)!);
+        int month = np.tryParse(match.group(2)!) ?? 1;
+        int day = np.tryParse(match.group(3)!) ?? 1;
+        String? period = match.group(4);
+        int hour = np.tryParse(match.group(5)!) ?? 0;
+        int minute = match.group(6) != null ? (np.tryParse(match.group(6)!) ?? 0) : 0;
+        int pmOffset = 0;
+        if (period != null && timePeriods.containsKey(period)) {
+          pmOffset = timePeriods[period]!;
+        }
+        if (pmOffset == 12 && hour < 12) hour += 12;
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          year: year,
+          month: month,
+          day: day,
+          hour: hour,
+          minute: minute,
+        );
+      },
+    ),
+
     // Full date: YYYY年MM月DD[号日]
     PatternDef(
       name: 'zh_fullDate',

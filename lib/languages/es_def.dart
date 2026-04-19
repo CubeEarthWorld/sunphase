@@ -138,6 +138,31 @@ class EsDefinitions {
       },
     ),
 
+    // Full datetime: DD de month de YYYY a las HH:MM
+    PatternDef(
+      name: 'es_fullDateTime',
+      regex: RegExp(r'(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})\s+a\s+las\s+(\d{1,2}):(\d{2})', caseSensitive: false),
+      extract: (match, np, ref) {
+        final day = int.parse(match.group(1)!);
+        final monthStr = match.group(2)!.toLowerCase();
+        final month = months[monthStr];
+        if (month == null) return null;
+        final year = int.parse(match.group(3)!);
+        final hour = int.parse(match.group(4)!);
+        final minute = int.parse(match.group(5)!);
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          year: year,
+          month: month,
+          day: day,
+          hour: hour,
+          minute: minute,
+        );
+      },
+    ),
+
     // DD de MM: "14 de marzo" or "14 de marzo de 2025"
     PatternDef(
       name: 'es_dayMonth',
