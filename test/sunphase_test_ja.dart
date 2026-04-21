@@ -140,5 +140,69 @@ void main() {
       expect(results.first.date, DateTime(2025, 3, 1, 0, 0, 0));
       expect(results.last.date, DateTime(2025, 3, daysInMarch, 0, 0, 0));
     });
+
+    // --- Weekday yobi suffix tests ---
+
+    test('Japanese: kin-yobi standalone', () {
+      String input = "金曜日";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2025, 2, 14, 0, 0, 0));
+    });
+
+    test('Japanese: kin-yobi 12:43', () {
+      String input = "金曜日12時43分";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2025, 2, 14, 12, 43, 0));
+    });
+
+    test('Japanese: do-yobi gogo 3ji', () {
+      String input = "土曜日午後3時";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2025, 2, 15, 15, 0, 0));
+    });
+
+    test('Japanese: raishu kayobi', () {
+      String input = "来週火曜日";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2025, 2, 11, 0, 0, 0));
+    });
+
+    test('Japanese: Saraishu getsuyobi', () {
+      String input = "再来週月曜日";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2025, 2, 17, 0, 0, 0));
+    });
+
+    test('Japanese: 3-shuukan-go kin-yobi', () {
+      String input = "3週間後金曜日";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2025, 2, 28, 0, 0, 0));
+    });
+
+    test('Japanese: 1-shuukan-go nichiyo', () {
+      String input = "1週間後日曜";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2025, 2, 9, 0, 0, 0));
+    });
+
+    // --- Year expression tests ---
+
+    test('Japanese: saranen', () {
+      String input = "再来年";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2027, 2, 1, 0, 0, 0));
+    });
+
+    test('Japanese: 2-nen-go', () {
+      String input = "2年後";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2027, 2, 1, 0, 0, 0));
+    });
+
+    test('Japanese: 5-nen-go', () {
+      String input = "5年後";
+      List<ParsingResult> results = parse(input, referenceDate: reference, languages: ['ja']);
+      expect(results.first.date, DateTime(2030, 2, 1, 0, 0, 0));
+    });
   });
 }

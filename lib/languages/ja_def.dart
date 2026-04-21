@@ -35,6 +35,15 @@ class JaDefinitions {
 
   static const _n = r'([0-9一二三四五六七八九十]+)';
 
+  // Weekday base kanji + 曜 with optional 日 suffix.
+  // Captures the base kanji; extract function appends '曜' for lookup.
+  static const _wd = r'([月火水木金土日])曜(?:日)?';
+
+  // Longest-first alternation of 曜 and 曜日 forms (no bare kanji).
+  static const _wdAlt =
+      r'(月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日'
+      r'|月曜|火曜|水曜|木曜|金曜|土曜|日曜)';
+
   static final numberParser = CJKNumberParser(kanjiDigits);
 
   static final patterns = [
@@ -197,7 +206,7 @@ class JaDefinitions {
     // N週間後 + weekday
     PatternDef(
       name: 'ja_weeksLaterWeekday',
-      regex: RegExp(_n + r'週間後' + r'([月火水木金土])曜'),
+      regex: RegExp(_n + r'週間後' + _wd),
       extract: (match, np, ref) {
         int weeks = np.tryParse(match.group(1)!) ?? 1;
         String weekday = match.group(2)!;
@@ -205,7 +214,7 @@ class JaDefinitions {
           startIndex: match.start,
           endIndex: match.end,
           text: match.group(0)!,
-          weekday: weekdays[weekday] ?? 1,
+          weekday: weekdays[weekday + '曜'] ?? 1,
           weekOffset: weeks,
         );
       },
@@ -283,10 +292,10 @@ class JaDefinitions {
       },
     ),
 
-    // Weekday + period + time: 月曜(午前|午後)HH時(MM分)?
+    // Weekday + period + time: 月曜日(午前|午後)HH時(MM分)?
     PatternDef(
       name: 'ja_weekdayPeriodTime',
-      regex: RegExp(r'(月曜|火曜|水曜|木曜|金曜|土曜|日曜)(?:\s*(午前|午後))?\s*' + _n + r'時(?:\s*' + _n + r'分)?'),
+      regex: RegExp(_wdAlt + r'(?:\s*(午前|午後))?\s*' + _n + r'時(?:\s*' + _n + r'分)?'),
       extract: (match, np, ref) {
         String weekday = match.group(1)!;
         String? period = match.group(2);
@@ -308,7 +317,7 @@ class JaDefinitions {
     // Next next weekday: 再来週[曜日]
     PatternDef(
       name: 'ja_nextNextWeekday',
-      regex: RegExp(r'再来週([月火水木金土日])曜'),
+      regex: RegExp(r'再来週' + _wd),
       extract: (match, np, ref) {
         String weekday = match.group(1)!;
         return RawMatch(
@@ -325,7 +334,7 @@ class JaDefinitions {
     // Next weekday: 来週[曜日]
     PatternDef(
       name: 'ja_nextWeekday',
-      regex: RegExp(r'来週([月火水木金土日])曜'),
+      regex: RegExp(r'来週' + _wd),
       extract: (match, np, ref) {
         String weekday = match.group(1)!;
         return RawMatch(
@@ -342,7 +351,7 @@ class JaDefinitions {
     // Weekday only (all forms)
     PatternDef(
       name: 'ja_weekdayOnly',
-      regex: RegExp(r'(月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日|月曜|火曜|水曜|木曜|金曜|土曜|日曜)'),
+      regex: RegExp(_wdAlt),
       extract: (match, np, ref) {
         String word = match.group(1)!;
         return RawMatch(
@@ -432,10 +441,10 @@ class JaDefinitions {
       },
     ),
 
-    // Relative offset: NN(日|週間|ヶ月)後
+    // Relative offset: NN(日|週間|ヶ月|年)後
     PatternDef(
       name: 'ja_relativeOffset',
-      regex: RegExp(_n + r'(日|週間|ヶ月)後'),
+      regex: RegExp(_n + r'(日|週間|ヶ月|年)後'),
       extract: (match, np, ref) {
         int value = np.tryParse(match.group(1)!) ?? 1;
         String unit = match.group(2)!;
@@ -453,6 +462,13 @@ class JaDefinitions {
             text: match.group(0)!,
             weekOffset: value,
           );
+        } else if (unit == '年') {
+          return RawMatch(
+            startIndex: match.start,
+            endIndex: match.end,
+            text: match.group(0)!,
+            yearOffset: value,
+          );
         } else {
           return RawMatch(
             startIndex: match.start,
@@ -464,10 +480,10 @@ class JaDefinitions {
       },
     ),
 
-    // Month only expressions: 来月, 今月, 再来月, 先月
+    // Month only expressions: 来月, 今月, 再来月, 先月, etc.
     PatternDef(
       name: 'ja_monthOnly',
-      regex: RegExp(r'(今月|来月|再来月|先月|来週|今週|先週|来年|今年|週末)'),
+      regex: RegExp(r'(再来年|今月|来月|再来月|先月|来週|今週|先週|来年|今年|週末)'),
       extract: (match, np, ref) {
         String word = match.group(1)!;
         switch (word) {
@@ -523,6 +539,13 @@ class JaDefinitions {
               endIndex: match.end,
               text: word,
               weekOffset: -1,
+            );
+          case '再来年':
+            return RawMatch(
+              startIndex: match.start,
+              endIndex: match.end,
+              text: word,
+              yearOffset: 2,
             );
           case '来年':
             return RawMatch(
