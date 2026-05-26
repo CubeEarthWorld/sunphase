@@ -18,6 +18,10 @@ class ParsingContext {
   /// supplied a `timezone` argument. `Duration.zero` means "no shift".
   final Duration timezoneOffset;
 
+  /// First day of the week used for named week expressions. Supported
+  /// values are [DateTime.sunday] and [DateTime.monday].
+  final int weekStartsOn;
+
   /// Optional language hint. Currently informational — the actual set of
   /// language parsers to run is decided by `ParserManager`.
   final String? language;
@@ -25,6 +29,7 @@ class ParsingContext {
   ParsingContext({
     required this.referenceDate,
     required this.timezoneOffset,
+    this.weekStartsOn = DateTime.sunday,
     this.language,
   });
 }

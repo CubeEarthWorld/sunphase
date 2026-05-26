@@ -19,18 +19,51 @@ import 'lang_def.dart';
 
 class JaDefinitions {
   static const Map<String, int> kanjiDigits = {
-    '零': 0, '〇': 0, '一': 1, '二': 2, '三': 3, '四': 4,
-    '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10,
+    '零': 0,
+    '〇': 0,
+    '一': 1,
+    '二': 2,
+    '三': 3,
+    '四': 4,
+    '五': 5,
+    '六': 6,
+    '七': 7,
+    '八': 8,
+    '九': 9,
+    '十': 10,
   };
 
   static const Map<String, int> weekdays = {
-    '月曜': 1, '火曜': 2, '水曜': 3, '木曜': 4, '金曜': 5, '土曜': 6, '日曜': 7,
-    '月': 1, '火': 2, '水': 3, '木': 4, '金': 5, '土': 6, '日': 7,
-    '月曜日': 1, '火曜日': 2, '水曜日': 3, '木曜日': 4, '金曜日': 5, '土曜日': 6, '日曜日': 7,
+    '月曜': 1,
+    '火曜': 2,
+    '水曜': 3,
+    '木曜': 4,
+    '金曜': 5,
+    '土曜': 6,
+    '日曜': 7,
+    '月': 1,
+    '火': 2,
+    '水': 3,
+    '木': 4,
+    '金': 5,
+    '土': 6,
+    '日': 7,
+    '月曜日': 1,
+    '火曜日': 2,
+    '水曜日': 3,
+    '木曜日': 4,
+    '金曜日': 5,
+    '土曜日': 6,
+    '日曜日': 7,
   };
 
   static const Map<String, int> relativeDays = {
-    '今日': 0, '明日': 1, '明後日': 2, '明々後日': 3, '昨日': -1, '一昨日': -2,
+    '今日': 0,
+    '明日': 1,
+    '明後日': 2,
+    '明々後日': 3,
+    '昨日': -1,
+    '一昨日': -2,
   };
 
   static const _n = r'([0-9一二三四五六七八九十]+)';
@@ -71,7 +104,9 @@ class JaDefinitions {
     // Full datetime: YYYY年MM月DD日HH時MM分
     PatternDef(
       name: 'ja_fullDateTime',
-      regex: RegExp(r'(\d{4})年' + _n + r'月' + _n + r'[日号]\s*' + _n + r'時' + _n + r'分'),
+      regex: RegExp(
+        r'(\d{4})年' + _n + r'月' + _n + r'[日号]\s*' + _n + r'時' + _n + r'分',
+      ),
       extract: (match, np, ref) {
         int year = int.parse(match.group(1)!);
         int month = np.tryParse(match.group(2)!) ?? 1;
@@ -113,12 +148,16 @@ class JaDefinitions {
     // Optional year prefix + MM月DD日HH時MM分
     PatternDef(
       name: 'ja_monthDayTimeJa',
-      regex: RegExp(r'(来年|去年|今年)?' + _n + r'月' + _n + r'[日号]\s*' + _n + r'時' + _n + r'分'),
+      regex: RegExp(
+        r'(来年|去年|今年)?' + _n + r'月' + _n + r'[日号]\s*' + _n + r'時' + _n + r'分',
+      ),
       extract: (match, np, ref) {
         String? prefix = match.group(1);
         int year = ref.year;
-        if (prefix == '来年') year++;
-        else if (prefix == '去年') year--;
+        if (prefix == '来年')
+          year++;
+        else if (prefix == '去年')
+          year--;
         int month = np.tryParse(match.group(2)!) ?? 1;
         int day = np.tryParse(match.group(3)!) ?? 1;
         int hour = np.tryParse(match.group(4)!) ?? 0;
@@ -139,12 +178,16 @@ class JaDefinitions {
     // Optional year prefix + MM月DD日HH時 (no minute)
     PatternDef(
       name: 'ja_monthDayHour',
-      regex: RegExp(r'(来年|去年|今年)?' + _n + r'月' + _n + r'[日号]\s*' + _n + r'時(?!\d)'),
+      regex: RegExp(
+        r'(来年|去年|今年)?' + _n + r'月' + _n + r'[日号]\s*' + _n + r'時(?!\d)',
+      ),
       extract: (match, np, ref) {
         String? prefix = match.group(1);
         int year = ref.year;
-        if (prefix == '来年') year++;
-        else if (prefix == '去年') year--;
+        if (prefix == '来年')
+          year++;
+        else if (prefix == '去年')
+          year--;
         int month = np.tryParse(match.group(2)!) ?? 1;
         int day = np.tryParse(match.group(3)!) ?? 1;
         int hour = np.tryParse(match.group(4)!) ?? 0;
@@ -188,8 +231,10 @@ class JaDefinitions {
       extract: (match, np, ref) {
         String? prefix = match.group(1);
         int year = ref.year;
-        if (prefix == '来年') year++;
-        else if (prefix == '去年') year--;
+        if (prefix == '来年')
+          year++;
+        else if (prefix == '去年')
+          year--;
         int month = np.tryParse(match.group(2)!) ?? 1;
         int day = np.tryParse(match.group(3)!) ?? 1;
         return RawMatch(
@@ -295,12 +340,16 @@ class JaDefinitions {
     // Weekday + period + time: 月曜日(午前|午後)HH時(MM分)?
     PatternDef(
       name: 'ja_weekdayPeriodTime',
-      regex: RegExp(_wdAlt + r'(?:\s*(午前|午後))?\s*' + _n + r'時(?:\s*' + _n + r'分)?'),
+      regex: RegExp(
+        _wdAlt + r'(?:\s*(午前|午後))?\s*' + _n + r'時(?:\s*' + _n + r'分)?',
+      ),
       extract: (match, np, ref) {
         String weekday = match.group(1)!;
         String? period = match.group(2);
         int hour = np.tryParse(match.group(3)!) ?? 0;
-        int minute = match.group(4) != null ? (np.tryParse(match.group(4)!) ?? 0) : 0;
+        int minute = match.group(4) != null
+            ? (np.tryParse(match.group(4)!) ?? 0)
+            : 0;
         bool pm = period == '午後';
         return RawMatch(
           startIndex: match.start,
@@ -326,24 +375,26 @@ class JaDefinitions {
           text: match.group(0)!,
           weekday: weekdays[weekday + '曜'] ?? 1,
           weekOffset: 2,
-          rangeType: 'week',
+          calendarWeek: true,
         );
       },
     ),
 
-    // Next weekday: 来週[曜日]
+    // Next / last weekday: 来週[曜日] / 先週[曜日]
     PatternDef(
-      name: 'ja_nextWeekday',
-      regex: RegExp(r'来週' + _wd),
+      name: 'ja_nextLastWeekday',
+      regex: RegExp(r'(来週|先週)' + _wd),
       extract: (match, np, ref) {
-        String weekday = match.group(1)!;
+        String prefix = match.group(1)!;
+        String weekday = match.group(2)!;
+        int weekOffset = prefix == '来週' ? 1 : -1;
         return RawMatch(
           startIndex: match.start,
           endIndex: match.end,
           text: match.group(0)!,
           weekday: weekdays[weekday + '曜'] ?? 1,
-          weekOffset: 1,
-          rangeType: 'week',
+          weekOffset: weekOffset,
+          calendarWeek: prefix == '来週',
         );
       },
     ),

@@ -35,6 +35,11 @@ import 'core/parser_manager.dart';
 /// the range. When `false` (the default), the single best-matching result is
 /// returned.
 ///
+/// ## Week start
+/// [weekStartsOn] controls named week expressions such as *next week* or
+/// *next week Sunday*. Pass either `DateTime.sunday` or `DateTime.monday`.
+/// The default is `DateTime.sunday`.
+///
 /// ## Timezone
 /// [timezone] is a string containing a UTC offset in **minutes**
 /// (e.g. `"480"` for UTC+8, `"-300"` for UTC-5). When supplied, the resolved
@@ -45,6 +50,7 @@ List<ParsingResult> parse(
   List<String>? languages,
   bool rangeMode = false,
   String? timezone,
+  int weekStartsOn = DateTime.sunday,
 }) {
   return ParserManager.parse(
     text,
@@ -52,5 +58,6 @@ List<ParsingResult> parse(
     languages: languages,
     rangeMode: rangeMode,
     timezone: timezone,
+    weekStartsOn: weekStartsOn,
   );
 }

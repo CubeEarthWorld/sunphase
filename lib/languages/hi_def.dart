@@ -18,17 +18,38 @@ import 'lang_def.dart';
 
 class HiDefinitions {
   static const Map<String, int> months = {
-    'जनवरी': 1, 'फरवरी': 2, 'मार्च': 3, 'अप्रैल': 4, 'मई': 5,
-    'जून': 6, 'जुलाई': 7, 'अगस्त': 8, 'सितंबर': 9, 'अक्टूबर': 10, 'नवंबर': 11, 'दिसंबर': 12,
+    'जनवरी': 1,
+    'फरवरी': 2,
+    'मार्च': 3,
+    'अप्रैल': 4,
+    'मई': 5,
+    'जून': 6,
+    'जुलाई': 7,
+    'अगस्त': 8,
+    'सितंबर': 9,
+    'अक्टूबर': 10,
+    'नवंबर': 11,
+    'दिसंबर': 12,
   };
 
   static const Map<String, int> weekdays = {
-    'सोमवार': 1, 'मंगलवार': 2, 'बुधवार': 3, 'गुरुवार': 4, 'शुक्रवार': 5, 'शनिवार': 6, 'रविवार': 7,
+    'सोमवार': 1,
+    'मंगलवार': 2,
+    'बुधवार': 3,
+    'गुरुवार': 4,
+    'शुक्रवार': 5,
+    'शनिवार': 6,
+    'रविवार': 7,
   };
 
   static const Map<String, int> relativeDays = {'आज': 0, 'कल': 1, 'परसों': 2};
 
-  static const Map<String, int> timePeriods = {'सुबह': 0, 'दोपहर': 12, 'शाम': 12, 'रात': 12};
+  static const Map<String, int> timePeriods = {
+    'सुबह': 0,
+    'दोपहर': 12,
+    'शाम': 12,
+    'रात': 12,
+  };
 
   static const arabicParser = ArabicNumberParser();
 
@@ -38,7 +59,9 @@ class HiDefinitions {
       name: 'hi_relativeDay',
       regex: RegExp(r'(आज|कल|परसों)'),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
         dayOffset: relativeDays[match.group(1)!]!,
       ),
     ),
@@ -51,8 +74,30 @@ class HiDefinitions {
         final days = int.parse(match.group(1)!);
         final dir = match.group(2)!;
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
           dayOffset: dir == 'बाद' ? days : -days,
+        );
+      },
+    ),
+
+    // N सप्ताह/हफ्ते पहले/बाद
+    PatternDef(
+      name: 'hi_weekOffset',
+      regex: RegExp(r'(\d+)\s*([^\s\d]+)\s*(पहले|बाद)'),
+      extract: (match, np, ref) {
+        final weeks = int.parse(match.group(1)!);
+        final unit = match.group(2)!;
+        if (!['सप्ताह', 'हफ्ते', 'हफ्ता', 'हफ़्ते'].contains(unit)) {
+          return null;
+        }
+        final dir = match.group(3)!;
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          weekOffset: dir == 'बाद' ? weeks : -weeks,
         );
       },
     ),
@@ -60,7 +105,9 @@ class HiDefinitions {
     // Full datetime: DD month YYYY (period) HH:MM
     PatternDef(
       name: 'hi_fullDateTime',
-      regex: RegExp(r'(\d{1,2})\s+([^\s\d]+)\s+(\d{4})\s*(?:को)?\s*(सुबह|दोपहर|शाम|रात)?\s*(\d{1,2}):(\d{2})'),
+      regex: RegExp(
+        r'(\d{1,2})\s+([^\s\d]+)\s+(\d{4})\s*(?:को)?\s*(सुबह|दोपहर|शाम|रात)?\s*(\d{1,2}):(\d{2})',
+      ),
       extract: (match, np, ref) {
         final day = int.parse(match.group(1)!);
         final monthStr = match.group(2)!;
@@ -98,12 +145,21 @@ class HiDefinitions {
         if (month == null) return null;
         final yearStr = match.group(3);
         int year = yearStr != null ? int.parse(yearStr) : ref.year;
-        if (yearStr == null && DateTime(year, month, day).isBefore(DateTime(ref.year, ref.month, ref.day))) {
+        if (yearStr == null &&
+            DateTime(
+              year,
+              month,
+              day,
+            ).isBefore(DateTime(ref.year, ref.month, ref.day))) {
           year++;
         }
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          year: yearStr == null ? null : year, month: month, day: day,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          year: yearStr == null ? null : year,
+          month: month,
+          day: day,
         );
       },
     ),
@@ -121,8 +177,11 @@ class HiDefinitions {
           if (offset == 12 && hour < 12) hour += 12;
         }
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          hour: hour, minute: minute,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          hour: hour,
+          minute: minute,
         );
       },
     ),
@@ -132,9 +191,30 @@ class HiDefinitions {
       name: 'hi_dayOnly',
       regex: RegExp(r'(\d{1,2})\s*तारीख'),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
         day: int.parse(match.group(1)!),
       ),
+    ),
+
+    // अगले सप्ताह/हफ्ते + weekday
+    PatternDef(
+      name: 'hi_nextWeekWeekday',
+      regex: RegExp(
+        r'अगले\s+(?:सप्ताह|हफ्ते|हफ्ता)\s+(सोमवार|मंगलवार|बुधवार|गुरुवार|शुक्रवार|शनिवार|रविवार)',
+      ),
+      extract: (match, np, ref) {
+        final day = match.group(1)!;
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          weekday: weekdays[day] ?? 1,
+          weekOffset: 1,
+          calendarWeek: true,
+        );
+      },
     ),
 
     // Weekday only
@@ -142,7 +222,9 @@ class HiDefinitions {
       name: 'hi_weekday',
       regex: RegExp(r'(सोमवार|मंगलवार|बुधवार|गुरुवार|शुक्रवार|शनिवार|रविवार)'),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
         weekday: weekdays[match.group(1)!]!,
       ),
     ),
@@ -152,45 +234,33 @@ class HiDefinitions {
       name: 'hi_nextMonth',
       regex: RegExp(r'अगले\s+महीने'),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-        monthOffset: 1, rangeType: 'month',
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
+        monthOffset: 1,
+        rangeType: 'month',
       ),
     ),
 
-    // पिछले शुक्रवार (last Friday)
+    // Next / last weekday: अगले सोमवार, पिछले शुक्रवार, etc.
     PatternDef(
-      name: 'hi_lastFriday',
-      regex: RegExp(r'पिछले\s+शुक्रवार'),
+      name: 'hi_nextLastWeekday',
+      regex: RegExp(
+        r'(अगले|पिछले)\s+(सोमवार|मंगलवार|बुधवार|गुरुवार|शुक्रवार|शनिवार|रविवार)',
+      ),
       extract: (match, np, ref) {
-        // Find previous Friday
-        int diff = (ref.weekday - 5 + 7) % 7;
-        diff = diff == 0 ? 7 : diff;
-        DateTime lastFri = ref.subtract(Duration(days: diff));
+        final dir = match.group(1)!;
+        final day = match.group(2)!;
+        final weekday = weekdays[day] ?? 1;
+        final isLast = dir == 'पिछले';
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          year: lastFri.year, month: lastFri.month, day: lastFri.day,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          weekday: weekday,
+          weekOffset: isLast ? -7 : 0,
         );
       },
-    ),
-
-    // 2 सप्ताह बाद (2 weeks later)
-    PatternDef(
-      name: 'hi_weeksLater',
-      regex: RegExp(r'2\s+सप्ताह\s+बाद'),
-      extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-        dayOffset: 14, // 2 weeks = 14 days
-      ),
-    ),
-
-    // अगले सोमवार
-    PatternDef(
-      name: 'hi_nextMonday',
-      regex: RegExp(r'अगले\s+सोमवार'),
-      extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-        weekday: 1, weekOffset: 0,
-      ),
     ),
   ];
 

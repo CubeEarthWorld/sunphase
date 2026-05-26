@@ -19,43 +19,84 @@ import 'lang_def.dart';
 
 class KoDefinitions {
   static const Map<String, int> months = {
-    '1월': 1, '일월': 1, '한달': 1,
-    '2월': 2, '이월': 2,
-    '3월': 3, '삼월': 3,
-    '4월': 4, '사월': 4,
-    '5월': 5, '오월': 5,
-    '6월': 6, '유월': 6,
-    '7월': 7, '칠월': 7,
-    '8월': 8, '팔월': 8,
-    '9월': 9, '구월': 9,
-    '10월': 10, '시월': 10,
-    '11월': 11, '십일월': 11,
-    '12월': 12, '십이월': 12,
+    '1월': 1,
+    '일월': 1,
+    '한달': 1,
+    '2월': 2,
+    '이월': 2,
+    '3월': 3,
+    '삼월': 3,
+    '4월': 4,
+    '사월': 4,
+    '5월': 5,
+    '오월': 5,
+    '6월': 6,
+    '유월': 6,
+    '7월': 7,
+    '칠월': 7,
+    '8월': 8,
+    '팔월': 8,
+    '9월': 9,
+    '구월': 9,
+    '10월': 10,
+    '시월': 10,
+    '11월': 11,
+    '십일월': 11,
+    '12월': 12,
+    '십이월': 12,
   };
 
   static const Map<String, int> weekdays = {
-    '월요일': 1, '월': 1,
-    '화요일': 2, '화': 2,
-    '수요일': 3, '수': 3,
-    '목요일': 4, '목': 4,
-    '금요일': 5, '금': 5,
-    '토요일': 6, '토': 6,
-    '일요일': 7, '일': 7,
+    '월요일': 1,
+    '월': 1,
+    '화요일': 2,
+    '화': 2,
+    '수요일': 3,
+    '수': 3,
+    '목요일': 4,
+    '목': 4,
+    '금요일': 5,
+    '금': 5,
+    '토요일': 6,
+    '토': 6,
+    '일요일': 7,
+    '일': 7,
   };
 
   static const Map<String, int> relativeDays = {
-    '오늘': 0, '금일': 0,
-    '내일': 1, '명일': 1,
+    '오늘': 0,
+    '금일': 0,
+    '내일': 1,
+    '명일': 1,
     '모레': 2,
-    '그제': -1, '어제': -1,
+    '그제': -1,
+    '어제': -1,
     '그끄제': -2,
   };
 
   static const Map<String, int> koreanDigits = {
-    '영': 0, '零': 0, '일': 1, '一': 1, '이': 2, '二': 2,
-    '삼': 3, '三': 3, '사': 4, '四': 4, '오': 5, '五': 5,
-    '육': 6, '六': 6, '칠': 7, '七': 7, '팔': 8, '八': 8,
-    '구': 9, '九': 9, '십': 10, '十': 10,
+    '영': 0,
+    '零': 0,
+    '일': 1,
+    '一': 1,
+    '이': 2,
+    '二': 2,
+    '삼': 3,
+    '三': 3,
+    '사': 4,
+    '四': 4,
+    '오': 5,
+    '五': 5,
+    '육': 6,
+    '六': 6,
+    '칠': 7,
+    '七': 7,
+    '팔': 8,
+    '八': 8,
+    '구': 9,
+    '九': 9,
+    '십': 10,
+    '十': 10,
   };
 
   static final _n = r'([0-9零一二三四五六七八九十]+)';
@@ -85,13 +126,17 @@ class KoDefinitions {
     // Full datetime: YYYY년MM월DD일HH시MM분
     PatternDef(
       name: 'ko_fullDateTime',
-      regex: RegExp(r'(\d{4})년' + _n + r'월' + _n + r'일\s*' + _n + r'시(?:\s*' + _n + r'분)?'),
+      regex: RegExp(
+        r'(\d{4})년' + _n + r'월' + _n + r'일\s*' + _n + r'시(?:\s*' + _n + r'분)?',
+      ),
       extract: (match, np, ref) {
         final year = int.parse(match.group(1)!);
         final month = np.tryParse(match.group(2)!) ?? 1;
         final day = np.tryParse(match.group(3)!) ?? 1;
         final hour = np.tryParse(match.group(4)!) ?? 0;
-        final minute = match.group(5) != null ? (np.tryParse(match.group(5)!) ?? 0) : 0;
+        final minute = match.group(5) != null
+            ? (np.tryParse(match.group(5)!) ?? 0)
+            : 0;
         return RawMatch(
           startIndex: match.start,
           endIndex: match.end,
@@ -158,6 +203,23 @@ class KoDefinitions {
           endIndex: match.end,
           text: match.group(0)!,
           day: day,
+        );
+      },
+    ),
+
+    // Calendar week + weekday: 다음 주 일요일
+    PatternDef(
+      name: 'ko_nextWeekWeekday',
+      regex: RegExp(r'다음\s*주\s*(월요일|화요일|수요일|목요일|금요일|토요일|일요일)'),
+      extract: (match, np, ref) {
+        final day = match.group(1)!;
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          weekday: weekdays[day] ?? 1,
+          weekOffset: 1,
+          calendarWeek: true,
         );
       },
     ),
@@ -301,8 +363,10 @@ class KoDefinitions {
       extract: (match, np, ref) {
         final expr = match.group(1)!;
         int offset = 0;
-        if (expr == '다음') offset = 1;
-        else if (expr == '지난') offset = -1;
+        if (expr == '다음')
+          offset = 1;
+        else if (expr == '지난')
+          offset = -1;
         return RawMatch(
           startIndex: match.start,
           endIndex: match.end,
@@ -318,8 +382,11 @@ class KoDefinitions {
       name: 'ko_nextMonth',
       regex: RegExp(r'다음\s*(달|월)'),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-        monthOffset: 1, rangeType: 'month',
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
+        monthOffset: 1,
+        rangeType: 'month',
       ),
     ),
 
@@ -328,8 +395,11 @@ class KoDefinitions {
       name: 'ko_lastMonth',
       regex: RegExp(r'지난\s*(달|월)'),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-        monthOffset: -1, rangeType: 'month',
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
+        monthOffset: -1,
+        rangeType: 'month',
       ),
     ),
   ];
@@ -342,11 +412,7 @@ class KoDefinitions {
 
   // Helper for mapping relative day variations
   static String _mapRelativeDay(String word) {
-    const map = {
-      '금일': '오늘',
-      '명일': '내일',
-      '그제': '어제',
-    };
+    const map = {'금일': '오늘', '명일': '내일', '그제': '어제'};
     return map[word] ?? word;
   }
 }

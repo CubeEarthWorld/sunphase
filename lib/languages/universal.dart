@@ -32,9 +32,7 @@ class UniversalParser {
       String dateStr = match.group(0)!;
       try {
         DateTime dt = DateTime.parse(dateStr);
-        results.add(
-          ParsingResult(index: match.start, text: dateStr, date: dt),
-        );
+        results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
       } catch (_) {
         // `DateTime.parse` rejected this string; skip it.
       }
@@ -50,9 +48,7 @@ class UniversalParser {
       String dateStr = match.group(0)!;
       try {
         DateTime dt = DateTime.parse(dateStr);
-        results.add(
-          ParsingResult(index: match.start, text: dateStr, date: dt),
-        );
+        results.add(ParsingResult(index: match.start, text: dateStr, date: dt));
       } catch (_) {}
     }
 

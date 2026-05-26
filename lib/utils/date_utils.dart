@@ -9,6 +9,38 @@
 // "one calendar month" shift.
 
 class DateUtils {
+  /// Converts full-width digits (U+FF10..U+FF19, e.g. "０１２３") to
+  /// their ASCII equivalents (U+0030..U+0039, e.g. "0123").
+  ///
+  /// The conversion is 1:1 — every full-width digit is replaced by a
+  /// single ASCII digit, so character indices are preserved.  Characters
+  /// outside the full-width digit range pass through unchanged.
+  ///
+  /// This is called once at the entry point of the parse pipeline so
+  /// that every pattern and number parser works correctly with input
+  /// that contains full-width digits (commonly produced by CJK IMEs).
+  ///
+  /// Example:
+  /// ```dart
+  /// DateUtils.normalizeFullWidthDigits('明日１０時３０分')
+  /// // → '明日10時30分'
+  /// ```
+  static String normalizeFullWidthDigits(String input) {
+    // Fast path: if there are no full-width digits, return as-is.
+    // Full-width '０' is U+FF10, '９' is U+FF19.
+    if (!input.contains(RegExp(r'[０-９]'))) return input;
+
+    const int offset = 0xFF10 - 0x0030; // 0xFEE0
+    return String.fromCharCodes(
+      input.runes.map((rune) {
+        if (rune >= 0xFF10 && rune <= 0xFF19) {
+          return rune - offset;
+        }
+        return rune;
+      }),
+    );
+  }
+
   /// Returns [date] unchanged if it is after [reference]; otherwise
   /// returns [date] shifted forward by one day.
   ///
@@ -84,18 +116,16 @@ class DateUtils {
   /// [startWeekday] allows overriding the first day of the week (default
   /// is 1 = Monday).
   static DateTime firstDayOfWeek(DateTime date, {int startWeekday = 1}) {
-    return date.subtract(Duration(days: date.weekday - startWeekday));
+    int diff = (date.weekday - startWeekday + 7) % 7;
+    DateTime start = date.subtract(Duration(days: diff));
+    return DateTime(start.year, start.month, start.day);
   }
 
   /// Returns the next `DateTime` at [hour]:[minute] after [reference].
   ///
   /// If the specified time is still in the future *today* it is returned
   /// for today; otherwise it is returned for tomorrow.
-  static DateTime nextOccurrenceTime(
-    DateTime reference,
-    int hour,
-    int minute,
-  ) {
+  static DateTime nextOccurrenceTime(DateTime reference, int hour, int minute) {
     DateTime candidate = DateTime(
       reference.year,
       reference.month,

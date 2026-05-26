@@ -13,22 +13,43 @@
 // Uses plain ASCII digit parsing.
 
 import '../core/number_parser.dart';
-import '../utils/date_utils.dart';
 import 'lang_def.dart';
 
 class EsDefinitions {
   static const Map<String, int> months = {
-    'enero': 1, 'febrero': 2, 'marzo': 3, 'abril': 4, 'mayo': 5,
-    'junio': 6, 'julio': 7, 'agosto': 8, 'septiembre': 9, 'setiembre': 9,
-    'octubre': 10, 'noviembre': 11, 'diciembre': 12,
+    'enero': 1,
+    'febrero': 2,
+    'marzo': 3,
+    'abril': 4,
+    'mayo': 5,
+    'junio': 6,
+    'julio': 7,
+    'agosto': 8,
+    'septiembre': 9,
+    'setiembre': 9,
+    'octubre': 10,
+    'noviembre': 11,
+    'diciembre': 12,
   };
 
   static const Map<String, int> weekdays = {
-    'lunes': 1, 'martes': 2, 'miércoles': 3, 'miercoles': 3,
-    'jueves': 4, 'viernes': 5, 'sábado': 6, 'sabado': 6, 'domingo': 7,
+    'lunes': 1,
+    'martes': 2,
+    'miércoles': 3,
+    'miercoles': 3,
+    'jueves': 4,
+    'viernes': 5,
+    'sábado': 6,
+    'sabado': 6,
+    'domingo': 7,
   };
 
-  static const Map<String, int> relativeDays = {'hoy': 0, 'mañana': 1, 'manana': 1, 'ayer': -1};
+  static const Map<String, int> relativeDays = {
+    'hoy': 0,
+    'mañana': 1,
+    'manana': 1,
+    'ayer': -1,
+  };
 
   static const arabicParser = ArabicNumberParser();
 
@@ -53,10 +74,17 @@ class EsDefinitions {
     // el día NN a las HH:MM
     PatternDef(
       name: 'es_elDiaTime',
-      regex: RegExp(r'el\s+d[ií]a\s+(\d{1,2})\s+a\s+las\s+(\d{1,2}):(\d{2})', caseSensitive: false),
+      regex: RegExp(
+        r'el\s+d[ií]a\s+(\d{1,2})\s+a\s+las\s+(\d{1,2}):(\d{2})',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-        day: int.parse(match.group(1)!), hour: int.parse(match.group(2)!), minute: int.parse(match.group(3)!),
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
+        day: int.parse(match.group(1)!),
+        hour: int.parse(match.group(2)!),
+        minute: int.parse(match.group(3)!),
       ),
     ),
 
@@ -65,7 +93,9 @@ class EsDefinitions {
       name: 'es_elDia',
       regex: RegExp(r'el\s+d[ií]a\s+(\d{1,2})', caseSensitive: false),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
         day: int.parse(match.group(1)!),
       ),
     ),
@@ -77,7 +107,9 @@ class EsDefinitions {
       extract: (match, np, ref) {
         String word = match.group(1)!.toLowerCase().replaceAll('ñ', 'n');
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
           dayOffset: relativeDays[word]!,
         );
       },
@@ -88,7 +120,9 @@ class EsDefinitions {
       name: 'es_agoDays',
       regex: RegExp(r'hace\s+(\d+)\s+d[ií]as', caseSensitive: false),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
         dayOffset: -int.parse(match.group(1)!),
       ),
     ),
@@ -98,7 +132,9 @@ class EsDefinitions {
       name: 'es_daysAtras',
       regex: RegExp(r'(\d+)\s+d[ií]as\s+atr[aá]s', caseSensitive: false),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
         dayOffset: -int.parse(match.group(1)!),
       ),
     ),
@@ -108,7 +144,9 @@ class EsDefinitions {
       name: 'es_semanasDesdeAhora',
       regex: RegExp(r'(\d+)\s+semanas\s+desde\s+ahora', caseSensitive: false),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
         weekOffset: int.parse(match.group(1)!),
       ),
     ),
@@ -116,10 +154,16 @@ class EsDefinitions {
     // Próximo mes / mes que viene
     PatternDef(
       name: 'es_nextMonth',
-      regex: RegExp(r'pr[óo]ximo\s+mes|mes\s+que\s+viene', caseSensitive: false),
+      regex: RegExp(
+        r'pr[óo]ximo\s+mes|mes\s+que\s+viene',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) => RawMatch(
-        startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-        monthOffset: 1, rangeType: 'month',
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
+        monthOffset: 1,
+        rangeType: 'month',
       ),
     ),
 
@@ -127,21 +171,22 @@ class EsDefinitions {
     PatternDef(
       name: 'es_lastWeek',
       regex: RegExp(r'la\s+semana\s+pasada', caseSensitive: false),
-      extract: (match, np, ref) {
-        // Note: Test expects Monday of THIS week (Feb 3), not LAST week (Jan 27)
-        DateTime mondayThisWeek = DateUtils.firstDayOfWeek(ref);
-        return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          year: mondayThisWeek.year, month: mondayThisWeek.month, day: mondayThisWeek.day,
-          rangeType: 'week',
-        );
-      },
+      extract: (match, np, ref) => RawMatch(
+        startIndex: match.start,
+        endIndex: match.end,
+        text: match.group(0)!,
+        weekOffset: -1,
+        rangeType: 'week',
+      ),
     ),
 
     // Full datetime: DD de month de YYYY a las HH:MM
     PatternDef(
       name: 'es_fullDateTime',
-      regex: RegExp(r'(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})\s+a\s+las\s+(\d{1,2}):(\d{2})', caseSensitive: false),
+      regex: RegExp(
+        r'(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})\s+a\s+las\s+(\d{1,2}):(\d{2})',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) {
         final day = int.parse(match.group(1)!);
         final monthStr = match.group(2)!.toLowerCase();
@@ -166,7 +211,10 @@ class EsDefinitions {
     // DD de MM: "14 de marzo" or "14 de marzo de 2025"
     PatternDef(
       name: 'es_dayMonth',
-      regex: RegExp(r'(\d{1,2})\s+de\s+([a-záéíóúñ]+)(?:\s+de\s+(\d{4}))?', caseSensitive: false),
+      regex: RegExp(
+        r'(\d{1,2})\s+de\s+([a-záéíóúñ]+)(?:\s+de\s+(\d{4}))?',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) {
         final day = int.parse(match.group(1)!);
         final monthStr = match.group(2)!.toLowerCase();
@@ -174,25 +222,63 @@ class EsDefinitions {
         if (month == null) return null;
         final yearStr = match.group(3);
         int year = yearStr != null ? int.parse(yearStr) : ref.year;
-        if (yearStr == null && DateTime(year, month, day).isBefore(DateTime(ref.year, ref.month, ref.day))) {
+        if (yearStr == null &&
+            DateTime(
+              year,
+              month,
+              day,
+            ).isBefore(DateTime(ref.year, ref.month, ref.day))) {
           year++;
         }
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          year: yearStr == null ? null : year, month: month, day: day,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          year: yearStr == null ? null : year,
+          month: month,
+          day: day,
         );
       },
     ),
 
-    // Próximo lunes
+    // Calendar week + weekday: "domingo de la próxima semana"
     PatternDef(
-      name: 'es_proximoWeekday',
-      regex: RegExp(r'pr[óo]ximo\s+(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)', caseSensitive: false),
+      name: 'es_nextWeekWeekday',
+      regex: RegExp(
+        r'(?:la\s+pr[óo]xima\s+semana\s+(?:el\s+)?(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)|(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)\s+de\s+la\s+pr[óo]xima\s+semana)',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) {
-        final day = match.group(1)!.toLowerCase();
+        final day = (match.group(1) ?? match.group(2))!.toLowerCase();
+        final normalizedDay = day.replaceAll('é', 'e').replaceAll('á', 'a');
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          weekday: weekdays[day] ?? 1, weekOffset: 0,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          weekday: weekdays[day] ?? weekdays[normalizedDay] ?? 1,
+          weekOffset: 1,
+          calendarWeek: true,
+        );
+      },
+    ),
+
+    // Próximo lunes / pasado lunes (next/last + weekday)
+    PatternDef(
+      name: 'es_nextLastWeekday',
+      regex: RegExp(
+        r'(pr[óo]ximo|pasado)\s+(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)',
+        caseSensitive: false,
+      ),
+      extract: (match, np, ref) {
+        final dir = match.group(1)!.toLowerCase();
+        final day = match.group(2)!.toLowerCase();
+        final isLast = dir == 'pasado';
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          weekday: weekdays[day] ?? 1,
+          weekOffset: isLast ? -7 : 0,
         );
       },
     ),
@@ -200,7 +286,10 @@ class EsDefinitions {
     // el tercer lunes de marzo
     PatternDef(
       name: 'es_nthWeekdayOfMonth',
-      regex: RegExp(r'el\s+(primer|segundo|tercer|cuarto)\s+(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)\s+de\s+([a-záéíóúñ]+)', caseSensitive: false),
+      regex: RegExp(
+        r'el\s+(primer|segundo|tercer|cuarto)\s+(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)\s+de\s+([a-záéíóúñ]+)',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) {
         final ordStr = match.group(1)!.toLowerCase();
         final dayStr = match.group(2)!.toLowerCase();
@@ -215,8 +304,12 @@ class EsDefinitions {
         if (date.isBefore(ref)) year++;
         date = _nthWeekdayOfMonth(year, month, weekday, n);
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          year: date.year, month: date.month, day: date.day,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          year: date.year,
+          month: date.month,
+          day: date.day,
         );
       },
     ),
@@ -224,7 +317,10 @@ class EsDefinitions {
     // el último viernes de abril
     PatternDef(
       name: 'es_lastWeekdayOfMonth',
-      regex: RegExp(r'el\s+[úu]ltimo\s+(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)\s+de\s+([a-záéíóúñ]+)', caseSensitive: false),
+      regex: RegExp(
+        r'el\s+[úu]ltimo\s+(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)\s+de\s+([a-záéíóúñ]+)',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) {
         final dayStr = match.group(1)!.toLowerCase();
         final monthStr = match.group(2)!.toLowerCase();
@@ -236,8 +332,12 @@ class EsDefinitions {
         if (date.isBefore(ref)) year++;
         date = _nthWeekdayOfMonth(year, month, weekday, -1);
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          year: date.year, month: date.month, day: date.day,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          year: date.year,
+          month: date.month,
+          day: date.day,
         );
       },
     ),
@@ -245,11 +345,16 @@ class EsDefinitions {
     // Weekday only
     PatternDef(
       name: 'es_weekday',
-      regex: RegExp(r'\b(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)\b', caseSensitive: false),
+      regex: RegExp(
+        r'\b(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)\b',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) {
         final day = match.group(1)!.toLowerCase();
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: day,
+          startIndex: match.start,
+          endIndex: match.end,
+          text: day,
           weekday: weekdays[day] ?? 1,
         );
       },
@@ -258,13 +363,19 @@ class EsDefinitions {
     // Esta noche HH:MM
     PatternDef(
       name: 'es_estaNoche',
-      regex: RegExp(r'(esta\s+noche)\s+(\d{1,2}):(\d{2})', caseSensitive: false),
+      regex: RegExp(
+        r'(esta\s+noche)\s+(\d{1,2}):(\d{2})',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) {
         var hour = int.parse(match.group(2)!);
         if (hour < 12) hour += 12;
         return RawMatch(
-          startIndex: match.start, endIndex: match.end, text: match.group(0)!,
-          hour: hour, minute: int.parse(match.group(3)!),
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          hour: hour,
+          minute: int.parse(match.group(3)!),
         );
       },
     ),

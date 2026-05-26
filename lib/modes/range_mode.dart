@@ -55,8 +55,7 @@ class RangeMode {
           // `result.date` falls in.
           DateTime first = result.date;
           // `DateTime(year, month + 1, 0)` is the last day of `month`.
-          DateTime last =
-              DateTime(first.year, first.month + 1, 0);
+          DateTime last = DateTime(first.year, first.month + 1, 0);
           int totalDays = last.day;
           for (int i = 0; i < totalDays; i++) {
             DateTime d = first.add(Duration(days: i));

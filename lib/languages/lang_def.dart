@@ -79,6 +79,13 @@ class RawMatch {
   /// this shifts the entire search window by that many weeks.
   final int? weekOffset;
 
+  /// When true, [weekday] + [weekOffset] resolves inside the named
+  /// calendar week instead of using the next/previous weekday occurrence.
+  ///
+  /// This distinguishes expressions like "next week Sunday" from
+  /// duration-like expressions such as "1 week later Sunday".
+  final bool calendarWeek;
+
   /// Set to `true` when the pattern recognised a "pm" marker, so the
   /// resolver can add 12 to hours < 12.
   final bool pmFlag;
@@ -108,6 +115,7 @@ class RawMatch {
     this.monthOffset,
     this.yearOffset,
     this.weekOffset,
+    this.calendarWeek = false,
     this.pmFlag = false,
     this.rangeType,
     this.rangeDays,
@@ -129,7 +137,7 @@ class RawMatch {
     if (dayOffset != null) s += 3;
     if (monthOffset != null) s += 3;
     if (yearOffset != null) s += 3;
-    if (weekOffset != null) s += 2;
+    if (weekOffset != null) s += 3;
     return s;
   }
 
@@ -177,7 +185,7 @@ class PatternDef {
   /// numeric group conversion, and [ref] (the reference date) in case
   /// the extraction logic needs to compute a relative year.
   final RawMatch? Function(RegExpMatch match, NumberParser np, DateTime ref)
-      extract;
+  extract;
 
   const PatternDef({
     required this.name,

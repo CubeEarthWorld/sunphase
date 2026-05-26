@@ -73,8 +73,9 @@ class ResultRanker {
     for (var m in matches) {
       // An overlap exists when two character ranges share at least one
       // position: [s1, e1) ∩ [s2, e2) is non-empty iff s1 < e2 && s2 < e1.
-      bool overlaps = selected.any((s) =>
-          getStart(m) < getEnd(s) && getStart(s) < getEnd(m));
+      bool overlaps = selected.any(
+        (s) => getStart(m) < getEnd(s) && getStart(s) < getEnd(m),
+      );
       if (!overlaps) {
         selected.add(m);
       }

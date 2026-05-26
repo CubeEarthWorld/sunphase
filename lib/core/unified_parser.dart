@@ -80,7 +80,13 @@ class UnifiedParser {
 
     // Turn each surviving `RawMatch` into a concrete `DateTime`.
     List<ParsingResult> results = filtered
-        .map((m) => DateResolver.resolve(m, context.referenceDate))
+        .map(
+          (m) => DateResolver.resolve(
+            m,
+            context.referenceDate,
+            weekStartsOn: context.weekStartsOn,
+          ),
+        )
         .toList();
 
     return results;

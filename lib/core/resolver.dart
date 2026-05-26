@@ -23,7 +23,11 @@ import 'result.dart';
 class DateResolver {
   /// Resolves a single [m] into a [ParsingResult] using [ref] as the
   /// anchor for every relative field.
-  static ParsingResult resolve(RawMatch m, DateTime ref) {
+  static ParsingResult resolve(
+    RawMatch m,
+    DateTime ref, {
+    int weekStartsOn = DateTime.sunday,
+  }) {
     // Extract time first so each date branch below only has to worry
     // about the year/month/day components.
     int hour = m.hour ?? 0;
@@ -39,8 +43,11 @@ class DateResolver {
       date = DateUtils.nextOccurrenceTime(ref, hour, minute);
     } else if (m.dayOffset != null) {
       // Relative day ("today", "tomorrow", "yesterday", "in 3 days").
-      DateTime base = DateTime(ref.year, ref.month, ref.day)
-          .add(Duration(days: m.dayOffset!));
+      DateTime base = DateTime(
+        ref.year,
+        ref.month,
+        ref.day,
+      ).add(Duration(days: m.dayOffset!));
       date = DateTime(base.year, base.month, base.day, hour, minute);
     } else if (m.weekOffset != null &&
         m.weekday != null &&
@@ -49,28 +56,36 @@ class DateResolver {
         m.monthOffset == null) {
       // "next Monday", "last Friday" — weekday combined with a
       // week-level offset.
-      date = _resolveWeekday(m, ref, hour, minute);
+      date = _resolveWeekday(m, ref, hour, minute, weekStartsOn);
     } else if (m.weekOffset != null &&
         m.weekday == null &&
         m.month == null &&
         m.day == null &&
         m.dayOffset == null) {
-      // Week offset without a weekday ("2 weeks from now"): treat it
-      // as a day offset of `weekOffset * 7`.
-      int dayOffset = m.weekOffset! * 7;
-      DateTime base = DateTime(ref.year, ref.month, ref.day)
-          .add(Duration(days: dayOffset));
-      date = DateTime(base.year, base.month, base.day, hour, minute);
+      if (m.rangeType == 'week') {
+        DateTime base = _resolveWeekStart(ref, m.weekOffset!, weekStartsOn);
+        date = DateTime(base.year, base.month, base.day, hour, minute);
+      } else {
+        // Week offset without a named week span ("2 weeks from now"):
+        // treat it as a day offset of `weekOffset * 7`.
+        int dayOffset = m.weekOffset! * 7;
+        DateTime base = DateTime(
+          ref.year,
+          ref.month,
+          ref.day,
+        ).add(Duration(days: dayOffset));
+        date = DateTime(base.year, base.month, base.day, hour, minute);
+      }
     } else if (m.weekday != null &&
         m.month == null &&
         m.day == null &&
         m.monthOffset == null) {
       // Bare weekday ("Monday") — resolves to the next occurrence.
-      date = _resolveWeekday(m, ref, hour, minute);
+      date = _resolveWeekday(m, ref, hour, minute, weekStartsOn);
     } else {
       // Everything else is a calendar-date expression with at least
       // one of year/month/day set.
-      date = _resolveCalendarDate(m, ref, hour, minute, hasTime);
+      date = _resolveCalendarDate(m, ref, hour, minute, hasTime, weekStartsOn);
     }
 
     return ParsingResult(
@@ -82,15 +97,37 @@ class DateResolver {
     );
   }
 
+  /// Returns the start date of the named week offset from [ref].
+  static DateTime _resolveWeekStart(
+    DateTime ref,
+    int weekOffset,
+    int weekStartsOn,
+  ) {
+    DateTime weekStart = DateUtils.firstDayOfWeek(
+      ref,
+      startWeekday: weekStartsOn,
+    );
+    DateTime base = weekStart.add(Duration(days: weekOffset * 7));
+    return DateTime(base.year, base.month, base.day);
+  }
+
   /// Resolves a weekday expression, honoring an optional week offset.
   static DateTime _resolveWeekday(
     RawMatch m,
     DateTime ref,
     int hour,
     int minute,
+    int weekStartsOn,
   ) {
     int weekOffset = m.weekOffset ?? 0;
     DateTime base;
+
+    if (m.calendarWeek) {
+      DateTime weekStart = _resolveWeekStart(ref, weekOffset, weekStartsOn);
+      int weekdayOffset = (m.weekday! - weekStartsOn + 7) % 7;
+      base = weekStart.add(Duration(days: weekdayOffset));
+      return DateTime(base.year, base.month, base.day, hour, minute);
+    }
 
     if (weekOffset == 0) {
       // No offset — pick the next occurrence of the weekday.
@@ -121,6 +158,7 @@ class DateResolver {
     int hour,
     int minute,
     bool hasTime,
+    int weekStartsOn,
   ) {
     int year = ref.year;
     int month = ref.month;
@@ -177,8 +215,9 @@ class DateResolver {
         m.yearOffset == null) {
       // If the requested day doesn't even exist this month (e.g. "the
       // 31st" in April), jump straight to the next month.
-      int lastDayOfCurrentMonth =
-          DateUtils.getMonthRange(DateTime(year, month, 1))['end']!.day;
+      int lastDayOfCurrentMonth = DateUtils.getMonthRange(
+        DateTime(year, month, 1),
+      )['end']!.day;
       if (day > lastDayOfCurrentMonth) {
         DateTime next = DateUtils.addMonths(DateTime(year, month, 1), 1);
         year = next.year;
@@ -203,23 +242,16 @@ class DateResolver {
       if (m.rangeType == "week") {
         if (m.weekOffset != null) {
           if (m.weekOffset == 0) {
-            // "this week" — Monday of the current week.
-            DateTime base = DateUtils.firstDayOfWeek(ref);
+            // "this week" — configured first day of the current week.
+            DateTime base = _resolveWeekStart(ref, 0, weekStartsOn);
             return DateTime(base.year, base.month, base.day);
           } else if (m.weekOffset == 1) {
-            // "next week" — Monday one week after the current week.
-            DateTime thisWeekMonday = DateUtils.firstDayOfWeek(ref);
-            DateTime nextWeekMonday =
-                thisWeekMonday.add(Duration(days: 7));
-            return DateTime(
-              nextWeekMonday.year,
-              nextWeekMonday.month,
-              nextWeekMonday.day,
-            );
+            // "next week" — first day one week after the current week.
+            DateTime base = _resolveWeekStart(ref, 1, weekStartsOn);
+            return DateTime(base.year, base.month, base.day);
           } else if (m.weekOffset == -1) {
-            // "last week" — Monday of the previous week.
-            DateTime base =
-                DateUtils.firstDayOfWeek(ref).subtract(Duration(days: 7));
+            // "last week" — first day of the previous week.
+            DateTime base = _resolveWeekStart(ref, -1, weekStartsOn);
             return DateTime(base.year, base.month, base.day);
           } else if (m.weekOffset == -7) {
             // Special sentinel used by Japanese "週末" (weekend):

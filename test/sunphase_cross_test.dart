@@ -37,6 +37,38 @@ void main() {
     });
   });
 
+  group('Week Start Configuration', () {
+    test('Invalid weekStartsOn value throws', () {
+      expect(
+        () => parse(
+          'next week',
+          referenceDate: reference,
+          weekStartsOn: DateTime.tuesday,
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('Default week start is Sunday', () {
+      List<ParsingResult> results = parse(
+        'next week Sunday',
+        referenceDate: reference,
+        languages: ['en'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 9));
+    });
+
+    test('Monday week start moves next-week Sunday later', () {
+      List<ParsingResult> results = parse(
+        'next week Sunday',
+        referenceDate: reference,
+        languages: ['en'],
+        weekStartsOn: DateTime.monday,
+      );
+      expect(results.first.date, DateTime(2025, 2, 16));
+    });
+  });
+
   group('Day-Only in Sentences (Cross-Language)', () {
     test('ES: "28 de febrero"', () {
       String input = "28 de febrero";
@@ -158,6 +190,49 @@ void main() {
         languages: ['en'],
       );
       expect(results.first.date, DateTime(2025, 3, 14, 15, 30));
+    });
+  });
+
+  group('Full-Width Digit (全角数字) Cross-Language Tests', () {
+    test('JA fullwidth: "明日１０時３０分に会議"', () {
+      String input = "明日１０時３０分に会議";
+      List<ParsingResult> results = parse(
+        input,
+        referenceDate: reference,
+        languages: ['ja'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 9, 10, 30, 0));
+    });
+
+    test('ZH fullwidth: "２０２６年５月１４日１４时３０分"', () {
+      String input = "２０２６年５月１４日１４时３０分";
+      List<ParsingResult> results = parse(
+        input,
+        referenceDate: reference,
+        languages: ['zh'],
+      );
+      expect(results.first.date, DateTime(2026, 5, 14, 14, 30, 0));
+    });
+
+    test('Mixed fullwidth: "２０２６年５月１４日" with multi-lang', () {
+      String input = "２０２６年５月１４日";
+      List<ParsingResult> results = parse(
+        input,
+        referenceDate: reference,
+        languages: ['en', 'ja', 'zh'],
+      );
+      expect(results.first.date, DateTime(2026, 5, 14, 0, 0, 0));
+    });
+
+    test('EN fullwidth digits in sentence: "Meeting on １５th"', () {
+      String input = "Meeting on １５th";
+      List<ParsingResult> results = parse(
+        input,
+        referenceDate: reference,
+        languages: ['en'],
+      );
+      // "１５th" → normalised to "15th" → parsed as day 15
+      expect(results.first.date, DateTime(2025, 2, 15, 0, 0, 0));
     });
   });
 }

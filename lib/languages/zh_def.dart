@@ -18,23 +18,60 @@ import 'lang_def.dart';
 
 class ZhDefinitions {
   static const Map<String, int> chineseDigits = {
-    '零': 0, '一': 1, '二': 2, '三': 3, '四': 4,
-    '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10,
+    '零': 0,
+    '一': 1,
+    '二': 2,
+    '三': 3,
+    '四': 4,
+    '五': 5,
+    '六': 6,
+    '七': 7,
+    '八': 8,
+    '九': 9,
+    '十': 10,
   };
 
   static const Map<String, int> weekdays = {
-    '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '天': 7, '日': 7,
-    '星期一': 1, '星期二': 2, '星期三': 3, '星期四': 4, '星期五': 5, '星期六': 6, '星期日': 7, '星期天': 7,
-    '周一': 1, '周二': 2, '周三': 3, '周四': 4, '周五': 5, '周六': 6, '周日': 7, '周天': 7,
+    '一': 1,
+    '二': 2,
+    '三': 3,
+    '四': 4,
+    '五': 5,
+    '六': 6,
+    '天': 7,
+    '日': 7,
+    '星期一': 1,
+    '星期二': 2,
+    '星期三': 3,
+    '星期四': 4,
+    '星期五': 5,
+    '星期六': 6,
+    '星期日': 7,
+    '星期天': 7,
+    '周一': 1,
+    '周二': 2,
+    '周三': 3,
+    '周四': 4,
+    '周五': 5,
+    '周六': 6,
+    '周日': 7,
+    '周天': 7,
   };
 
   static const Map<String, int> relativeDays = {
-    '今天': 0, '明天': 1, '后天': 2, '昨天': -1,
+    '今天': 0,
+    '明天': 1,
+    '后天': 2,
+    '昨天': -1,
   };
 
   static const Map<String, int> timePeriods = {
-    '上午': 0, '中午': 0, '早上': 0,
-    '下午': 12, '晚上': 12, '夜里': 12,
+    '上午': 0,
+    '中午': 0,
+    '早上': 0,
+    '下午': 12,
+    '晚上': 12,
+    '夜里': 12,
   };
 
   static const _n = r'([0-9零一二三四五六七八九十]+)';
@@ -55,9 +92,12 @@ class ZhDefinitions {
         int month = np.tryParse(match.group(3)!) ?? 1;
         int day = np.tryParse(match.group(4)!) ?? 1;
         int year = ref.year;
-        if (yearPrefix == '明年') year++;
-        else if (yearPrefix == '去年') year--;
-        else if (yearStr != null) year = int.parse(yearStr!);
+        if (yearPrefix == '明年')
+          year++;
+        else if (yearPrefix == '去年')
+          year--;
+        else if (yearStr != null)
+          year = int.parse(yearStr);
         return RawMatch(
           startIndex: match.start,
           endIndex: match.end,
@@ -151,14 +191,26 @@ class ZhDefinitions {
     // Full datetime: YYYY年MM月DD日HH时MM分
     PatternDef(
       name: 'zh_fullDateTime',
-      regex: RegExp(r'(\d{4})年' + _n + r'月' + _n + r'[号日]\s*(上午|中午|下午|晚上|早上)?\s*' + _n + r'(?:点|时)(?:\s*' + _n + r'分)?'),
+      regex: RegExp(
+        r'(\d{4})年' +
+            _n +
+            r'月' +
+            _n +
+            r'[号日]\s*(上午|中午|下午|晚上|早上)?\s*' +
+            _n +
+            r'(?:点|时)(?:\s*' +
+            _n +
+            r'分)?',
+      ),
       extract: (match, np, ref) {
         int year = int.parse(match.group(1)!);
         int month = np.tryParse(match.group(2)!) ?? 1;
         int day = np.tryParse(match.group(3)!) ?? 1;
         String? period = match.group(4);
         int hour = np.tryParse(match.group(5)!) ?? 0;
-        int minute = match.group(6) != null ? (np.tryParse(match.group(6)!) ?? 0) : 0;
+        int minute = match.group(6) != null
+            ? (np.tryParse(match.group(6)!) ?? 0)
+            : 0;
         int pmOffset = 0;
         if (period != null && timePeriods.containsKey(period)) {
           pmOffset = timePeriods[period]!;
@@ -223,14 +275,17 @@ class ZhDefinitions {
         String week = match.group(1)!;
         String day = match.group(2)!;
         int offset = 0;
-        if (week == '下周') offset = 1;
-        else if (week == '上周') offset = -1;
+        if (week == '下周')
+          offset = 1;
+        else if (week == '上周')
+          offset = -1;
         return RawMatch(
           startIndex: match.start,
           endIndex: match.end,
           text: match.group(0)!,
           weekday: weekdays[day] ?? 1,
           weekOffset: offset,
+          calendarWeek: week == '下周',
           rangeType: offset == 0 ? 'week' : null,
         );
       },
@@ -275,8 +330,10 @@ class ZhDefinitions {
       extract: (match, np, ref) {
         String week = match.group(1)!;
         int offset = 0;
-        if (week == '下周') offset = 1;
-        else if (week == '上周') offset = -1;
+        if (week == '下周')
+          offset = 1;
+        else if (week == '上周')
+          offset = -1;
         return RawMatch(
           startIndex: match.start,
           endIndex: match.end,
@@ -313,7 +370,9 @@ class ZhDefinitions {
       name: 'zh_monthDayKanji',
       regex: RegExp(r'(?:([零一二三四五六七八九十]+)月)?([零一二三四五六七八九十]+)[号日]'),
       extract: (match, np, ref) {
-        int? month = match.group(1) != null ? (np.tryParse(match.group(1)!) ?? 1) : null;
+        int? month = match.group(1) != null
+            ? (np.tryParse(match.group(1)!) ?? 1)
+            : null;
         int day = np.tryParse(match.group(2)!) ?? 1;
         return RawMatch(
           startIndex: match.start,
@@ -360,12 +419,20 @@ class ZhDefinitions {
     // Weekday + period + time: [星期周][N](上午|下午)HH点
     PatternDef(
       name: 'zh_weekdayPeriodTime',
-      regex: RegExp(r'[星期周]([一二三四五六天日])\s*(上午|中午|下午|晚上|早上)?\s*' + _n + r'(?:点|时|:：)(?:\s*' + _n + r'分)?'),
+      regex: RegExp(
+        r'[星期周]([一二三四五六天日])\s*(上午|中午|下午|晚上|早上)?\s*' +
+            _n +
+            r'(?:点|时|:：)(?:\s*' +
+            _n +
+            r'分)?',
+      ),
       extract: (match, np, ref) {
         String day = match.group(1)!;
         String? period = match.group(2);
         int hour = np.tryParse(match.group(3)!) ?? 0;
-        int minute = match.group(4) != null ? (np.tryParse(match.group(4)!) ?? 0) : 0;
+        int minute = match.group(4) != null
+            ? (np.tryParse(match.group(4)!) ?? 0)
+            : 0;
         int pmOffset = 0;
         if (period != null && timePeriods.containsKey(period)) {
           pmOffset = timePeriods[period]!;
@@ -405,12 +472,16 @@ class ZhDefinitions {
     // Day + period + time: 20号下午3点
     PatternDef(
       name: 'zh_dayPeriodTime',
-      regex: RegExp(_n + r'[号日]\s*(上午|中午|下午|晚上|早上)\s*' + _n + r'点(?:\s*' + _n + r'分)?'),
+      regex: RegExp(
+        _n + r'[号日]\s*(上午|中午|下午|晚上|早上)\s*' + _n + r'点(?:\s*' + _n + r'分)?',
+      ),
       extract: (match, np, ref) {
         int day = np.tryParse(match.group(1)!) ?? 1;
         String? period = match.group(2);
         int hour = np.tryParse(match.group(3)!) ?? 0;
-        int minute = match.group(4) != null ? (np.tryParse(match.group(4)!) ?? 0) : 0;
+        int minute = match.group(4) != null
+            ? (np.tryParse(match.group(4)!) ?? 0)
+            : 0;
         int pmOffset = 0;
         if (period != null && timePeriods.containsKey(period)) {
           pmOffset = timePeriods[period]!;
@@ -434,7 +505,9 @@ class ZhDefinitions {
       extract: (match, np, ref) {
         String period = match.group(1)!;
         int hour = np.tryParse(match.group(2)!) ?? 0;
-        int minute = match.group(3) != null ? (np.tryParse(match.group(3)!) ?? 0) : 0;
+        int minute = match.group(3) != null
+            ? (np.tryParse(match.group(3)!) ?? 0)
+            : 0;
         int pmOffset = timePeriods[period] ?? 0;
         if (pmOffset == 12 && hour < 12) hour += 12;
         return RawMatch(

@@ -15,6 +15,7 @@ import 'unified_parser.dart';
 import '../languages/universal.dart' as old_universal;
 import '../modes/range_mode.dart';
 import '../utils/timezone_utils.dart';
+import '../utils/date_utils.dart';
 
 /// Top-level parse pipeline. All members are static — this class exists
 /// only as a namespace.
@@ -28,7 +29,20 @@ class ParserManager {
     List<String>? languages,
     bool rangeMode = false,
     String? timezone,
+    int weekStartsOn = DateTime.sunday,
   }) {
+    if (weekStartsOn != DateTime.sunday && weekStartsOn != DateTime.monday) {
+      throw ArgumentError.value(
+        weekStartsOn,
+        'weekStartsOn',
+        'Use DateTime.sunday or DateTime.monday.',
+      );
+    }
+
+    // 0. Normalise full-width digits (U+FF10–U+FF19) to ASCII so that
+    //    every regex pattern and number parser works uniformly.
+    text = DateUtils.normalizeFullWidthDigits(text);
+
     // 1. Anchor every relative expression to a single reference moment.
     //    When the caller does not provide one we fall back to "now".
     DateTime ref = referenceDate ?? DateTime.now();
@@ -37,6 +51,7 @@ class ParserManager {
       timezoneOffset: timezone != null
           ? TimezoneUtils.offsetFromString(timezone)
           : Duration.zero,
+      weekStartsOn: weekStartsOn,
     );
 
     // 2. Decide which language parsers to run. When the caller passes
