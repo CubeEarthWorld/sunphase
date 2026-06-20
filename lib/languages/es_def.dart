@@ -44,11 +44,18 @@ class EsDefinitions {
     'domingo': 7,
   };
 
+  // Single source of truth for relative-day words; both the accented and
+  // unaccented spellings are listed so the derived regex matches either,
+  // while lookups normalise 'ñ' -> 'n' before indexing this map.
   static const Map<String, int> relativeDays = {
     'hoy': 0,
     'mañana': 1,
     'manana': 1,
+    'pasado mañana': 2,
+    'pasado manana': 2,
     'ayer': -1,
+    'anteayer': -2,
+    'antier': -2,
   };
 
   static const arabicParser = ArabicNumberParser();
@@ -103,7 +110,10 @@ class EsDefinitions {
     // Relative days: hoy, mañana, ayer
     PatternDef(
       name: 'es_relativeDay',
-      regex: RegExp(r'\b(hoy|ma[ñn]ana|ayer)\b', caseSensitive: false),
+      regex: RegExp(
+        r'\b' + buildAlternation(relativeDays.keys) + r'\b',
+        caseSensitive: false,
+      ),
       extract: (match, np, ref) {
         String word = match.group(1)!.toLowerCase().replaceAll('ñ', 'n');
         return RawMatch(

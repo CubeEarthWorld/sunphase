@@ -247,3 +247,42 @@ class UniversalPatterns {
     ),
   );
 }
+
+// ---------------------------------------------------------------------------
+// Vocabulary helpers
+// ---------------------------------------------------------------------------
+
+/// Escapes the regex metacharacters in [s] so an arbitrary vocabulary word
+/// can be embedded safely inside a larger pattern.
+String escapeRegExp(String s) =>
+    s.replaceAllMapped(RegExp(r'[.*+?^${}()|[\]\\]'), (m) => '\\${m[0]}');
+
+/// Builds a single capturing-group regex alternation from [words], escaping
+/// each word and ordering them **longest-first**.
+///
+/// ## Why this exists
+/// Relative-day vocabularies — *today*, *tomorrow*, *the day after
+/// tomorrow*, *the day after that*, … — used to be hand-written as a
+/// separate alternation inside every pattern that referenced them (the
+/// "word only" pattern, the "word + hour" pattern, the "word + hour +
+/// minute" pattern, and so on). Those parallel lists inevitably drifted out
+/// of sync with the authoritative `relativeDays` map.
+///
+/// For example, Japanese `明々後日` ("the day after the day after tomorrow")
+/// was present in the map and in the "+ minutes" pattern, but missing from
+/// the "+ hour" pattern — so `明々後日16時` failed to combine into a single
+/// datetime while `明後日16時` worked. This was not a missing-word problem so
+/// much as a missing-*single-source-of-truth* problem.
+///
+/// By deriving the alternation from the map's keys at construction time, the
+/// map becomes the one place a word is declared: add it once and every
+/// pattern that uses `buildAlternation(map.keys)` recognises it.
+///
+/// Longest-first ordering guarantees that a longer word (e.g. `明々後日`,
+/// `послезавтра`, `pasado mañana`) is attempted before any shorter word that
+/// could otherwise shadow it in the alternation.
+String buildAlternation(Iterable<String> words) {
+  final sorted = words.toSet().toList()
+    ..sort((a, b) => b.length.compareTo(a.length));
+  return '(${sorted.map(escapeRegExp).join('|')})';
+}

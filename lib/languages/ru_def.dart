@@ -88,10 +88,7 @@ class RuDefinitions {
     // Relative days: сегодня, завтра, вчера
     PatternDef(
       name: 'ru_relativeDay',
-      regex: RegExp(
-        r'(сегодня|завтра|послезавтра|вчера|позавчера)',
-        caseSensitive: false,
-      ),
+      regex: RegExp(buildAlternation(relativeDays.keys), caseSensitive: false),
       extract: (match, np, ref) {
         final word = match.group(1)!.toLowerCase();
         return RawMatch(

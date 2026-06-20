@@ -42,7 +42,14 @@ class HiDefinitions {
     'रविवार': 7,
   };
 
-  static const Map<String, int> relativeDays = {'आज': 0, 'कल': 1, 'परसों': 2};
+  // Single source of truth for relative-day words; the regex alternation
+  // below is derived from these keys via `buildAlternation`.
+  static const Map<String, int> relativeDays = {
+    'आज': 0,
+    'कल': 1,
+    'परसों': 2,
+    'नरसों': 3,
+  };
 
   static const Map<String, int> timePeriods = {
     'सुबह': 0,
@@ -57,7 +64,7 @@ class HiDefinitions {
     // Relative days: आज, कल, परसों
     PatternDef(
       name: 'hi_relativeDay',
-      regex: RegExp(r'(आज|कल|परसों)'),
+      regex: RegExp(buildAlternation(relativeDays.keys)),
       extract: (match, np, ref) => RawMatch(
         startIndex: match.start,
         endIndex: match.end,

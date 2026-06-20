@@ -460,5 +460,45 @@ void main() {
       );
       expect(results.first.date, DateTime(2025, 2, 7, 0, 0, 0));
     });
+
+    // Regression: every relative-day word must combine with an hour-only
+    // time, not just the "+ minutes" form. "明々後日16時" used to fail while
+    // "明後日16時" worked because the hour-only pattern hard-coded a shorter
+    // word list than the relativeDays map.
+    test('Japanese: "明々後日16時"', () {
+      List<ParsingResult> results = parse(
+        "明々後日16時",
+        referenceDate: reference,
+        languages: ['ja'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 11, 16, 0, 0));
+    });
+
+    test('Japanese: "明々後日16時30分"', () {
+      List<ParsingResult> results = parse(
+        "明々後日16時30分",
+        referenceDate: reference,
+        languages: ['ja'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 11, 16, 30, 0));
+    });
+
+    test('Japanese: "一昨日10時"', () {
+      List<ParsingResult> results = parse(
+        "一昨日10時",
+        referenceDate: reference,
+        languages: ['ja'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 6, 10, 0, 0));
+    });
+
+    test('Japanese: "本日"', () {
+      List<ParsingResult> results = parse(
+        "本日",
+        referenceDate: reference,
+        languages: ['ja'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 8, 0, 0, 0));
+    });
   });
 }

@@ -57,13 +57,22 @@ class JaDefinitions {
     '日曜日': 7,
   };
 
+  // Authoritative vocabulary for relative-day words. This map is the single
+  // source of truth: every relative-day pattern below derives its regex
+  // alternation from these keys via `buildAlternation`, so adding a word
+  // here makes it recognised everywhere (word-only, word + hour, and
+  // word + hour + minute forms alike).
   static const Map<String, int> relativeDays = {
     '今日': 0,
+    '本日': 0,
     '明日': 1,
     '明後日': 2,
     '明々後日': 3,
+    '明明後日': 3,
     '昨日': -1,
     '一昨日': -2,
+    '一昨々日': -3,
+    '一昨昨日': -3,
   };
 
   static const _n = r'([0-9一二三四五六七八九十]+)';
@@ -304,7 +313,9 @@ class JaDefinitions {
     // Relative day + time: (明日|今日|明後日|昨日)HH時MM分
     PatternDef(
       name: 'ja_relativeDayTime',
-      regex: RegExp(r'(明日|今日|明後日|明々後日|昨日)\s*' + _n + r'時\s*' + _n + r'分'),
+      regex: RegExp(
+        buildAlternation(relativeDays.keys) + r'\s*' + _n + r'時\s*' + _n + r'分',
+      ),
       extract: (match, np, ref) {
         String word = match.group(1)!;
         int hour = np.tryParse(match.group(2)!) ?? 0;
@@ -323,7 +334,9 @@ class JaDefinitions {
     // Relative day + hour only: (明日|今日|明後日|昨日)HH時
     PatternDef(
       name: 'ja_relativeDayHour',
-      regex: RegExp(r'(明日|今日|明後日|昨日)\s*' + _n + r'時(?!\d)'),
+      regex: RegExp(
+        buildAlternation(relativeDays.keys) + r'\s*' + _n + r'時(?!\d)',
+      ),
       extract: (match, np, ref) {
         String word = match.group(1)!;
         int hour = np.tryParse(match.group(2)!) ?? 0;
@@ -448,7 +461,7 @@ class JaDefinitions {
     // Relative day words
     PatternDef(
       name: 'ja_relativeDay',
-      regex: RegExp(r'(今日|明日|明後日|明々後日|昨日)'),
+      regex: RegExp(buildAlternation(relativeDays.keys)),
       extract: (match, np, ref) {
         String word = match.group(1)!;
         return RawMatch(
