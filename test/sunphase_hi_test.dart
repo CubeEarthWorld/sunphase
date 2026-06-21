@@ -223,5 +223,15 @@ void main() {
       DateTime expected = DateTime(2025, 2, 5, 0, 0, 0);
       expect(results.first.date, expected);
     });
+
+    // Multi-step relative-day word: नरसों (three days from now).
+    test('Hindi: "नरसों"', () {
+      List<ParsingResult> results = parse(
+        "नरसों",
+        referenceDate: reference,
+        languages: ['hi'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 11, 0, 0, 0));
+    });
   });
 }

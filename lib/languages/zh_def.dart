@@ -58,11 +58,18 @@ class ZhDefinitions {
     '周天': 7,
   };
 
+  // Single source of truth for relative-day words. Every relative-day
+  // pattern derives its regex alternation from these keys via
+  // `buildAlternation`, so the word-only, "+ Chinese time", and "+ colon
+  // time" forms can never drift apart.
   static const Map<String, int> relativeDays = {
     '今天': 0,
     '明天': 1,
     '后天': 2,
+    '大后天': 3,
     '昨天': -1,
+    '前天': -2,
+    '大前天': -3,
   };
 
   static const Map<String, int> timePeriods = {
@@ -112,11 +119,44 @@ class ZhDefinitions {
     // Relative day + Chinese time: 明天十一时三十四分
     PatternDef(
       name: 'zh_relativeDayChineseTime',
-      regex: RegExp(r'(今天|明天|后天|昨天)\s*' + _n + r'时\s*' + _n + r'分'),
+      regex: RegExp(
+        buildAlternation(relativeDays.keys) + r'\s*' + _n + r'时\s*' + _n + r'分',
+      ),
       extract: (match, np, ref) {
         String word = match.group(1)!;
         int hour = np.tryParse(match.group(2)!) ?? 0;
         int minute = np.tryParse(match.group(3)!) ?? 0;
+        return RawMatch(
+          startIndex: match.start,
+          endIndex: match.end,
+          text: match.group(0)!,
+          dayOffset: relativeDays[word]!,
+          hour: hour,
+          minute: minute,
+        );
+      },
+    ),
+
+    // Relative day + 点 time: 后天16点, 大后天16点30分, 后天下午3点
+    PatternDef(
+      name: 'zh_relativeDayDian',
+      regex: RegExp(
+        buildAlternation(relativeDays.keys) +
+            r'\s*(上午|中午|下午|晚上|早上|夜里)?\s*' +
+            _n +
+            r'点(?:\s*' +
+            _n +
+            r'分)?',
+      ),
+      extract: (match, np, ref) {
+        String word = match.group(1)!;
+        String? period = match.group(2);
+        int hour = np.tryParse(match.group(3)!) ?? 0;
+        int minute = match.group(4) != null
+            ? (np.tryParse(match.group(4)!) ?? 0)
+            : 0;
+        int pmOffset = (period != null) ? (timePeriods[period] ?? 0) : 0;
+        if (pmOffset == 12 && hour < 12) hour += 12;
         return RawMatch(
           startIndex: match.start,
           endIndex: match.end,
@@ -251,7 +291,9 @@ class ZhDefinitions {
     // Relative day + time: (今天|明天|后天|昨天)HH:MM
     PatternDef(
       name: 'zh_relativeDayTime',
-      regex: RegExp(r'(今天|明天|后天|昨天)\s*(\d{1,2}):(\d{2})'),
+      regex: RegExp(
+        buildAlternation(relativeDays.keys) + r'\s*(\d{1,2}):(\d{2})',
+      ),
       extract: (match, np, ref) {
         String word = match.group(1)!;
         int hour = int.parse(match.group(2)!);
@@ -523,7 +565,7 @@ class ZhDefinitions {
     // Relative day words: 今天|明天|后天|昨天
     PatternDef(
       name: 'zh_relativeDay',
-      regex: RegExp(r'(今天|明天|后天|昨天)'),
+      regex: RegExp(buildAlternation(relativeDays.keys)),
       extract: (match, np, ref) {
         String word = match.group(1)!;
         return RawMatch(

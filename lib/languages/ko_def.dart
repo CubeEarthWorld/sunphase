@@ -109,7 +109,7 @@ class KoDefinitions {
     // Relative days: 오늘, 내일, 어제
     PatternDef(
       name: 'ko_relativeDay',
-      regex: RegExp(r'(오늘|내일|명일|모레|어제|그제|그끄제|금일)'),
+      regex: RegExp(buildAlternation(relativeDays.keys)),
       extract: (match, np, ref) {
         final word = match.group(0)!;
         final mappedWord = _mapRelativeDay(word);
@@ -281,7 +281,9 @@ class KoDefinitions {
     // Relative day + time: 내일 3시
     PatternDef(
       name: 'ko_relativeDayTime',
-      regex: RegExp(r'(오늘|내일|어제)\s*' + _n + r'시(?:\s*' + _n + r'분)?'),
+      regex: RegExp(
+        buildAlternation(relativeDays.keys) + r'\s*' + _n + r'시(?:\s*' + _n + r'분)?',
+      ),
       extract: (match, np, ref) {
         final word = match.group(1)!;
         final mappedWord = _mapRelativeDay(word);

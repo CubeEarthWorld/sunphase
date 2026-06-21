@@ -207,5 +207,44 @@ void main() {
       );
       expect(results.first.date, DateTime(2025, 2, 11, 0, 0, 0));
     });
+
+    // Regression: 前天 was documented in the file header but missing from
+    // the relativeDays map, and relative-day words did not combine with the
+    // 点 hour marker.
+    test('Chinese: "前天"', () {
+      List<ParsingResult> results = parse(
+        "前天",
+        referenceDate: reference,
+        languages: ['zh'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 6, 0, 0, 0));
+    });
+
+    test('Chinese: "大前天"', () {
+      List<ParsingResult> results = parse(
+        "大前天",
+        referenceDate: reference,
+        languages: ['zh'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 5, 0, 0, 0));
+    });
+
+    test('Chinese: "后天16点"', () {
+      List<ParsingResult> results = parse(
+        "后天16点",
+        referenceDate: reference,
+        languages: ['zh'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 10, 16, 0, 0));
+    });
+
+    test('Chinese: "大后天16点30分"', () {
+      List<ParsingResult> results = parse(
+        "大后天16点30分",
+        referenceDate: reference,
+        languages: ['zh'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 11, 16, 30, 0));
+    });
   });
 }

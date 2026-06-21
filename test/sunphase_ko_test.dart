@@ -206,5 +206,25 @@ void main() {
       );
       expect(results.first.date, DateTime(2025, 2, 9, 10, 30, 0));
     });
+
+    // Regression: relative-day words beyond 오늘/내일/어제 must also combine
+    // with a 시 time.
+    test('Korean: "모레 3시"', () {
+      List<ParsingResult> results = parse(
+        "모레 3시",
+        referenceDate: reference,
+        languages: ['ko'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 10, 3, 0, 0));
+    });
+
+    test('Korean: "그끄제 10시"', () {
+      List<ParsingResult> results = parse(
+        "그끄제 10시",
+        referenceDate: reference,
+        languages: ['ko'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 6, 10, 0, 0));
+    });
   });
 }

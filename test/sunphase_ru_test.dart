@@ -209,5 +209,24 @@ void main() {
       );
       expect(results.first.date, DateTime(2025, 2, 9, 10, 30, 0));
     });
+
+    // Multi-step relative-day words.
+    test('Russian: "послезавтра"', () {
+      List<ParsingResult> results = parse(
+        "послезавтра",
+        referenceDate: reference,
+        languages: ['ru'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 10, 0, 0, 0));
+    });
+
+    test('Russian: "позавчера"', () {
+      List<ParsingResult> results = parse(
+        "позавчера",
+        referenceDate: reference,
+        languages: ['ru'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 6, 0, 0, 0));
+    });
   });
 }

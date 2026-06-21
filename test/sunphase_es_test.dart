@@ -294,5 +294,24 @@ void main() {
       DateTime expected = DateTime(2025, 2, 3, 0, 0, 0);
       expect(results.first.date, expected);
     });
+
+    // Multi-step relative-day words.
+    test('Spanish: "pasado mañana"', () {
+      List<ParsingResult> results = parse(
+        "pasado mañana",
+        referenceDate: reference,
+        languages: ['es'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 10, 0, 0, 0));
+    });
+
+    test('Spanish: "anteayer"', () {
+      List<ParsingResult> results = parse(
+        "anteayer",
+        referenceDate: reference,
+        languages: ['es'],
+      );
+      expect(results.first.date, DateTime(2025, 2, 6, 0, 0, 0));
+    });
   });
 }
