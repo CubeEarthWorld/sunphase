@@ -6,13 +6,16 @@
 // should only need to import `package:sunphase/sunphase.dart` and call
 // the top-level `parse` function defined below.
 //
-// The heavy lifting (language detection, pattern matching, date
-// resolution, range expansion, timezone application) is delegated to the
-// `ParserManager`. See `lib/core/parser_manager.dart` for the pipeline.
+// Architecture: languages contribute small *component* recognisers
+// (relative-day words, month anchors, clock times, …); the
+// language-neutral engine composes adjacent compatible components into
+// full expressions, resolves them against the reference date, and picks
+// the best result. See `lib/src/core/pipeline.dart`.
 
-import 'core/result.dart'; // Used internally as the return type.
-export 'core/result.dart'; // Re-exported so callers can use `ParsingResult`.
-import 'core/parser_manager.dart';
+import 'src/core/pipeline.dart';
+import 'src/result.dart';
+
+export 'src/result.dart';
 
 /// Parses natural-language date and time expressions from [text] and returns
 /// a list of [ParsingResult]s.
@@ -28,6 +31,7 @@ import 'core/parser_manager.dart';
 /// parsers run (e.g. `['en']` for English only). When omitted, the default set
 /// `['en', 'ja', 'zh']` is used so mixed-language input is handled out of the
 /// box. Currently supported codes: `en`, `ja`, `zh`, `es`, `hi`, `ko`, `ru`.
+/// ISO 8601 and similar machine-readable formats are always recognised.
 ///
 /// ## Range mode
 /// When [rangeMode] is `true`, expressions that denote a span (for example
@@ -52,7 +56,7 @@ List<ParsingResult> parse(
   String? timezone,
   int weekStartsOn = DateTime.sunday,
 }) {
-  return ParserManager.parse(
+  return Pipeline.parse(
     text,
     referenceDate: referenceDate,
     languages: languages,

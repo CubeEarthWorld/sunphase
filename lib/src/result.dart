@@ -1,11 +1,6 @@
-// lib/core/result.dart
+// lib/src/result.dart
 //
 // Final result type returned from the public `parse` function.
-//
-// A `ParsingResult` represents a single date/time expression that was
-// successfully extracted from the input text. A single call to `parse`
-// can return multiple results — one per matched expression, or (in range
-// mode) one per day in an expanded range.
 
 /// The resolved output of a single parsed date/time expression.
 class ParsingResult {
@@ -28,7 +23,7 @@ class ParsingResult {
   final int? rangeDays;
 
   /// For range expressions: the kind of span the expression refers to
-  /// (e.g. `"week"` or `"month"`). `null` for point-in-time results.
+  /// (`"week"` or `"month"`). `null` for point-in-time results.
   final String? rangeType;
 
   ParsingResult({
