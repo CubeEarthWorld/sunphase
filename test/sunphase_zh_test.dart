@@ -246,5 +246,17 @@ void main() {
       );
       expect(results.first.date, DateTime(2025, 2, 11, 16, 30, 0));
     });
+
+    // Regression: a year anchor (明年) must not be double-advanced by the
+    // bare-month future-bias rule when the named month is earlier than the
+    // reference month.
+    test('Chinese: "明年一月" (year anchor + bare month)', () {
+      List<ParsingResult> results = parse(
+        "明年一月",
+        referenceDate: reference,
+        languages: ['zh'],
+      );
+      expect(results.first.date, DateTime(2026, 1, 1, 0, 0, 0));
+    });
   });
 }

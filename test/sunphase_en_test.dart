@@ -205,5 +205,18 @@ void main() {
       );
       expect(results.first.date, DateTime(2025, 2, 8, 12, 0, 0));
     });
+
+    // Regression: a year anchor ("next year") must not be double-advanced
+    // by the bare-month future-bias rule when the named month is earlier
+    // than the reference month.
+    test('EN: "next year January" (year anchor + bare month)', () {
+      String input = "next year January";
+      List<ParsingResult> results = parse(
+        input,
+        referenceDate: reference,
+        languages: ['en'],
+      );
+      expect(results.first.date, DateTime(2026, 1, 1, 0, 0, 0));
+    });
   });
 }

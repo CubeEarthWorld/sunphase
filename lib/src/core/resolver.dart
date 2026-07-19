@@ -181,7 +181,13 @@ class Resolver {
     }
 
     // Bare month name: future bias to the next occurrence of that month.
-    if (f.month != null && f.day == null && f.monthAnchor == null) {
+    // Only applies when the year is otherwise unconstrained — an explicit
+    // year anchor (来年, 再来年, …) already fixed the year above, so the
+    // bias must not run again on top of it (that double-advances the year).
+    if (f.month != null &&
+        f.day == null &&
+        f.monthAnchor == null &&
+        f.yearAnchor == null) {
       if (f.month! < ref.month) year++;
     }
 

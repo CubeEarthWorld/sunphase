@@ -126,6 +126,31 @@ void main() {
       expect(results.first.date, DateTime(2026, 5, 12, 0, 0, 0));
     });
 
+    // Regression: 来年 (next year) fixes the year, so the bare-month
+    // future-bias rule must not also advance it when the target month is
+    // earlier than the reference month (year was being double-advanced,
+    // e.g. reference 2026-07-19 + "来年1月15時32分" wrongly produced 2028
+    // instead of 2027).
+    test('Japanese: "来年1月15時32分" (year anchor + bare month + time)', () {
+      String input = "来年1月15時32分";
+      List<ParsingResult> results = parse(
+        input,
+        referenceDate: reference,
+        languages: ['ja'],
+      );
+      expect(results.first.date, DateTime(2026, 1, 1, 15, 32, 0));
+    });
+
+    test('Japanese: "来年1月" (year anchor + bare month, no time)', () {
+      String input = "来年1月";
+      List<ParsingResult> results = parse(
+        input,
+        referenceDate: reference,
+        languages: ['ja'],
+      );
+      expect(results.first.date, DateTime(2026, 1, 1, 0, 0, 0));
+    });
+
     test('Japanese: "16日"', () {
       String input = "16日";
       List<ParsingResult> results = parse(
