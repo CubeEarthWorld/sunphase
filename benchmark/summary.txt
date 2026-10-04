@@ -1,0 +1,10 @@
+parse_short_default         221.679 ->    208.918 us/op (+5.8%)
+parse_seven_languages       153.654 ->    142.450 us/op (+7.3%)
+parse_month_anchor          282.342 ->    254.935 us/op (+9.7%)
+parse_range                 461.739 ->    439.758 us/op (+4.8%)
+parse_long_point          43494.080 ->  38477.120 us/op (+11.5%)
+parse_long_range          43661.075 ->  38560.250 us/op (+11.7%)
+parse_long_no_match        3747.937 ->   3726.903 us/op (+0.6%)
+add_months                  149.511 ->    121.238 us/op (+18.9%)
+AOT process RSS: {'baseline': {'median_peak_rss_bytes': 17850368, 'min_peak_rss_bytes': 17801216, 'max_peak_rss_bytes': 17944576, 'samples': [17846272, 17801216, 17838080, 17838080, 17866752, 17920000, 17944576, 17850368, 17879040]}, 'optimized': {'median_peak_rss_bytes': 17801216, 'min_peak_rss_bytes': 17768448, 'max_peak_rss_bytes': 17874944, 'samples': [17768448, 17842176, 17874944, 17838080, 17776640, 17801216, 17797120, 17788928, 17858560]}}
+JIT transient allocation diagnostic rejected; use AOT RSS and binary size metrics.

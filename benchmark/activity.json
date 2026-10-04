@@ -1,0 +1,1582 @@
+[
+  {
+    "utc": "2026-10-03T17:59:15.7241974Z",
+    "variant": "baseline",
+    "round": 0,
+    "wall_seconds": 12.642786,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 1.6875
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.453125
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.546875
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.34375
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 0.84375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.21875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.890625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.109375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.25
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.78125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.25
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.96875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.171875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.046875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.234375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.984375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.3125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.21875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.84375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.0
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 2.9375
+      },
+      {
+        "name": "pwsh",
+        "cpu_seconds": 1.046875
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T17:59:28.3966501Z",
+    "variant": "optimized",
+    "round": 0,
+    "wall_seconds": 11.3779879,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 4.609375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.15625
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.28125
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.28125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.71875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.53125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.734375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.546875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.953125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.984375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.6875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.90625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.71875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.59375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.78125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.78125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.5625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.890625
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 2.171875
+      },
+      {
+        "name": "pwsh",
+        "cpu_seconds": 1.34375
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T17:59:39.8030538Z",
+    "variant": "optimized",
+    "round": 1,
+    "wall_seconds": 10.9365686,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.984375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.234375
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.390625
+      },
+      {
+        "name": "Code",
+        "cpu_seconds": 0.65625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.734375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.84375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.828125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.671875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.828125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.71875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.734375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.765625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.84375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.796875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.890625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.859375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.734375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.640625
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 0.6875
+      },
+      {
+        "name": "pwsh",
+        "cpu_seconds": 0.578125
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T17:59:50.7613302Z",
+    "variant": "baseline",
+    "round": 1,
+    "wall_seconds": 12.1299849,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.828125
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.4375
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.859375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.296875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.203125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.1875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.28125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.171875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.390625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.3125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.03125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.40625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.171875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.078125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.15625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.21875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.171875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.078125
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:00:02.9186164Z",
+    "variant": "baseline",
+    "round": 2,
+    "wall_seconds": 12.1439863,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.890625
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.09375
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.71875
+      },
+      {
+        "name": "Code",
+        "cpu_seconds": 0.546875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.0
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.03125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.8125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.265625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.9375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.3125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.40625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.96875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.1875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.1875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.078125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.015625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.0
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.046875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.171875
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 0.96875
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:00:15.0801869Z",
+    "variant": "optimized",
+    "round": 2,
+    "wall_seconds": 11.0701413,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.34375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.296875
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.078125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.84375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.953125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.84375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.953125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.828125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.703125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.796875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.859375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.78125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.921875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.765625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.84375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.859375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.84375
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 2.625
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:00:26.1763472Z",
+    "variant": "optimized",
+    "round": 3,
+    "wall_seconds": 10.9643828,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.59375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 1.9375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 1.75
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.296875
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.75
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.359375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.578125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.390625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.3125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.53125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.46875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.484375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.296875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.390625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.765625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.609375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.703125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.203125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.3125
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 2.375
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:00:37.1631202Z",
+    "variant": "baseline",
+    "round": 3,
+    "wall_seconds": 12.1132624,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.625
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 3.609375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.953125
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.53125
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.578125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.53125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.25
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.4375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.515625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.71875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.40625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.609375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.3125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.359375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.65625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.484375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.46875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.515625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.484375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.53125
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 1.359375
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 0.875
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:00:49.2944738Z",
+    "variant": "baseline",
+    "round": 4,
+    "wall_seconds": 12.3719889,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.84375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.078125
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.21875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.59375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.390625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.5
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.40625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.46875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.421875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.4375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.390625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.390625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.453125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.40625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.265625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.578125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.46875
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:01:01.6885685Z",
+    "variant": "optimized",
+    "round": 4,
+    "wall_seconds": 10.9440335,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 1.671875
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.203125
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.109375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.109375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.046875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.953125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.046875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.953125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.015625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.0625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.90625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.9375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.90625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.9375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.234375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.828125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.125
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:01:12.6583967Z",
+    "variant": "optimized",
+    "round": 5,
+    "wall_seconds": 11.0010067,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.890625
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.0625
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.90625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.96875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.09375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.109375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.984375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.03125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.0625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.96875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.984375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.796875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.140625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.046875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.046875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.125
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 2.015625
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:01:23.6913120Z",
+    "variant": "baseline",
+    "round": 5,
+    "wall_seconds": 12.1547166,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 1.734375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.359375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.90625
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.078125
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.296875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.703125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.828125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.9375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.84375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.53125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.9375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.640625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.8125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.828125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.84375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.90625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.6875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.859375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.96875
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 2.671875
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:01:35.8739674Z",
+    "variant": "baseline",
+    "round": 6,
+    "wall_seconds": 12.1549914,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 4.6875
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 3.796875
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.046875
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.171875
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.234375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.25
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.1875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.0625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.28125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.21875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.34375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.484375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.3125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.671875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.234375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.34375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.515625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.265625
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 2.375
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 0.84375
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:01:48.0475869Z",
+    "variant": "optimized",
+    "round": 6,
+    "wall_seconds": 10.9516766,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 1.640625
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 0.625
+      },
+      {
+        "name": "Code",
+        "cpu_seconds": 0.5625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.109375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.15625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.15625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.09375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.3125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.171875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.25
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.96875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.296875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.03125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.21875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.1875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.96875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.1875
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:01:59.0278053Z",
+    "variant": "optimized",
+    "round": 7,
+    "wall_seconds": 11.0272155,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.765625
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.125
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 1.953125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.1875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.25
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.265625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.1875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.15625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.859375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.1875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.171875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.109375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.109375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.09375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.140625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.0625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.984375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.3125
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:02:10.0795372Z",
+    "variant": "baseline",
+    "round": 7,
+    "wall_seconds": 12.2432732,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.6875
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.4375
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.609375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.921875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.015625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.921875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.609375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.703125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.734375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.828125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.9375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.78125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 11.0
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.859375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.671875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.796875
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 1.234375
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:02:22.3459287Z",
+    "variant": "baseline",
+    "round": 8,
+    "wall_seconds": 12.2866426,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 1.765625
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.578125
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 0.625
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.296875
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 0.703125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.484375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.703125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.75
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.78125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.390625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.640625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.828125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.59375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.65625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.734375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.390625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.53125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.46875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.546875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 10.5625
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 2.75
+      }
+    ]
+  },
+  {
+    "utc": "2026-10-03T18:02:34.6543038Z",
+    "variant": "optimized",
+    "round": 8,
+    "wall_seconds": 11.0847774,
+    "other_process_cpu": [
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 4.609375
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.625
+      },
+      {
+        "name": "ChatGPT",
+        "cpu_seconds": 2.390625
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 0.765625
+      },
+      {
+        "name": "claude",
+        "cpu_seconds": 2.5
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.4375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.53125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.34375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.484375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.59375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.125
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.375
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.671875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.40625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.546875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.515625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.390625
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.5
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.46875
+      },
+      {
+        "name": "find",
+        "cpu_seconds": 9.421875
+      },
+      {
+        "name": "msedgewebview2",
+        "cpu_seconds": 2.40625
+      }
+    ]
+  }
+]

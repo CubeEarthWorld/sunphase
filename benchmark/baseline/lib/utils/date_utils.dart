@@ -56,7 +56,7 @@ class DateUtils {
     DateTime firstDay = firstDayOfMonth(date);
     // `DateTime(year, month + 1, 0)` is the last day of `month` because
     // "day 0 of next month" == "day −1" == last day of current month.
-    DateTime lastDay = lastDayOfMonth(date);
+    DateTime lastDay = DateTime(date.year, date.month + 1, 0);
     return {'start': firstDay, 'end': lastDay};
   }
 
@@ -82,14 +82,10 @@ class DateUtils {
       year--;
     }
     int day = date.day;
-    int lastDay = lastDayOfMonth(DateTime(year, month, 1)).day;
+    int lastDay = getMonthRange(DateTime(year, month, 1))['end']!.day;
     if (day > lastDay) day = lastDay;
     return DateTime(year, month, day, date.hour, date.minute, date.second);
   }
-
-  /// Returns midnight on the last day of the month containing [date].
-  static DateTime lastDayOfMonth(DateTime date) =>
-      DateTime(date.year, date.month + 1, 0);
 
   /// Returns midnight on the first day of the month containing [date].
   static DateTime firstDayOfMonth(DateTime date) =>

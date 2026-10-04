@@ -170,7 +170,8 @@ class Resolver {
         f.month == null &&
         f.monthAnchor == null &&
         f.yearAnchor == null) {
-      final lastDay = DateUtils.lastDayOfMonth(DateTime(year, month, 1)).day;
+      final lastDay = DateUtils.getMonthRange(DateTime(year, month, 1))['end']!
+          .day;
       if (day > lastDay || !DateTime(year, month, day).isAfter(_refDay)) {
         final next = DateUtils.addMonths(DateTime(year, month, 1), 1);
         year = next.year;

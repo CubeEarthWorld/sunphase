@@ -29,3 +29,13 @@ migrate_working_dir/
 .flutter-plugins
 .flutter-plugins-dependencies
 build/
+
+# Reproducible benchmark generated files
+/benchmark/baseline/tool/
+/benchmark/*.exe
+/benchmark/*.pdb
+
+# Local exploratory diagnostics; final timings and allocation status are tracked.
+/benchmark/*-initial.jsonl
+/benchmark/allocations.json
+/benchmark/allocation-log.txt

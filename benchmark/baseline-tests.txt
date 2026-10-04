@@ -1,0 +1,267 @@
+00:00 +0: loading C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart
+00:00 +0: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (mandatory cases) JA: "蜀肴擂譛・1譌･"
+00:00 +0: loading C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart
+Reference Date: 2025-02-08 11:05:00.000
+
+00:00 +1: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Cross-Language Tests Mixed: "Today雋ｷ縺・黄繧偵☆繧・
+00:00 +2: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Cross-Language Tests Mixed: "Today雋ｷ縺・黄繧偵☆繧・
+00:00 +3: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Cross-Language Tests Mixed: "Today雋ｷ縺・黄繧偵☆繧・
+00:00 +4: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Cross-Language Tests Mixed: "Today雋ｷ縺・黄繧偵☆繧・
+00:00 +5: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "Ayer"
+00:00 +6: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (mandatory cases) JA: "譚･譛・1譌･14譎・
+00:00 +7: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Cross-Language Tests Mixed: "2026蟷ｴ5譛・4譌･"
+00:00 +8: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Cross-Language Tests Mixed: "2026蟷ｴ5譛・4譌･"
+00:00 +9: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Cross-Language Tests Mixed: "2026蟷ｴ5譛・4譌･"
+00:00 +10: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (mandatory cases) JA: "譚･騾ｱ轣ｫ譖・4譎・4蛻・
+00:00 +11: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (mandatory cases) JA: "譚･騾ｱ轣ｫ譖・4譎・4蛻・
+00:00 +12: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Cross-Language Tests Universal: ISO 8601
+00:00 +13: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Cross-Language Tests Universal: ISO 8601
+00:00 +14: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "Esta noche 21:31"
+00:00 +15: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Week Start Configuration Invalid weekStartsOn value throws
+00:00 +16: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Week Start Configuration Invalid weekStartsOn value throws
+00:00 +17: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "prﾃｳximo lunes"
+00:00 +18: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Week Start Configuration Default week start is Sunday
+00:00 +19: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Week Start Configuration Default week start is Sunday
+00:00 +20: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "domingo de la prﾃｳxima semana"
+00:00 +21: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "譚･騾ｱ驥第屆18譎・0蛻・
+00:00 +22: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Week Start Configuration Monday week start moves next-week Sunday later
+00:00 +23: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Week Start Configuration Monday week start moves next-week Sunday later
+00:00 +24: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "蜀肴擂騾ｱ驥第屆譌･"
+00:00 +25: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "hace 3 dﾃｭas"
+00:00 +26: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Day-Only in Sentences (Cross-Language) ES: "28 de febrero"
+00:00 +27: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "蜈磯ｱ轣ｫ譖・4譎・
+00:00 +28: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "2 semanas desde ahora"
+00:00 +29: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "2 semanas desde ahora"
+00:00 +30: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Day-Only in Sentences (Cross-Language) HI: "15 爨､爨ｾ爨ｰ爭爨・爨歩･・爨ｮ爭爨游､ｿ爨も､・
+00:00 +31: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "3 dﾃｭas atrﾃ｡s"
+00:00 +32: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "10譌･蠕・4譎・
+00:00 +33: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "10譌･蠕・4譎・
+00:00 +34: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "15 de febrero"
+00:00 +35: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "15 de febrero"
+00:00 +36: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "15 de febrero"
+00:00 +37: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "譏取律蜊亥ｾ・譎・
+00:00 +38: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full DateTime Tests JA: "5241蟷ｴ11譛・1譌･21譎・1蛻・
+00:00 +39: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "martes"
+00:00 +40: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "譏主ｾ梧律蜊亥燕9譎・0蛻・
+00:00 +41: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full DateTime Tests ZH: "2026蟷ｴ5譛・4譌･14譌ｶ30蛻・
+00:00 +42: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "el tercer lunes de marzo"
+00:00 +43: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "3繝ｶ譛亥ｾ・
+00:00 +44: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full DateTime Tests ZH: "2026蟷ｴ5譛・4譌･荳句壕3轤ｹ30蛻・
+00:00 +45: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "el ﾃｺltimo viernes de abril"
+00:00 +46: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "騾ｱ譛ｫ"
+00:00 +47: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full DateTime Tests KO: "2025・・・・4・ｼ15・・0・・
+00:00 +48: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full DateTime Tests KO: "2025・・・・4・ｼ15・・0・・
+00:00 +49: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "15譎・ (future today)
+00:00 +50: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "15譎・ (future today)
+00:00 +51: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish (Range): "el prﾃｳximo mes"
+00:00 +52: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: "9譎・ (past 竊・tomorrow)
+00:00 +53: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish (Range): "la semana pasada"
+00:00 +54: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full DateTime Tests ES: "14 de marzo de 2025 a las 15:30"
+00:00 +55: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: kanji numerals compose: "譚･譛井ｺ悟香荳譌･蜊∽ｺ梧凾荳牙香荳蛻・
+00:00 +56: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Japanese composition (broader coverage) JA: kanji numerals compose: "譚･譛井ｺ悟香荳譌･蜊∽ｺ梧凾荳牙香荳蛻・
+00:00 +57: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish (Range): "la semana pasada" with Monday week start
+00:00 +58: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full DateTime Tests EN: "March 14, 2025 15:30"
+00:00 +59: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full DateTime Tests EN: "March 14, 2025 15:30"
+00:00 +60: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full DateTime Tests EN: "March 14, 2025 15:30"
+00:00 +61: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish ES: "28 de febrero"
+00:00 +62: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full-Width Digit (蜈ｨ隗呈焚蟄・ Cross-Language Tests JA fullwidth: "譏取律・托ｼ先凾・難ｼ仙・縺ｫ莨夊ｭｰ"
+00:00 +63: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: English composition EN: "next month on the 21st"
+00:00 +64: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish ES Sentence: "Cita el dﾃｭa 20 a las 15:00"
+00:00 +65: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full-Width Digit (蜈ｨ隗呈焚蟄・ Cross-Language Tests ZH fullwidth: "・抵ｼ撰ｼ抵ｼ門ｹｴ・墓怦・托ｼ疲律・托ｼ疲慮・難ｼ仙・"
+00:00 +66: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full-Width Digit (蜈ｨ隗呈焚蟄・ Cross-Language Tests ZH fullwidth: "・抵ｼ撰ｼ抵ｼ門ｹｴ・墓怦・托ｼ疲律・托ｼ疲慮・難ｼ仙・"
+00:00 +67: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "pasado viernes"
+00:00 +68: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: English composition EN: "next Tuesday at 2:30pm"
+00:00 +69: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full-Width Digit (蜈ｨ隗呈焚蟄・ Cross-Language Tests Mixed fullwidth: "・抵ｼ撰ｼ抵ｼ門ｹｴ・墓怦・托ｼ疲律" with multi-lang
+00:00 +70: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "pasado lunes"
+00:00 +71: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: English composition EN: "next week Tuesday at 14:14"
+00:00 +72: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_cross_test.dart: Full-Width Digit (蜈ｨ隗呈焚蟄・ Cross-Language Tests EN fullwidth digits in sentence: "Meeting on ・托ｼ付h"
+00:00 +73: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "pasado maﾃｱana"
+00:00 +74: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: English composition EN: "tomorrow at 14:00"
+00:00 +75: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_es_test.dart: Sunphase Parser Tests for Spanish Spanish: "anteayer"
+00:00 +76: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: English composition EN: "the 21st at 14:00"
+00:00 +77: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: English composition EN: "in 3 days at 9am"
+00:00 +78: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Chinese composition ZH: "荳倶ｸｪ譛・1蜿ｷ"
+00:00 +79: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Chinese composition ZH: "荳倶ｸｪ譛・1蜿ｷ14轤ｹ31蛻・
+00:00 +80: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Chinese composition ZH: "荳句捉莠・4轤ｹ14蛻・
+00:00 +81: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Chinese composition ZH: "譏主､ｩ15轤ｹ30蛻・
+00:00 +82: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Chinese composition ZH: "蜷主､ｩ荳雁壕9轤ｹ"
+00:00 +83: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Chinese composition ZH: "3螟ｩ蜷・4轤ｹ"
+00:00 +84: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Korean composition KO: "・､・・・ｬ 21・ｼ"
+00:00 +85: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Korean composition KO: "・､・・・ｼ 嶹肥囈・ｼ 14・・31・・
+00:00 +86: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Korean composition KO: "3・ｼ 弡・14・・
+00:00 +87: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Korean composition KO: "14・ｼ 14・・30・・
+00:00 +88: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Russian composition RU: "ﾐｷﾐｰﾐｲﾑびﾐｰ ﾐｲ 15:30"
+00:00 +89: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Russian composition RU: "21 ﾐｼﾐｰﾑﾑひｰ ﾐｲ 14:31"
+00:00 +90: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Russian composition RU: "ﾑ・ｵﾑﾐｵﾐｷ 2 ﾐｴﾐｽﾑ・ﾐｲ 15:00"
+00:00 +91: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Russian composition RU: "ﾐｿﾐｾﾐｽﾐｵﾐｴﾐｵﾐｻﾑ糊ｽﾐｸﾐｺ ﾐｲ 9:00"
+00:00 +92: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Spanish composition ES: "maﾃｱana a las 15:30"
+00:00 +93: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Spanish composition ES: "el prﾃｳximo martes a las 14:30"
+00:00 +94: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Spanish composition ES: "21 de marzo a las 14:31"
+00:00 +95: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Spanish composition ES: "el 21 del prﾃｳximo mes"
+00:00 +96: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Hindi composition HI: "爨歩､ｲ 15 爨ｬ爨憫･・
+00:00 +97: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Hindi composition HI: "爨・､伶､ｲ爭・爨ｮ爨ｹ爭爨ｨ爭・21 爨､爨ｾ爨ｰ爭爨・
+00:00 +98: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_composition_test.dart: Hindi composition HI: "爨ｪ爨ｰ爨ｸ爭金､・10:30"
+00:00 +99: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "Today"
+00:00 +100: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "Tomorrow"
+00:00 +101: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "Yesterday"
+00:00 +102: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "Midnight"
+00:00 +103: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "2 weeks from now"
+00:00 +104: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "4 days later"
+00:00 +105: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "5 days ago"
+00:00 +106: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "Last Friday"
+00:00 +107: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "next week Sunday"
+00:00 +108: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "next week Sunday" with Monday week start
+00:00 +109: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "march 7 10:10"
+00:00 +110: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "the 16th"
+00:00 +111: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "February 28"
+00:00 +112: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English: "Dentist on the 20th at 3pm"
+00:00 +113: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English (Range): "next week go to university"
+00:00 +114: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English (Range): "next week" with Monday week start
+00:00 +115: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English English (Range): "march"
+00:00 +116: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English EN: "Gym session at 06:00"
+00:00 +117: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English EN: "Lunch with client at noon"
+00:00 +118: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_en_test.dart: Sunphase Parser Tests for English EN: "next year January" (year anchor + bare month)
+00:01 +119: loading C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart
+Reference Date: 2025-02-08 11:05:00.000
+
+00:01 +119: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨・､・
+00:01 +120: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ko_test.dart: Sunphase Parser Tests for Korean Korean: "・､・・
+00:01 +121: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "莉頑律"
+00:01 +122: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "莉頑律"
+00:01 +123: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "莉頑律"
+00:01 +124: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "莉頑律"
+00:01 +125: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "莉頑律"
+00:01 +126: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "莉頑律"
+00:01 +127: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨歩､ｲ"
+00:01 +128: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨歩､ｲ"
+00:01 +129: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨歩､ｲ"
+00:01 +130: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨歩､ｲ"
+00:01 +131: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨歩､ｲ"
+00:01 +132: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ko_test.dart: Sunphase Parser Tests for Korean Korean: "・､・・・ｼ" with Monday week start
+00:01 +133: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律"
+00:01 +134: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律"
+00:01 +135: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律"
+00:01 +136: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律"
+00:01 +137: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律"
+00:01 +138: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律"
+00:01 +139: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ko_test.dart: Sunphase Parser Tests for Korean Korean: "14・ｼ 3・・
+00:01 +140: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "14 爨ｮ爨ｾ爨ｰ爭財､・2025"
+00:01 +141: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "14 爨ｮ爨ｾ爨ｰ爭財､・2025"
+00:01 +142: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨ｸ爭≒､ｬ爨ｹ 10:10"
+00:01 +143: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨ｸ爭≒､ｬ爨ｹ 10:10"
+00:01 +144: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨ｸ爭≒､ｬ爨ｹ 10:10"
+00:01 +145: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ko_test.dart: Sunphase Parser Tests for Korean Korean: "10:30"
+00:01 +146: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨・､・14:30"
+00:01 +147: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏ｨ譌･"
+00:01 +148: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏ｨ譌･"
+00:01 +149: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏ｨ譌･"
+00:01 +150: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏ｨ譌･"
+00:01 +151: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏ｨ譌･"
+00:01 +152: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏ｨ譌･"
+00:01 +153: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "2 爨ｸ爨ｪ爭財､､爨ｾ爨ｹ 爨ｬ爨ｾ爨ｦ"
+00:01 +154: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "3 爨ｦ爨ｿ爨ｨ 爨ｪ爨ｹ爨ｲ爭・
+00:01 +155: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "15 爨､爨ｾ爨ｰ爭爨・
+00:01 +156: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "21譎・1蛻・
+00:01 +157: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "21譎・1蛻・
+00:01 +158: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "21譎・1蛻・
+00:01 +159: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "21譎・1蛻・
+00:01 +160: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "21譎・1蛻・
+00:01 +161: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "21譎・1蛻・
+00:01 +162: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "21譎・1蛻・
+00:01 +163: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "21譎・1蛻・
+00:01 +164: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "21譎・1蛻・
+00:01 +165: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_hi_test.dart: Sunphase Parser Tests for Hindi Hindi: "爨ｨ爨ｰ爨ｸ爭金､・
+00:01 +166: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "3譌･12譎・5蛻・
+00:01 +167: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾑ・ｵﾐｳﾐｾﾐｴﾐｽﾑ・
+00:01 +168: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律14譎・5蛻・
+00:01 +169: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律14譎・5蛻・
+00:01 +170: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律14譎・5蛻・
+00:01 +171: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律14譎・5蛻・
+00:01 +172: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "14.02.2025"
+00:01 +173: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "14-ﾐｳﾐｾ"
+00:01 +174: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "24譌･14譎・5蛻・
+00:01 +175: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "3-ﾐｳﾐｾ" (past 竊・next month)
+00:01 +176: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譛ｨ譖・4譎・6蛻・
+00:01 +177: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譛ｨ譖・4譎・6蛻・
+00:01 +178: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾐｿﾑ肖ひｽﾐｸﾑ・・
+00:01 +179: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律蜊∵凾荳牙香荳蛻・
+00:01 +180: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾐｽﾐｰ ﾑ・ｻﾐｵﾐｴﾑτ紗禍ｵﾐｹ ﾐｽﾐｵﾐｴﾐｵﾐｻﾐｵ"
+00:01 +181: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "蜀肴擂騾ｱ蝨滓屆"
+00:01 +182: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "蜀肴擂騾ｱ蝨滓屆"
+00:01 +183: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏取律5譎・
+00:01 +184: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾐｲ ﾐｲﾐｾﾑ・ｺﾑﾐｵﾑ・ｵﾐｽﾑ糊ｵ ﾐｽﾐｰ ﾑ・ｻﾐｵﾐｴﾑτ紗禍ｵﾐｹ ﾐｽﾐｵﾐｴﾐｵﾐｻﾐｵ"
+00:01 +185: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譚･蟷ｴ莠疲怦蜊∽ｺ梧律"
+00:01 +186: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾐｲ ﾐｲﾐｾﾑ・ｺﾑﾐｵﾑ・ｵﾐｽﾑ糊ｵ ﾐｽﾐｰ ﾑ・ｻﾐｵﾐｴﾑτ紗禍ｵﾐｹ ﾐｽﾐｵﾐｴﾐｵﾐｻﾐｵ" with Monday week start
+00:01 +187: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譚･蟷ｴ1譛・5譎・2蛻・ (year anchor + bare month + time)
+00:01 +188: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾐｲ 15:30"
+00:01 +189: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譚･蟷ｴ1譛・ (year anchor + bare month, no time)
+00:01 +190: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾐｲﾐｵﾑ・ｵﾑﾐｰ 18:00"
+00:01 +191: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "16譌･"
+00:01 +192: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾑ・ｵﾑﾐｵﾐｷ 3 ﾐｴﾐｽﾑ・
+00:01 +193: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "3譌･" (past day 竊・next month)
+00:01 +194: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "3 ﾐｴﾐｽﾑ・ﾐｽﾐｰﾐｷﾐｰﾐｴ"
+00:01 +195: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "蜊∝・譌･"
+00:01 +196: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾑ・ｵﾑﾐｵﾐｷ 2 ﾐｽﾐｵﾐｴﾐｵﾐｻﾐｸ"
+00:01 +197: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "8譌･" (same day 竊・next month)
+00:01 +198: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾐｲ ﾑ・ｻﾐｵﾐｴﾑτ紗禍ｵﾐｼ ﾐｼﾐｵﾑ・肖・ｵ"
+00:01 +199: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "16譌･ 14譎・
+00:01 +200: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "10:30"
+00:01 +201: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "2譛・8譌･"
+00:01 +202: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾐｿﾐｾﾑ・ｻﾐｵﾐｷﾐｰﾐｲﾑびﾐｰ"
+00:01 +203: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "31譌･" (Feb 竊・March 31)
+00:01 +204: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ru_test.dart: Sunphase Parser Tests for Russian Russian: "ﾐｿﾐｾﾐｷﾐｰﾐｲﾑ・ｵﾑﾐｰ"
+00:01 +205: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "1譌･" (past 竊・next month)
+00:01 +206: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "20譌･縺ｫ豁ｯ蛹ｻ閠・
+00:01 +207: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese (Range): "譚･譛医・莠亥ｮ・
+00:01 +208: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: kin-yobi standalone
+00:01 +209: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: kin-yobi 12:43
+00:01 +210: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: do-yobi gogo 3ji
+00:01 +211: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: raishu kayobi
+00:01 +212: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: Saraishu getsuyobi
+00:01 +213: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: 3-shuukan-go kin-yobi
+00:01 +214: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: 1-shuukan-go nichiyo
+00:01 +215: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: saranen
+00:01 +216: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: 2-nen-go
+00:01 +217: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: 5-nen-go
+00:01 +218: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese fullwidth: "譏取律・托ｼ先凾・難ｼ仙・"
+00:01 +219: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese fullwidth: "・抵ｼ第凾・難ｼ大・"
+00:01 +220: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese fullwidth: "・捺律・托ｼ呈凾・托ｼ募・"
+00:01 +221: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese fullwidth: "・托ｼ匁律"
+00:01 +222: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese fullwidth: "・抵ｼ撰ｼ抵ｼ門ｹｴ・墓怦・托ｼ疲律"
+00:01 +223: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese fullwidth: "・俶律" (same day 竊・next month)
+00:01 +224: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese fullwidth: "譚･蟷ｴ莠疲怦蜊∽ｺ梧律" (mixed kanji)
+00:01 +225: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譚･騾ｱ豌ｴ譖懈律"
+00:01 +226: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譚･騾ｱ譌･譖懈律"
+00:01 +227: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譚･騾ｱ譌･譖懈律" with Monday week start
+00:01 +228: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "蜈磯ｱ譛域屆譌･"
+00:01 +229: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "蜈磯ｱ驥第屆譌･"
+00:01 +230: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏弱・ｾ梧律16譎・
+00:01 +231: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譏弱・ｾ梧律16譎・0蛻・
+00:01 +232: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "荳譏ｨ譌･10譎・
+00:01 +233: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_ja_test.dart: Sunphase Parser Tests for Japanese Japanese: "譛ｬ譌･"
+00:01 +234: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "莉雁､ｩ"
+00:01 +235: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "譏主､ｩ"
+00:01 +236: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "譏ｨ螟ｩ"
+00:01 +237: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "蝗帛捷荳轤ｹ"
+00:01 +238: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "3譛・蜿ｷ 14:24"
+00:01 +239: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "荳画怦荳・捷荳雁壕荵晉せ"
+00:01 +240: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "荳牙､ｩ蜷・
+00:01 +241: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "16蜿ｷ"
+00:01 +242: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "蜊∝・蜿ｷ"
+00:01 +243: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "20蜿ｷ荳句壕3轤ｹ"
+00:01 +244: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "2譛・8譌･"
+00:01 +245: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "29譌･" (Feb 2025 竊・March 29)
+00:01 +246: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "20蜿ｷ蜴ｻ逵狗甥蛹ｻ"
+00:01 +247: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "荳句捉譌･"
+00:01 +248: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "荳句捉譌･" with Monday week start
+00:01 +249: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese fullwidth: "・抵ｼ撰ｼ抵ｼ門ｹｴ・墓怦・托ｼ疲律"
+00:01 +250: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese fullwidth: "・捺怦・大捷 14:24"
+00:01 +251: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese fullwidth: "・托ｼ門捷"
+00:01 +252: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese fullwidth: "・抵ｼ仙捷荳句壕・鍋せ"
+00:01 +253: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese fullwidth: "荳牙､ｩ蜷・ (kanji only, already works)
+00:01 +254: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "蜑榊､ｩ"
+00:01 +255: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "螟ｧ蜑榊､ｩ"
+00:01 +256: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "蜷主､ｩ16轤ｹ"
+00:01 +257: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "螟ｧ蜷主､ｩ16轤ｹ30蛻・
+00:01 +258: C:/Users/mosim/AndroidStudioProjects/sunphase/test/sunphase_zh_test.dart: Sunphase Parser Tests for Chinese Chinese: "譏主ｹｴ荳譛・ (year anchor + bare month)
+00:02 +259: All tests passed!

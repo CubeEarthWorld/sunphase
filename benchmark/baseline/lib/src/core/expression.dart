@@ -25,7 +25,7 @@ class DateExpression {
   /// twice, and the combined slot set must form a valid shape.
   bool canAccept(Token token) {
     final other = token.slots;
-    if (other.any(slots.contains)) return false;
+    if (slots.intersection(other).isNotEmpty) return false;
     return _shapeValid(slots.union(other));
   }
 
@@ -51,15 +51,12 @@ class DateExpression {
   ///   calendar-date expression.
   static bool _shapeValid(Set<Slot> s) {
     if (s.contains(Slot.dayRel)) {
-      return s.every((slot) =>
-          slot == Slot.dayRel || slot == Slot.time || slot == Slot.meridiem);
+      return s.difference(const {Slot.dayRel, Slot.time, Slot.meridiem}).isEmpty;
     }
     if (s.contains(Slot.weekRel)) {
-      return s.every((slot) =>
-          slot == Slot.weekRel ||
-          slot == Slot.weekday ||
-          slot == Slot.time ||
-          slot == Slot.meridiem);
+      return s
+          .difference(const {Slot.weekRel, Slot.weekday, Slot.time, Slot.meridiem})
+          .isEmpty;
     }
     return true;
   }

@@ -1,0 +1,48 @@
+{
+  "baseline_commit": "6d2a063cc36ac353fc7a941a82303685df9c1aac",
+  "baseline_archive_sha256": "9BB8BC658F936660DEB3BDF10A9EBBDE1B67AE3000DDD3A8F155089C588844CC",
+  "utc_started": "2026-10-03T17:59:07.9664215Z",
+  "dart_version": "Dart SDK version: 3.13.4 (stable) (Tue Sep 15 01:01:15 2026 -0700) on \"windows_x64\"",
+  "flutter_version": {
+    "frameworkVersion": "3.47.5",
+    "channel": "stable",
+    "repositoryUrl": "https://github.com/flutter/flutter.git",
+    "frameworkRevision": "6a19cca56475dbfba1478ee68d7bd0c2ef891da1",
+    "frameworkCommitDate": "2026-09-17 14:13:22 -0400",
+    "engineRevision": "af7e796e161ae0bb1ff0758c71a7105418bd9ded",
+    "engineCommitDate": "2026-09-16 18:35:09.000Z",
+    "engineContentHash": "ab598368592da0064197e2bc15c7f5b0a2c6bb1f",
+    "engineBuildDate": "2026-09-17 04:35:21.428",
+    "dartSdkVersion": "3.13.4",
+    "devToolsVersion": "2.60.0",
+    "flutterVersion": "3.47.5"
+  },
+  "cpu": {
+    "Name": "AMD Ryzen 7 5700G with Radeon Graphics         ",
+    "NumberOfCores": 8,
+    "NumberOfLogicalProcessors": 16
+  },
+  "os": {
+    "Caption": "Microsoft Windows 11 Pro",
+    "Version": "10.0.26300",
+    "TotalVisibleMemorySize": 32896916
+  },
+  "gpu": [
+    {
+      "Name": "NVIDIA GeForce RTX 5070 Ti",
+      "DriverVersion": "32.0.16.1656"
+    },
+    {
+      "Name": "AMD Radeon(TM) Graphics",
+      "DriverVersion": "31.0.12027.9001"
+    }
+  ],
+  "timezone": "Tokyo Standard Time",
+  "rounds": 9,
+  "warmup_ms_per_case": 250,
+  "mode": "dart compile exe (AOT), windows_x64, same SDK and driver",
+  "binary_sizes": {
+    "baseline_bytes": 6426624,
+    "optimized_bytes": 6425088
+  }
+}
