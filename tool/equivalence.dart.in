@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import '../lib/sunphase.dart' as current;
 import '../benchmark/baseline/lib/sunphase.dart' as baseline;
@@ -24,7 +23,6 @@ Object canonical(dynamic r) => [
 
 void main() {
   var parseCount = 0;
-  final snapshots = StringBuffer();
   final inputs = <String>{
     ...shortInputs,
     ...rangeInputs,
@@ -119,17 +117,6 @@ void main() {
             'Mismatch: $input $ref $languages $range\n$expected\n$actual',
           );
         }
-        snapshots.writeln(
-          jsonEncode({
-            'text': input,
-            'ref': ref.toIso8601String(),
-            'languages': languages,
-            'range': range,
-            'timezone': timezone,
-            'weekStart': weekStart,
-            'expected': expected,
-          }),
-        );
         index++;
         parseCount++;
       }
@@ -275,9 +262,6 @@ void main() {
       }
     }
   }
-  File(
-    'benchmark/baseline-snapshots.jsonl',
-  ).writeAsStringSync(snapshots.toString());
   print(
     jsonEncode({
       'passed': true,
@@ -285,6 +269,44 @@ void main() {
       'month_comparisons': dateCount,
       'slot_comparisons': slotCount,
       'invalid_week_start_checks': 8,
+      'date_limit_comparisons': checkDateLimits(),
     }),
   );
+}
+
+String outcome(DateTime Function() fn) {
+  try {
+    return fn().toIso8601String();
+  } catch (e) {
+    return e.runtimeType.toString();
+  }
+}
+
+int checkDateLimits() {
+  var checked = 0;
+  for (final edge in [-8640000000000000, 8640000000000000]) {
+    for (final offset in [
+      0,
+      86400000,
+      -86400000,
+      30 * 86400000,
+      -30 * 86400000,
+    ]) {
+      DateTime ref;
+      try {
+        ref = DateTime.fromMillisecondsSinceEpoch(edge + offset, isUtc: true);
+      } catch (_) {
+        continue;
+      }
+      for (final months in [-12, -1, 0, 1, 12]) {
+        final before = outcome(() => oldUtils.DateUtils.addMonths(ref, months));
+        final after = outcome(() => utils.DateUtils.addMonths(ref, months));
+        checked++;
+        if (before != after) {
+          throw StateError('$ref $months: $before -> $after');
+        }
+      }
+    }
+  }
+  return checked;
 }

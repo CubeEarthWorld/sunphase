@@ -1,6 +1,0 @@
-{
-  "status": "rejected_for_transient_allocation_comparison",
-  "reason": "After 1000 operations and GC, getAllocationProfile reports only 1 DateTime and 2 Sets. These counters do not account for the transient allocations under test in this environment. Profiler/protocol allocations also contaminate collection-class counts. No bytes-per-operation or total-allocation reduction is inferred from this diagnostic.",
-  "raw_data": "allocations.json",
-  "mode": "JIT, separate from AOT timings"
-}
