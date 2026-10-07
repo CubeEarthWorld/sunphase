@@ -1,6 +1,6 @@
-# 1.0.0 — Rust replacement (2026-10-07)
+# 1.0.0 (2026-10-07)
 
-- Replace the Dart/Flutter package, tests and tooling with a Cargo Rust crate.
+- Multilingual natural-language date and time parsing in Rust.
 - Preserve all seven languages and component composition; public custom language builders.
 - Pure Rust standard library; zero normal, development or build dependencies.
 - Shared bounded ordered NFA, byte-mask slots and conditional normalization.
@@ -11,4 +11,4 @@
 - Fix bare 31st resolving into the wrong month; reject numeric suffix false matches.
 - Fix Korean 그제/그끄제 offsets; recognize Sino-Korean numeral strings.
 - Original UTF-8 spans survive emoji and full-width digits.
-- Native/Wasm tests and equivalent-workload AOT comparison.
+- Native and Wasm support with parsing, calendar and input-boundary tests.

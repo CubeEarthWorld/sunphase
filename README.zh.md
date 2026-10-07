@@ -92,7 +92,7 @@ Point mode selects the longest, most specific expression.
 ```rust
 use sunphase::{DateTime, Options, parse_with};
 let mut options = Options::new(DateTime::parse("2025-02-08T11:05:00").unwrap());
-options.offset_minutes = 480; // UTC+8, the old timezone="480" behavior
+options.offset_minutes = 480; // UTC+8
 assert_eq!(parse_with("明天", &options).unwrap()[0].date.to_string(),
            "2025-02-09 08:00:00");
 ```
@@ -100,7 +100,7 @@ assert_eq!(parse_with("明天", &options).unwrap()[0].date.to_string(),
 `offset_minutes` shifts the resolved result; it does not load a timezone or
 change the reference. Convert host-local time to reference wall-clock fields
 in your application. Fixed offsets are supported; named timezone/DST rules
-belong to the host, as in the original API.
+belong to the host.
 
 ## Extend without changing the engine
 
@@ -130,7 +130,7 @@ Invalid calendar dates and times are rejected instead of overflowing. A bare
 year selects the next leap year. Arithmetic is checked. Range expansion is
 limited to 36,600 days per expression, with an explicit error above the limit.
 Spans are **UTF-8 byte offsets into the original input**, including emoji and
-full-width digits. The Flutter adapter converts them to UTF-16 indices.
+full-width digits.
 Native and `wasm32-unknown-unknown` use the same pure parser. `parse_with` works
 without a host clock; convenience `parse` returns `ClockUnavailable` on Wasm.
 
@@ -145,8 +145,8 @@ cargo check --offline --locked --target wasm32-unknown-unknown
 cargo tree --offline --locked
 ```
 
-The old 259 Dart tests were preserved as 250 distinct parsing cases plus calendar,
+Tests cover 250 parsing cases plus calendar,
 Unicode, custom-pattern and input-boundary regressions. Fixtures are compiled
 Rust data: no JSON parser, generator or Python install is needed to run them.
-See [measured performance](benchmark/REPORT.ja.md), [changes](CHANGELOG.md),
+See [changes](CHANGELOG.md),
 and [runnable multilingual examples](examples/usage.rs). BSD-3-Clause license.

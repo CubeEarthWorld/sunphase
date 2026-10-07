@@ -6,7 +6,7 @@ rust-version = "1.85"
 license = "BSD-3-Clause"
 description = "Composable multilingual natural-language date and time parser"
 repository = "https://github.com/CubeEarthWorld/sunphase"
-include = ["Cargo.toml", "Cargo.lock", "src/**", "tests/**", "examples/**", "benchmark/workloads.json", "benchmark/workloads.rs", "benchmark/REPORT.ja.md", "docs/**", "README*.md", "CHANGELOG.md", "LICENSE", "rust-toolchain.toml"]
+include = ["Cargo.toml", "Cargo.lock", "src/**", "tests/**", "examples/**", "benchmark/workloads.json", "benchmark/workloads.rs", "docs/**", "README*.md", "CHANGELOG.md", "LICENSE", "rust-toolchain.toml"]
 
 [profile.release]
 lto = true
