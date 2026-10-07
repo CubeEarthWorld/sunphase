@@ -2,9 +2,10 @@
 
 [English](README.md) · [日本語](README.jp.md) · [中文](README.zh.md)
 
-A general-purpose, extensible date/time parser written entirely with Rust's
-standard library. **Zero dependencies**, including tests.
-No extra crates, runtime, timezone database, or language-specific installation.
+A general-purpose, extensible date/time parser in Rust.
+Calendar calculations use Chrono; pattern matching uses the rust-lang regex crate.
+Cargo manages these dependencies automatically. No separate runtime, timezone
+database, or language-specific installation is required.
 English, Japanese, Chinese, Spanish, Hindi, Korean, Russian, and universal dates.
 
 ## Install once
@@ -17,15 +18,9 @@ sunphase = { git = "https://github.com/CubeEarthWorld/sunphase", tag = "v1.0.0" 
 ```
 
 Cargo is Rust's standard build/package tool, normally included with Rust.
-Sunphase does not require installing any other package. Cargo is convenient,
-but optional: the library also builds directly from its source directory:
-
-```sh
-rustc --edition 2024 --crate-type lib --crate-name sunphase src/lib.rs
-```
-
-After obtaining the source, `cargo test --offline --locked` works without
-network access. Applications built with Sunphase require no Rust or Cargo
+Add only Sunphase to your manifest; Cargo fetches and builds its dependencies.
+After running `cargo fetch --locked` once, `cargo test --offline --locked` works
+without network access. Applications built with Sunphase require no Rust or Cargo
 installation on the end user's machine.
 
 ## Quick start
@@ -52,8 +47,8 @@ let results = parse_with("next Tuesday", &options).unwrap();
 assert_eq!(results[0].date.to_string(), "2021-02-09 00:00:00");
 ```
 
-`DateTime` / `NaiveDateTime` are Sunphase's own checked Gregorian wall-clock
-types, not another crate's types. Create them from ISO text, Unix microseconds
+`DateTime` / `NaiveDateTime` are convenient microsecond wall-clock types
+backed by Chrono's checked Gregorian calendar. Create them from ISO text, Unix microseconds
 (`DateTime::from_timestamp_micros`), calendar fields
 (`NaiveDate::from_ymd_opt(...).and_hms_opt(...)`), or a caller-supplied standard
 `SystemTime` (`DateTime::from_system_time(SystemTime::now())`). Negative Unix
@@ -170,7 +165,7 @@ assert_eq!(parser.parse("after 2 sleeps", &options).unwrap()[0].date.to_string()
 
 Vocabulary/patterns emit components; composition, validation, ranking and date
 resolution stay shared. Built-ins initialize lazily once. Reuse `Parser` for
-caller-owned extensions. The standard-only ordered NFA avoids exponential
+caller-owned extensions. The rust-lang regex engine avoids exponential
 backtracking; [pattern syntax and extension details](docs/EXTENDING.md).
 
 ## Correctness and portability
@@ -187,6 +182,7 @@ without a host clock; convenience `parse` returns `ClockUnavailable` on Wasm.
 ## Run every example and test
 
 ```sh
+cargo fetch --locked
 cargo run --offline --locked --example usage
 cargo test --offline --locked
 cargo clippy --offline --all-targets --locked -- -D warnings

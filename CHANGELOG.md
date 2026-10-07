@@ -1,22 +1,15 @@
 # 1.0.0 (2026-10-07)
 
 - Multilingual natural-language date and time parsing in Rust.
-- Preserve all seven languages and component composition; public custom language builders.
-- Pure Rust standard library; zero normal, development or build dependencies.
-- Shared bounded ordered NFA, byte-mask slots and conditional normalization.
-- Checked Gregorian date/time types with microsecond precision.
-- Convenient `parse`, configurable `parse_with`, optional Cargo, multilingual runnable examples.
-- Recognize browser GMT dates through the shared calendar parser.
-- Checked calendar arithmetic, invalid-date/time rejection, bounded ranges.
-- Fix bare 31st resolving into the wrong month; reject numeric suffix false matches.
-- Fix Korean 그제/그끄제 offsets; recognize Sino-Korean numeral strings.
-- Original UTF-8 spans survive emoji and full-width digits.
-- Native and Wasm support with parsing, calendar and input-boundary tests.
-
-- Reuse NFA branch workspace and skip duplicate language selections.
-- Restore full-width digit spans using indexed normalization offsets.
-- Keep calendar validation independent of language resolution.
-
+- Seven languages, universal dates, composition and custom language builders.
+- Chrono-backed Gregorian calendar and rust-lang regex pattern matching.
+- Microsecond wall clocks, arbitrary reference dates and fixed ISO offsets.
+- Convenient `parse`, configurable `parse_with` and multilingual examples.
+- Checked date arithmetic, invalid-date rejection and bounded ranges.
 - Compact range results with checked endpoints through `Parser::parse_ranges`.
-- English ordinal weekdays share the validated weekday resolver.
-- Minimum supported Rust version: 1.88, tested independently in CI.
+- English and Spanish ordinal weekdays share the validated weekday resolver.
+- Correct month-end searches, Korean offsets and Sino-Korean numerals.
+- Original UTF-8 spans survive emoji and full-width digits.
+- Correct sub-microsecond rounding before the Unix epoch.
+- Bounded pattern compilation with Unicode properties and scoped flags.
+- Native and Wasm support; Rust 1.88 minimum, tested in CI.

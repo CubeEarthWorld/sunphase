@@ -2,7 +2,7 @@
 
 Rust 1.88以上が必要です。
 
-Rust標準ライブラリのみで動作する、汎用的な自然言語の日時解析パッケージです。本体・テスト・ベンチマークの外部依存はゼロです。CargoはRust標準の管理ツールで、追加ライブラリのインストールは不要です。rustc単独でもビルドできます。
+汎用的なRustの自然言語日時解析パッケージです。暦計算にはChrono、正規表現にはrust-lang管理のregexを使用します。Cargoが依存関係を自動管理するため、利用者が個別に追加する必要はありません。追加の実行環境やタイムゾーンデータベースは不要です。
 
 `parse("tomorrow")` で現在のUTC日時を基準に解析できます。端末の現地日時・任意の過去や未来・指定時刻を使う場合は `Options::new(DateTime::parse(...))` と `parse_with` を使います。基準日時、使用言語、週の開始日、時差、範囲モード、独自言語やパターンを指定できます。以下に全機能と7言語の実行例を掲載しています。
 
@@ -17,8 +17,8 @@ let results = parse_with("next Tuesday", &options).unwrap();
 assert_eq!(results[0].date.to_string(), "2021-02-09 00:00:00");
 ```
 
-`DateTime` / `NaiveDateTime` are Sunphase's own checked Gregorian wall-clock
-types, not another crate's types. Create them from ISO text, Unix microseconds
+`DateTime` / `NaiveDateTime` are convenient microsecond wall-clock types
+backed by Chrono's checked Gregorian calendar. Create them from ISO text, Unix microseconds
 (`DateTime::from_timestamp_micros`), calendar fields
 (`NaiveDate::from_ymd_opt(...).and_hms_opt(...)`), or a caller-supplied standard
 `SystemTime` (`DateTime::from_system_time(SystemTime::now())`). Negative Unix
@@ -135,7 +135,7 @@ assert_eq!(parser.parse("after 2 sleeps", &options).unwrap()[0].date.to_string()
 
 Vocabulary/patterns emit components; composition, validation, ranking and date
 resolution stay shared. Built-ins initialize lazily once. Reuse `Parser` for
-caller-owned extensions. The standard-only ordered NFA avoids exponential
+caller-owned extensions. The rust-lang regex engine avoids exponential
 backtracking; [pattern syntax and extension details](docs/EXTENDING.md).
 
 ## 正確性と移植性
@@ -152,6 +152,7 @@ without a host clock; convenience `parse` returns `ClockUnavailable` on Wasm.
 ## 全サンプルとテストを実行
 
 ```sh
+cargo fetch --locked
 cargo run --offline --locked --example usage
 cargo test --offline --locked
 cargo clippy --offline --all-targets --locked -- -D warnings

@@ -3,11 +3,10 @@
 //! Compile a [`Parser`] once and reuse it. Dates are timezone-free wall clocks;
 //! ISO offsets are converted to UTC. Result offsets are UTF-8 byte offsets.
 mod calendar;
-mod pattern;
 use calendar::Duration;
 pub use calendar::{DateError, DateTime, NaiveDate, NaiveDateTime};
-use pattern::Regex;
-pub use pattern::{Capture, Captures, PatternError};
+pub use regex::{Captures, Error as PatternError, Match as Capture};
+use regex::{Regex, RegexBuilder};
 use std::{borrow::Cow, sync::LazyLock};
 pub mod languages;
 mod resolve;
@@ -101,7 +100,7 @@ impl Pattern {
     pub fn custom(source: &str, builder: Builder) -> Result<Self, PatternError> {
         Ok(Self {
             name: "custom",
-            regex: Regex::new(source)?,
+            regex: compile_checked(source)?,
             guards: vec![],
             words: &[],
             builder: Some(builder),
@@ -122,7 +121,16 @@ impl Pattern {
     }
 }
 fn compile(s: &str) -> Regex {
-    Regex::new(s).expect("built-in pattern")
+    compile_checked(s).expect("valid language pattern")
+}
+fn compile_checked(s: &str) -> Result<Regex, PatternError> {
+    if s.len() > 64 * 1024 {
+        return Err(PatternError::Syntax("pattern exceeds 64 KiB".into()));
+    }
+    RegexBuilder::new(s)
+        .nest_limit(64)
+        .size_limit(8 * 1024 * 1024)
+        .build()
 }
 pub struct Language {
     pub code: &'static str,

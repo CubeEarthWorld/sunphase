@@ -2,7 +2,7 @@
 
 需要 Rust 1.88 或更高版本。
 
-仅使用 Rust 标准库的通用自然语言日期时间解析包。库、测试与基准均无外部依赖。Cargo 是 Rust 标准工具，也可以直接用 rustc 构建，无需安装额外库。
+通用的 Rust 自然语言日期时间解析包。日期计算使用 Chrono，正则表达式使用 rust-lang 维护的 regex。Cargo 自动管理依赖，无需用户单独添加，也无需额外运行环境或时区数据库。
 
 `parse("tomorrow")` 使用当前 UTC 时间。使用本地时间、任意历史或未来时间时，通过 `Options::new(DateTime::parse(...))` 和 `parse_with` 传入参考时间。保留语言选择、周起始日、分钟时差、范围模式及自定义语言和模式。下面包含所有功能和七种语言的可运行示例。
 
@@ -17,8 +17,8 @@ let results = parse_with("next Tuesday", &options).unwrap();
 assert_eq!(results[0].date.to_string(), "2021-02-09 00:00:00");
 ```
 
-`DateTime` / `NaiveDateTime` are Sunphase's own checked Gregorian wall-clock
-types, not another crate's types. Create them from ISO text, Unix microseconds
+`DateTime` / `NaiveDateTime` are convenient microsecond wall-clock types
+backed by Chrono's checked Gregorian calendar. Create them from ISO text, Unix microseconds
 (`DateTime::from_timestamp_micros`), calendar fields
 (`NaiveDate::from_ymd_opt(...).and_hms_opt(...)`), or a caller-supplied standard
 `SystemTime` (`DateTime::from_system_time(SystemTime::now())`). Negative Unix
@@ -135,7 +135,7 @@ assert_eq!(parser.parse("after 2 sleeps", &options).unwrap()[0].date.to_string()
 
 Vocabulary/patterns emit components; composition, validation, ranking and date
 resolution stay shared. Built-ins initialize lazily once. Reuse `Parser` for
-caller-owned extensions. The standard-only ordered NFA avoids exponential
+caller-owned extensions. The rust-lang regex engine avoids exponential
 backtracking; [pattern syntax and extension details](docs/EXTENDING.md).
 
 ## Correctness and portability
@@ -152,6 +152,7 @@ without a host clock; convenience `parse` returns `ClockUnavailable` on Wasm.
 ## Run every example and test
 
 ```sh
+cargo fetch --locked
 cargo run --offline --locked --example usage
 cargo test --offline --locked
 cargo clippy --offline --all-targets --locked -- -D warnings

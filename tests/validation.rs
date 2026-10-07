@@ -31,6 +31,11 @@ fn calendar_roundtrips_and_offsets() {
         "2025-01-01T12:00:00+24:00",
         "2025-01-01T12:00:00.",
         "2025-01-01T12:00:00junk",
+        "2025-01-01T12:00:00+09:",
+        "2025-01-01T12:00:00+09::30",
+        "2025-01-01T12:00:00+09 30",
+        "2025-01-01T12:00:00+09",
+        "2025-1-1T12:00:00",
     ] {
         assert!(DateTime::parse(text).is_err(), "{text}");
     }
@@ -40,17 +45,39 @@ fn calendar_roundtrips_and_offsets() {
             .timestamp_micros(),
         0
     );
+    assert_eq!(
+        DateTime::from_system_time(std::time::UNIX_EPOCH - std::time::Duration::from_nanos(100))
+            .unwrap()
+            .timestamp_micros(),
+        -1
+    );
+    assert_eq!(
+        DateTime::parse("1970-01-01T00:00:00.123456789Z")
+            .unwrap()
+            .timestamp_micros(),
+        123456
+    );
+    assert!(DateTime::parse("2016-12-31T23:59:60Z").is_err());
+    for year in [-262142, 262142] {
+        let date = NaiveDate::from_ymd_opt(year, 12, 31)
+            .unwrap()
+            .and_hms_opt(23, 59, 59)
+            .unwrap();
+        assert_eq!(DateTime::parse(&date.to_iso8601()).unwrap(), date);
+    }
 }
 #[test]
 fn generic_patterns_and_bounded_compilation() {
-    for bad in [
-        "(",
-        "[z-a]",
-        "a{1001}",
-        "(a{1000}){1000}",
-        "(?i)a(?i)b",
-        "(a)\\1",
-    ] {
+    assert!(Pattern::custom("a{1001}", |_, _| None).is_ok());
+    assert!(Pattern::custom(r"(?i:a)(?-i:b)\p{Greek}+", |_, _| None).is_ok());
+    assert!(Pattern::custom(&"a".repeat(65537), |_, _| None).is_err());
+    assert!(
+        Pattern::custom(&format!("{}a{}", "(".repeat(65), ")".repeat(65)), |_, _| {
+            None
+        })
+        .is_err()
+    );
+    for bad in ["(", "[z-a]", "(a{1000}){1000}", "(a)\\1"] {
         assert!(Pattern::custom(bad, |_, _| None).is_err(), "{bad}");
     }
     let pattern = Pattern::custom(
