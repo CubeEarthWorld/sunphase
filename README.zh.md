@@ -1,4 +1,4 @@
-# Sunphase — Rust（中文）
+# Sunphase —（中文）
 
 仅使用 Rust 标准库的通用自然语言日期时间解析包。库、测试与基准均无外部依赖。Cargo 是 Rust 标准工具，也可以直接用 rustc 构建，无需安装额外库。
 
