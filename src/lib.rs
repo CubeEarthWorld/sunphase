@@ -259,7 +259,22 @@ impl Expression {
     }
 }
 impl Parser {
+    /// Return one match per day for date ranges.
     pub fn parse(&self, text: &str, options: &Options<'_>) -> Result<Vec<Match>, Error> {
+        self.parse_impl(text, options, true)
+    }
+    /// Keep ranges compact: `range_days` is the number of consecutive days
+    /// beginning at `date`. With `Options::range = false`, behaves like `parse`.
+    /// The entire range is checked, including its final date after the offset.
+    pub fn parse_ranges(&self, text: &str, options: &Options<'_>) -> Result<Vec<Match>, Error> {
+        self.parse_impl(text, options, false)
+    }
+    fn parse_impl(
+        &self,
+        text: &str,
+        options: &Options<'_>,
+        expand: bool,
+    ) -> Result<Vec<Match>, Error> {
         if ![1, 7].contains(&options.week_start) {
             return Err(Error::InvalidWeekStart);
         }
@@ -401,6 +416,17 @@ impl Parser {
             if let Some(days) = days {
                 if !(0..=36600).contains(&days) {
                     return Err(Error::RangeTooLarge);
+                }
+                if days == 0 {
+                    continue;
+                }
+                if !expand {
+                    m.date
+                        .checked_add_signed(Duration::days(i64::from(days - 1)))
+                        .ok_or(Error::DateOutOfRange)?;
+                    m.range_days = Some(days);
+                    results.push(m);
+                    continue;
                 }
                 for i in 0..days {
                     results.push(Match {
@@ -619,11 +645,11 @@ fn build(
         "meridiem" if lang.code == "es" => vec![Meridiem(!word(1).starts_with("ma"))],
         "nthWeekday" => {
             let ord = match word(1).as_str() {
-                "primer" | "primero" => 1,
-                "segundo" => 2,
-                "tercer" | "tercero" => 3,
-                "cuarto" => 4,
-                "quinto" => 5,
+                "first" | "primer" | "primero" => 1,
+                "second" | "segundo" => 2,
+                "third" | "tercer" | "tercero" => 3,
+                "fourth" | "cuarto" => 4,
+                "fifth" | "quinto" => 5,
                 _ => -1,
             };
             vec![Nth(

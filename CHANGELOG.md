@@ -16,3 +16,7 @@
 - Reuse NFA branch workspace and skip duplicate language selections.
 - Restore full-width digit spans using indexed normalization offsets.
 - Keep calendar validation independent of language resolution.
+
+- Compact range results with checked endpoints through `Parser::parse_ranges`.
+- English ordinal weekdays share the validated weekday resolver.
+- Minimum supported Rust version: 1.88, tested independently in CI.

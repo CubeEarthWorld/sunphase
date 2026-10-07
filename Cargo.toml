@@ -2,7 +2,7 @@
 name = "sunphase"
 version = "1.0.0"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.88"
 license = "BSD-3-Clause"
 description = "Composable multilingual natural-language date and time parser"
 repository = "https://github.com/CubeEarthWorld/sunphase"

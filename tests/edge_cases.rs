@@ -108,8 +108,79 @@ fn corrected_language_and_composition_cases() {
         "2025-03-17 15:00:00"
     );
     o.languages = &["en"];
+    for text in ["the fifth Monday of February", "fifth mon in feb"] {
+        assert!(p.parse(text, &o).unwrap().is_empty(), "{text}");
+    }
+    assert_eq!(
+        p.parse("the third Monday of March at 3pm", &o).unwrap()[0]
+            .date
+            .to_string(),
+        "2025-03-17 15:00:00"
+    );
+    assert_eq!(
+        p.parse("last Monday of February", &o).unwrap()[0]
+            .date
+            .to_string(),
+        "2025-02-24 00:00:00"
+    );
     assert_eq!(
         p.parse("February 29", &o).unwrap()[0].date.to_string(),
         "2028-02-29 00:00:00"
     );
+}
+
+#[test]
+fn compact_ranges_check_lengths_and_the_final_day() {
+    let parser = Parser::default();
+    let mut o = options();
+    o.range = true;
+    for offset in [-90, 1440] {
+        o.offset_minutes = offset;
+        assert_eq!(
+            parser.parse_ranges("next week", &o).unwrap()[0].date,
+            parser.parse("next week", &o).unwrap()[0].date
+        );
+    }
+    o.offset_minutes = 0;
+    assert_eq!(
+        parser.parse_ranges("next week", &o).unwrap()[0].range_days,
+        Some(7)
+    );
+    assert_eq!(
+        parser.parse_ranges("next month", &o).unwrap()[0].range_days,
+        Some(31)
+    );
+    assert_eq!(
+        parser.parse_ranges("36600日以内", &o),
+        Err(Error::RangeTooLarge)
+    );
+    o.reference = NaiveDate::from_ymd_opt(262142, 12, 1)
+        .unwrap()
+        .and_hms_opt(0, 0, 0)
+        .unwrap();
+    o.languages = &["en"];
+    o.offset_minutes = 1440;
+    assert_eq!(
+        parser.parse_ranges("December", &o),
+        Err(Error::DateOutOfRange)
+    );
+    assert_eq!(parser.parse("December", &o), Err(Error::DateOutOfRange));
+}
+
+#[test]
+fn calendar_composition_preserves_the_requested_weekday() {
+    let parser = Parser::default();
+    let mut o = options();
+    o.languages = &["en"];
+    o.range = true;
+    for (text, expected) in [
+        ("Monday of February", "2025-02-03 00:00:00"),
+        ("next month Monday", "2025-03-03 00:00:00"),
+        ("Monday February 10 at 3pm", "2025-02-10 15:00:00"),
+    ] {
+        let results = parser.parse(text, &o).unwrap();
+        assert_eq!(results.len(), 1, "{text}");
+        assert_eq!(results[0].date.to_string(), expected, "{text}");
+    }
+    assert!(parser.parse("Monday February 11", &o).unwrap().is_empty());
 }

@@ -217,10 +217,27 @@ pub(super) fn resolve(e: &Expression, o: &Options<'_>) -> Result<Option<Match>, 
         {
             y += 1;
         }
-        if day.is_none() && hour.is_none() && (month.is_some() || ma.is_some()) && year.is_none() {
+        if day.is_none()
+            && weekday.is_none()
+            && hour.is_none()
+            && (month.is_some() || ma.is_some())
+            && year.is_none()
+        {
             range_type = Some("month");
         }
-        date(y, m, d, h, min)
+        let result = date(y, m, d, h, min);
+        if let Some(target) = weekday {
+            result.and_then(|candidate| {
+                let diff = (target - candidate.weekday().number_from_monday() as i32).rem_euclid(7);
+                if day.is_some() {
+                    (diff == 0).then_some(candidate)
+                } else {
+                    candidate.checked_add_signed(Duration::days(i64::from(diff)))
+                }
+            })
+        } else {
+            result
+        }
     };
     Ok(result.map(|date| Match {
         start: e.start,

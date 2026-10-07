@@ -13,6 +13,24 @@ fn legacy_cases() {
             offset_minutes,
         };
         let results = parser.parse(input, &options).unwrap();
+        let compact = parser.parse_ranges(input, &options).unwrap();
+        let expanded: Vec<_> = compact
+            .into_iter()
+            .flat_map(|m| {
+                let range = options.range && m.range_days.is_some();
+                let days = if range { m.range_days.unwrap() } else { 1 };
+                (0..days).map(move |day| sunphase::Match {
+                    date: DateTime::from_timestamp_micros(
+                        m.date.timestamp_micros() + i64::from(day) * 86_400_000_000,
+                    )
+                    .unwrap(),
+                    range_type: if range { None } else { m.range_type },
+                    range_days: if range { None } else { m.range_days },
+                    ..m.clone()
+                })
+            })
+            .collect();
+        assert_eq!(expanded, results, "compact {input:?} {languages:?}");
         let actual: Vec<_> = results
             .iter()
             .map(|m| {

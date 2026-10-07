@@ -1,5 +1,7 @@
 # Sunphase —（日本語）
 
+Rust 1.88以上が必要です。
+
 Rust標準ライブラリのみで動作する、汎用的な自然言語の日時解析パッケージです。本体・テスト・ベンチマークの外部依存はゼロです。CargoはRust標準の管理ツールで、追加ライブラリのインストールは不要です。rustc単独でもビルドできます。
 
 `parse("tomorrow")` で現在のUTC日時を基準に解析できます。端末の現地日時・任意の過去や未来・指定時刻を使う場合は `Options::new(DateTime::parse(...))` と `parse_with` を使います。基準日時、使用言語、週の開始日、時差、範囲モード、独自言語やパターンを指定できます。以下に全機能と7言語の実行例を掲載しています。
@@ -81,6 +83,19 @@ options.week_start = 1; // ISO: Monday=1, Sunday=7 (default)
 let week = parse_with("next week", &options).unwrap();
 assert_eq!(week.len(), 7);
 assert_eq!(week[0].date.to_string(), "2025-02-10 00:00:00");
+```
+
+`Parser::parse_ranges` は日ごとの結果を作らず、範囲を1件で返します。
+`date` は開始日、`range_days` は検証済みの日数です。
+`range = false` の場合は `parse` と同じ単日結果を返します。
+
+```rust
+use sunphase::{DateTime, Options, Parser};
+let mut options = Options::new(DateTime::parse("2025-02-08T11:05:00").unwrap());
+options.range = true;
+let week = Parser::default().parse_ranges("next week", &options).unwrap();
+assert_eq!(week.len(), 1);
+assert_eq!(week[0].range_days, Some(7));
 ```
 
 Range mode selects non-overlapping expressions and expands named week/month/

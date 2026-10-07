@@ -69,6 +69,12 @@ pub fn language() -> Language {
                 &[],
             ),
             Pattern::new(
+                "en_nthWeekday",
+                "(?i)(?P<guard0>)(?:the\\s+)?(first|second|third|fourth|fifth|last)\\s+([a-z]+)\\s+(?:of|in)\\s+([a-z]+)(?P<guard1>)",
+                &[("guard0", true, "[a-zA-Z]"), ("guard1", false, "[a-zA-Z]")],
+                &[],
+            ),
+            Pattern::new(
                 "en_weekday",
                 "(?i)(?P<guard0>)(wednesday|thursday|saturday|tuesday|monday|friday|sunday|mon|tue|wed|thu|fri|sat|sun)(?P<guard1>)",
                 &[

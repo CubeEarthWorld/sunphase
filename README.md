@@ -9,6 +9,8 @@ English, Japanese, Chinese, Spanish, Hindi, Korean, Russian, and universal dates
 
 ## Install once
 
+Requires Rust 1.88 or newer.
+
 ```toml
 [dependencies]
 sunphase = { git = "https://github.com/CubeEarthWorld/sunphase", tag = "v1.0.0" }
@@ -116,6 +118,19 @@ options.week_start = 1; // ISO: Monday=1, Sunday=7 (default)
 let week = parse_with("next week", &options).unwrap();
 assert_eq!(week.len(), 7);
 assert_eq!(week[0].date.to_string(), "2025-02-10 00:00:00");
+```
+
+Use `Parser::parse_ranges` to keep each range as one match instead of allocating
+a result per day. `date` is its first day and `range_days` is its checked length.
+With `range = false`, it returns the same point results as `parse`.
+
+```rust
+use sunphase::{DateTime, Options, Parser};
+let mut options = Options::new(DateTime::parse("2025-02-08T11:05:00").unwrap());
+options.range = true;
+let week = Parser::default().parse_ranges("next week", &options).unwrap();
+assert_eq!(week.len(), 1);
+assert_eq!(week[0].range_days, Some(7));
 ```
 
 Range mode selects non-overlapping expressions and expands named week/month/
