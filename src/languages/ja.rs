@@ -1,0 +1,90 @@
+use crate::{Component, Language, Pattern};
+pub fn language() -> Language {
+    Language::new(
+        "ja",
+        "(?i)^(?:[\\s、,]|の|に|は)+$",
+        vec![
+            Pattern::new("ja_special", "野獣先輩", &[], &[]),
+            Pattern::new(
+                "ja_withinDays",
+                "([0-9〇零一二三四五六七八九十百千]+)日以内",
+                &[],
+                &[],
+            ),
+            Pattern::new(
+                "ja_offset",
+                "([0-9〇零一二三四五六七八九十百千]+)(日|週間|[ヶケか]月|年)(後|前)",
+                &[],
+                &[],
+            ),
+            Pattern::new(
+                "ja_relativeDay",
+                "(明々後日|明明後日|一昨々日|一昨昨日|明後日|一昨日|今日|本日|明日|昨日)",
+                &[],
+                &[
+                    ("今日", &[Component::RelativeDay(0)]),
+                    ("本日", &[Component::RelativeDay(0)]),
+                    ("明日", &[Component::RelativeDay(1)]),
+                    ("明後日", &[Component::RelativeDay(2)]),
+                    ("明々後日", &[Component::RelativeDay(3)]),
+                    ("明明後日", &[Component::RelativeDay(3)]),
+                    ("昨日", &[Component::RelativeDay(-1)]),
+                    ("一昨日", &[Component::RelativeDay(-2)]),
+                    ("一昨々日", &[Component::RelativeDay(-3)]),
+                    ("一昨昨日", &[Component::RelativeDay(-3)]),
+                ],
+            ),
+            Pattern::new(
+                "ja_anchor",
+                "(再来年|再来月|再来週|来年|今年|去年|昨年|来月|今月|先月|来週|今週|先週|週末)",
+                &[],
+                &[
+                    ("再来年", &[Component::YearOffset(2)]),
+                    ("来年", &[Component::YearOffset(1)]),
+                    ("今年", &[Component::YearOffset(0)]),
+                    ("去年", &[Component::YearOffset(-1)]),
+                    ("昨年", &[Component::YearOffset(-1)]),
+                    ("再来月", &[Component::MonthOffset(2)]),
+                    ("来月", &[Component::MonthOffset(1)]),
+                    ("今月", &[Component::MonthOffset(0)]),
+                    ("先月", &[Component::MonthOffset(-1)]),
+                    ("再来週", &[Component::Week(2, true)]),
+                    ("来週", &[Component::Week(1, true)]),
+                    ("今週", &[Component::Week(0, true)]),
+                    ("先週", &[Component::Week(-1, true)]),
+                    ("週末", &[Component::Weekend]),
+                ],
+            ),
+            Pattern::new(
+                "ja_meridiem",
+                "(午前|午後)",
+                &[],
+                &[
+                    ("午前", &[Component::Meridiem(false)]),
+                    ("午後", &[Component::Meridiem(true)]),
+                ],
+            ),
+            Pattern::new("ja_weekday", "([月火水木金土日])曜日?", &[], &[]),
+            Pattern::new("ja_year", "([0-9]{4})年", &[], &[]),
+            Pattern::new(
+                "ja_month",
+                "([0-9〇零一二三四五六七八九十百千]+)月(?P<guard0>)",
+                &[("guard0", false, "曜")],
+                &[],
+            ),
+            Pattern::new(
+                "ja_day",
+                "([0-9〇零一二三四五六七八九十百千]+)[日号]",
+                &[],
+                &[],
+            ),
+            Pattern::new(
+                "ja_time",
+                "([0-9〇零一二三四五六七八九十百千]+)時(?:\\s*([0-9〇零一二三四五六七八九十百千]+)分)?",
+                &[],
+                &[],
+            ),
+            Pattern::new("ja_colonTime", "([0-9]{1,2}):([0-9]{2})", &[], &[]),
+        ],
+    )
+}

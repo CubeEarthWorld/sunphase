@@ -1,0 +1,19 @@
+[package]
+name = "sunphase"
+version = "1.0.0"
+edition = "2024"
+license = "BSD-3-Clause"
+description = "Composable multilingual natural-language date and time parser"
+repository = "https://github.com/CubeEarthWorld/sunphase"
+include = ["Cargo.toml", "Cargo.lock", "src/**", "tests/**", "examples/**", "benchmark/workloads.json", "benchmark/REPORT.ja.md", "docs/**", "README*.md", "CHANGELOG.md", "LICENSE", "rust-toolchain.toml"]
+
+[dependencies]
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+regex = { version = "1", default-features = false, features = ["std", "perf", "unicode-case", "unicode-perl"] }
+
+[dev-dependencies]
+serde_json = "1"
+
+[profile.release]
+lto = true
+codegen-units = 1

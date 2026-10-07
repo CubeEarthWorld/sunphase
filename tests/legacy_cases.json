@@ -1,0 +1,5768 @@
+[
+  {
+    "input": "오늘",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "오늘",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "내일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "내일",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "어제",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "어제",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2월14일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2월14일",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14일",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3일",
+        "date": "2025-03-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2025년2월8일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2025년2월8일",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "월요일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "월요일",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "금요일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "금요일",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "다음 주",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "다음 주",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": "week",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "다음 주",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 0,
+        "text": "다음 주",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": "week",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "다음 주 일요일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "다음 주 일요일",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "다음 주 일요일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 0,
+        "text": "다음 주 일요일",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3시30분",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3시30분",
+        "date": "2025-02-09T03:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "내일 14시",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "내일 14시",
+        "date": "2025-02-09T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14일 3시",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14일 3시",
+        "date": "2025-02-14T03:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3일 후",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3일 후",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2주 후",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2주 후",
+        "date": "2025-02-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "다음 달",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "다음 달",
+        "date": "2025-03-01T00:00:00.000",
+        "range_type": "month",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "10:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "10:30",
+        "date": "2025-02-09T10:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "모레 3시",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "모레 3시",
+        "date": "2025-02-10T03:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "그끄제 10시",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "그끄제 10시",
+        "date": "2025-02-05T10:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "내년 1월",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "내년 1월",
+        "date": "2026-01-01T00:00:00.000",
+        "range_type": "month",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "आज",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "आज",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "कल",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "कल",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "परसों",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "परसों",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14 मार्च 2025",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14 मार्च 2025",
+        "date": "2025-03-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "सुबह 10:10",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "सुबह 10:10",
+        "date": "2025-02-09T10:10:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "आज 14:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "आज 14:30",
+        "date": "2025-02-08T14:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "अगले सोमवार",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "अगले सोमवार",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "पिछले शुक्रवार",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "पिछले शुक्रवार",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2 सप्ताह बाद",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2 सप्ताह बाद",
+        "date": "2025-02-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3 दिन पहले",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3 दिन पहले",
+        "date": "2025-02-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "15 तारीख",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "15 तारीख",
+        "date": "2025-02-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "सोमवार",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "सोमवार",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "अगले महीने की योजना",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": true,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-02T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-04T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-06T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-12T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-13T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-17T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-18T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-19T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-20T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-23T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-24T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-25T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-26T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-27T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-29T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-30T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "अगले महीने",
+        "date": "2025-03-31T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "15 तारीख को मीटिंग",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "15 तारीख",
+        "date": "2025-02-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "अगले मंगलवार",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "अगले मंगलवार",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "अगले हफ्ते रविवार",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "अगले हफ्ते रविवार",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "अगले हफ्ते रविवार",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 0,
+        "text": "अगले हफ्ते रविवार",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "पिछले रविवार",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "पिछले रविवार",
+        "date": "2025-02-02T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "पिछले बुधवार",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "पिछले बुधवार",
+        "date": "2025-02-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "नरसों",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "नरसों",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Today買い物をする",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en",
+      "ja",
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Today",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2026年5月14日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en",
+      "ja",
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2026年5月14日",
+        "date": "2026-05-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2025-02-08T15:00:00Z",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en",
+      "ja",
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2025-02-08T15:00:00Z",
+        "date": "2025-02-08T15:00:00.000Z",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "next week Sunday",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "next week Sunday",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "next week Sunday",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 0,
+        "text": "next week Sunday",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "28 de febrero",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "28 de febrero",
+        "date": "2025-02-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Cita el día 20 a las 15:00",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 5,
+        "text": "el día 20 a las 15:00",
+        "date": "2025-02-20T15:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "el día 20",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "el día 20",
+        "date": "2025-02-20T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "5241年11月11日21時41分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "5241年11月11日21時41分",
+        "date": "5241-11-11T21:41:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2026年5月14日14时30分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2026年5月14日14时30分",
+        "date": "2026-05-14T14:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2026年5月14日下午3点30分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2026年5月14日下午3点30分",
+        "date": "2026-05-14T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2025년2월14일15시30분",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2025년2월14일15시30분",
+        "date": "2025-02-14T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14.02.2025 в 15:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14.02.2025 в 15:30",
+        "date": "2025-02-14T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14 de marzo de 2025 a las 15:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14 de marzo de 2025 a las 15:30",
+        "date": "2025-03-14T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14 मार्च 2025 दोपहर 3:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14 मार्च 2025 दोपहर 3:30",
+        "date": "2025-03-14T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "March 14, 2025 15:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "March 14, 2025 15:30",
+        "date": "2025-03-14T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明日１０時３０分に会議",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明日10時30分",
+        "date": "2025-02-09T10:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "２０２６年５月１４日１４时３０分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2026年5月14日14时30分",
+        "date": "2026-05-14T14:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "２０２６年５月１４日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en",
+      "ja",
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2026年5月14日",
+        "date": "2026-05-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Meeting on １５th",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 11,
+        "text": "15th",
+        "date": "2025-02-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "再来月21日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "再来月21日",
+        "date": "2025-04-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来月21日12時31分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来月21日12時31分",
+        "date": "2025-03-21T12:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来月21日14時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来月21日14時",
+        "date": "2025-03-21T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "再来月14日12時41分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "再来月14日12時41分",
+        "date": "2025-04-14T12:41:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来週火曜14時14分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来週火曜14時14分",
+        "date": "2025-02-11T14:14:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "再来週火曜日14時31分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "再来週火曜日14時31分",
+        "date": "2025-02-18T14:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来月5日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来月5日",
+        "date": "2025-03-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "再来月1日9時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "再来月1日9時",
+        "date": "2025-04-01T09:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来週金曜18時30分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来週金曜18時30分",
+        "date": "2025-02-14T18:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "再来週金曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "再来週金曜日",
+        "date": "2025-02-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "先週火曜14時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "先週火曜14時",
+        "date": "2025-02-04T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来年3月21日14時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来年3月21日14時",
+        "date": "2026-03-21T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "10日後14時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "10日後14時",
+        "date": "2025-02-18T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来週の火曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来週の火曜日",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明日午後3時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明日午後3時",
+        "date": "2025-02-09T15:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明後日午前9時30分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明後日午前9時30分",
+        "date": "2025-02-10T09:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3ヶ月後",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3ヶ月後",
+        "date": "2025-05-01T00:00:00.000",
+        "range_type": "month",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "週末",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "週末",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "15時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "15時",
+        "date": "2025-02-08T15:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "9時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "9時",
+        "date": "2025-02-09T09:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来月二十一日十二時三十一分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来月二十一日十二時三十一分",
+        "date": "2025-03-21T12:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "会議は来月21日14時から",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 3,
+        "text": "来月21日14時",
+        "date": "2025-03-21T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "next month on the 21st",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "next month on the 21st",
+        "date": "2025-03-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "next month on the 21st at 2pm",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "next month on the 21st at 2pm",
+        "date": "2025-03-21T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "next Tuesday at 2:30pm",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "next Tuesday at 2:30pm",
+        "date": "2025-02-11T14:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "next week Tuesday at 14:14",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "next week Tuesday at 14:14",
+        "date": "2025-02-11T14:14:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "tomorrow at 14:00",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "tomorrow at 14:00",
+        "date": "2025-02-09T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "the 21st at 14:00",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "the 21st at 14:00",
+        "date": "2025-02-21T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "in 3 days at 9am",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "in 3 days at 9am",
+        "date": "2025-02-11T09:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "下个月21号",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "下个月21号",
+        "date": "2025-03-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "下个月21号14点31分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "下个月21号14点31分",
+        "date": "2025-03-21T14:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "下周二14点14分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "下周二14点14分",
+        "date": "2025-02-11T14:14:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明天15点30分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明天15点30分",
+        "date": "2025-02-09T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "后天上午9点",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "后天上午9点",
+        "date": "2025-02-10T09:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3天后14点",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3天后14点",
+        "date": "2025-02-11T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "다음 달 21일",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "다음 달 21일",
+        "date": "2025-03-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "다음 주 화요일 14시 31분",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "다음 주 화요일 14시 31분",
+        "date": "2025-02-11T14:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3일 후 14시",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3일 후 14시",
+        "date": "2025-02-11T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14일 14시 30분",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ko"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14일 14시 30분",
+        "date": "2025-02-14T14:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "завтра в 15:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "завтра в 15:30",
+        "date": "2025-02-09T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "21 марта в 14:31",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "21 марта в 14:31",
+        "date": "2025-03-21T14:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "через 2 дня в 15:00",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "через 2 дня в 15:00",
+        "date": "2025-02-10T15:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "понедельник в 9:00",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "понедельник в 9:00",
+        "date": "2025-02-10T09:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "mañana a las 15:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "mañana a las 15:30",
+        "date": "2025-02-09T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "el próximo martes a las 14:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 3,
+        "text": "próximo martes a las 14:30",
+        "date": "2025-02-11T14:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "21 de marzo a las 14:31",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "21 de marzo a las 14:31",
+        "date": "2025-03-21T14:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "el 21 del próximo mes",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "el 21 del próximo mes",
+        "date": "2025-03-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "कल 15 बजे",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "कल 15 बजे",
+        "date": "2025-02-09T15:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "अगले महीने 21 तारीख",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "अगले महीने 21 तारीख",
+        "date": "2025-03-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "परसों 10:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "hi"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "परसों 10:30",
+        "date": "2025-02-10T10:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "сегодня",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "сегодня",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "завтра",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "завтра",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "вчера",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "вчера",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14 февраля",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14 февраля",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14.02.2025",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14.02.2025",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14-го",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14-го",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3-го",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3-го",
+        "date": "2025-03-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "понедельник",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "понедельник",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "пятницу",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "пятницу",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "на следующей неделе",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 3,
+        "text": "следующей неделе",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": "week",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "на следующей неделе",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 3,
+        "text": "следующей неделе",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": "week",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "в воскресенье на следующей неделе",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 2,
+        "text": "воскресенье на следующей неделе",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "в воскресенье на следующей неделе",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 2,
+        "text": "воскресенье на следующей неделе",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "в 15:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 2,
+        "text": "15:30",
+        "date": "2025-02-08T15:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "вечера 18:00",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "вечера 18:00",
+        "date": "2025-02-08T18:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "через 3 дня",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "через 3 дня",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3 дня назад",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3 дня назад",
+        "date": "2025-02-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "через 2 недели",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "через 2 недели",
+        "date": "2025-02-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "в следующем месяце",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 2,
+        "text": "следующем месяце",
+        "date": "2025-03-01T00:00:00.000",
+        "range_type": "month",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "10:30",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "10:30",
+        "date": "2025-02-09T10:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "послезавтра",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "послезавтра",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "позавчера",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ru"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "позавчера",
+        "date": "2025-02-06T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "今日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "今日",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明日",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "昨日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "昨日",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "21時31分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "21時31分",
+        "date": "2025-02-08T21:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3日12時15分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3日12時15分",
+        "date": "2025-03-03T12:15:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明日14時25分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明日14時25分",
+        "date": "2025-02-09T14:25:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "24日14時25分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "24日14時25分",
+        "date": "2025-02-24T14:25:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "木曜14時36分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "木曜14時36分",
+        "date": "2025-02-13T14:36:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明日十時三十一分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明日十時三十一分",
+        "date": "2025-02-09T10:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "再来週土曜",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "再来週土曜",
+        "date": "2025-02-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明日5時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明日5時",
+        "date": "2025-02-09T05:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来年五月十二日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来年五月十二日",
+        "date": "2026-05-12T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来年1月15時32分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来年1月15時32分",
+        "date": "2026-01-01T15:32:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来年1月",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来年1月",
+        "date": "2026-01-01T00:00:00.000",
+        "range_type": "month",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "16日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "16日",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3日",
+        "date": "2025-03-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "十六日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "十六日",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "8日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "8日",
+        "date": "2025-03-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "16日 14時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "16日 14時",
+        "date": "2025-02-16T14:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2月28日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2月28日",
+        "date": "2025-02-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "31日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "31日",
+        "date": "2025-03-31T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "1日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "1日",
+        "date": "2025-03-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "20日に歯医者",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "20日",
+        "date": "2025-02-20T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来月の予定",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": true,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-02T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-04T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-06T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-12T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-13T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-17T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-18T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-19T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-20T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-23T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-24T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-25T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-26T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-27T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-29T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-30T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "来月",
+        "date": "2025-03-31T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "金曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "金曜日",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "金曜日12時43分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "金曜日12時43分",
+        "date": "2025-02-14T12:43:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "土曜日午後3時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "土曜日午後3時",
+        "date": "2025-02-15T15:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来週火曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来週火曜日",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "再来週月曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "再来週月曜日",
+        "date": "2025-02-17T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3週間後金曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3週間後金曜日",
+        "date": "2025-02-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "1週間後日曜",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "1週間後日曜",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "再来年",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "再来年",
+        "date": "2027-02-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2年後",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2年後",
+        "date": "2027-02-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "5年後",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "5年後",
+        "date": "2030-02-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明日１０時３０分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明日10時30分",
+        "date": "2025-02-09T10:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "２１時３１分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "21時31分",
+        "date": "2025-02-08T21:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "３日１２時１５分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3日12時15分",
+        "date": "2025-03-03T12:15:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "１６日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "16日",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "２０２６年５月１４日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2026年5月14日",
+        "date": "2026-05-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "８日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "8日",
+        "date": "2025-03-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来週水曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来週水曜日",
+        "date": "2025-02-12T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来週日曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "来週日曜日",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "来週日曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 0,
+        "text": "来週日曜日",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "先週月曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "先週月曜日",
+        "date": "2025-02-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "先週金曜日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "先週金曜日",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明々後日16時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明々後日16時",
+        "date": "2025-02-11T16:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明々後日16時30分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明々後日16時30分",
+        "date": "2025-02-11T16:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "一昨日10時",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "一昨日10時",
+        "date": "2025-02-06T10:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "本日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "ja"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "本日",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Today",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Today",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Tomorrow",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Tomorrow",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Yesterday",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Yesterday",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Midnight",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Midnight",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2 weeks from now",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2 weeks from now",
+        "date": "2025-02-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "4 days later",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "4 days later",
+        "date": "2025-02-12T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "5 days ago",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "5 days ago",
+        "date": "2025-02-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Last Friday",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Last Friday",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "march 7 10:10",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "march 7 10:10",
+        "date": "2025-03-07T10:10:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "the 16th",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "the 16th",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "February 28",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "February 28",
+        "date": "2025-02-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Dentist on the 20th at 3pm",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 11,
+        "text": "the 20th at 3pm",
+        "date": "2025-02-20T15:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "next week go to university",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": true,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-12T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-13T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "next week go to university",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": true,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-12T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-13T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "next week",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "march",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": true,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-02T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-04T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-06T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-12T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-13T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-17T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-18T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-19T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-20T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-23T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-24T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-25T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-26T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-27T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-29T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-30T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 0,
+        "text": "march",
+        "date": "2025-03-31T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Gym session at 06:00",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 15,
+        "text": "06:00",
+        "date": "2025-02-09T06:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Lunch with client at noon",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 21,
+        "text": "noon",
+        "date": "2025-02-08T12:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "next year January",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "en"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "next year January",
+        "date": "2026-01-01T00:00:00.000",
+        "range_type": "month",
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Hoy",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Hoy",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Mañana",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Mañana",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Ayer",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Ayer",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "14 de marzo de 2025",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "14 de marzo de 2025",
+        "date": "2025-03-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "10:10",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "10:10",
+        "date": "2025-02-09T10:10:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "Esta noche 21:31",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "Esta noche 21:31",
+        "date": "2025-02-08T21:31:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "próximo lunes",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "próximo lunes",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "domingo de la próxima semana",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "domingo de la próxima semana",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "domingo de la próxima semana",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 0,
+        "text": "domingo de la próxima semana",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "hace 3 días",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "hace 3 días",
+        "date": "2025-02-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2 semanas desde ahora",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2 semanas desde ahora",
+        "date": "2025-02-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3 días atrás",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3 días atrás",
+        "date": "2025-02-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "15 de febrero",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "15 de febrero",
+        "date": "2025-02-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "martes",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "martes",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "el tercer lunes de marzo",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "el tercer lunes de marzo",
+        "date": "2025-03-17T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "el último viernes de abril",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "el último viernes de abril",
+        "date": "2025-04-25T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "sábado",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "sábado",
+        "date": "2025-02-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "el próximo mes",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": true,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-02T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-04T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-06T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-12T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-13T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-15T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-17T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-18T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-19T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-20T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-21T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-22T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-23T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-24T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-25T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-26T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-27T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-29T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-30T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "próximo mes",
+        "date": "2025-03-31T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "la semana pasada",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": true,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-26T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-27T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-29T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-30T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-31T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-02-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "la semana pasada",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": true,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-27T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-29T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-30T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-01-31T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-02-01T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      },
+      {
+        "index": 3,
+        "text": "semana pasada",
+        "date": "2025-02-02T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "pasado viernes",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "pasado viernes",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "pasado lunes",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "pasado lunes",
+        "date": "2025-02-03T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "pasado mañana",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "pasado mañana",
+        "date": "2025-02-10T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "anteayer",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "es"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "anteayer",
+        "date": "2025-02-06T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "今天",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "今天",
+        "date": "2025-02-08T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明天",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明天",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "昨天",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "昨天",
+        "date": "2025-02-07T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "四号一点",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "四号一点",
+        "date": "2025-03-04T01:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "3月1号 14:24",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3月1号 14:24",
+        "date": "2025-03-01T14:24:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "三月七号上午九点",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "三月七号上午九点",
+        "date": "2025-03-07T09:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "三天后",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "三天后",
+        "date": "2025-02-11T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "16号",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "16号",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "十六号",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "十六号",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "20号下午3点",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "20号下午3点",
+        "date": "2025-02-20T15:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "2月28日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2月28日",
+        "date": "2025-02-28T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "29日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "29日",
+        "date": "2025-03-29T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "20号去看牙医",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "20号",
+        "date": "2025-02-20T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "下周日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "下周日",
+        "date": "2025-02-09T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "下周日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 1,
+    "results": [
+      {
+        "index": 0,
+        "text": "下周日",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "２０２６年５月１４日",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "2026年5月14日",
+        "date": "2026-05-14T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "３月１号 14:24",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "3月1号 14:24",
+        "date": "2025-03-01T14:24:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "１６号",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "16号",
+        "date": "2025-02-16T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "２０号下午３点",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "20号下午3点",
+        "date": "2025-02-20T15:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "前天",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "前天",
+        "date": "2025-02-06T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "大前天",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "大前天",
+        "date": "2025-02-05T00:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "后天16点",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "后天16点",
+        "date": "2025-02-10T16:00:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "大后天16点30分",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "大后天16点30分",
+        "date": "2025-02-11T16:30:00.000",
+        "range_type": null,
+        "range_days": null
+      }
+    ]
+  },
+  {
+    "input": "明年一月",
+    "reference": "2025-02-08T11:05:00.000",
+    "languages": [
+      "zh"
+    ],
+    "range": false,
+    "timezone": null,
+    "week_start": 7,
+    "results": [
+      {
+        "index": 0,
+        "text": "明年一月",
+        "date": "2026-01-01T00:00:00.000",
+        "range_type": "month",
+        "range_days": null
+      }
+    ]
+  }
+]

@@ -1,0 +1,158 @@
+use crate::{Component, Language, Pattern};
+pub fn language() -> Language {
+    Language::new(
+        "en",
+        "(?i)^(?:[\\s,]|on|at|the|of|in)+$",
+        vec![
+            Pattern::new(
+                "en_relativeDay",
+                "(?i)(?P<guard0>)(yesterday|tomorrow|today)(?P<guard1>)",
+                &[
+                    ("guard0", true, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                    ("guard1", false, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                ],
+                &[
+                    ("today", &[Component::RelativeDay(0)]),
+                    ("tomorrow", &[Component::RelativeDay(1)]),
+                    ("yesterday", &[Component::RelativeDay(-1)]),
+                ],
+            ),
+            Pattern::new(
+                "en_anchor",
+                "(?i)(?P<guard0>)(next month|this month|last month|next year|last year|next week|this week|last week)(?P<guard1>)",
+                &[
+                    ("guard0", true, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                    ("guard1", false, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                ],
+                &[
+                    ("next year", &[Component::YearOffset(1)]),
+                    ("last year", &[Component::YearOffset(-1)]),
+                    ("next month", &[Component::MonthOffset(1)]),
+                    ("this month", &[Component::MonthOffset(0)]),
+                    ("last month", &[Component::MonthOffset(-1)]),
+                    ("next week", &[Component::Week(1, true)]),
+                    ("this week", &[Component::Week(0, true)]),
+                    ("last week", &[Component::Week(-1, true)]),
+                ],
+            ),
+            Pattern::new(
+                "en_fixedTime",
+                "(?i)(?P<guard0>)(midnight|noon)(?P<guard1>)",
+                &[
+                    ("guard0", true, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                    ("guard1", false, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                ],
+                &[
+                    ("noon", &[Component::Time(12, Some(0), None)]),
+                    ("midnight", &[Component::Time(0, Some(0), None)]),
+                ],
+            ),
+            Pattern::new(
+                "en_in",
+                "(?i)in\\s+([0-9]+)\\s+(days?|weeks?|months?|years?)",
+                &[],
+                &[],
+            ),
+            Pattern::new(
+                "en_offset",
+                "(?i)([0-9]+)\\s+(days?|weeks?|months?|years?)\\s+(from\\s+now|later|ago)",
+                &[],
+                &[],
+            ),
+            Pattern::new(
+                "en_nextLastWeekday",
+                "(?i)(?P<guard0>)(next|last)\\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun)(?P<guard1>)",
+                &[
+                    ("guard0", true, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                    ("guard1", false, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                ],
+                &[],
+            ),
+            Pattern::new(
+                "en_weekday",
+                "(?i)(?P<guard0>)(wednesday|thursday|saturday|tuesday|monday|friday|sunday|mon|tue|wed|thu|fri|sat|sun)(?P<guard1>)",
+                &[
+                    ("guard0", true, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                    ("guard1", false, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                ],
+                &[
+                    ("monday", &[Component::Weekday(1)]),
+                    ("mon", &[Component::Weekday(1)]),
+                    ("tuesday", &[Component::Weekday(2)]),
+                    ("tue", &[Component::Weekday(2)]),
+                    ("wednesday", &[Component::Weekday(3)]),
+                    ("wed", &[Component::Weekday(3)]),
+                    ("thursday", &[Component::Weekday(4)]),
+                    ("thu", &[Component::Weekday(4)]),
+                    ("friday", &[Component::Weekday(5)]),
+                    ("fri", &[Component::Weekday(5)]),
+                    ("saturday", &[Component::Weekday(6)]),
+                    ("sat", &[Component::Weekday(6)]),
+                    ("sunday", &[Component::Weekday(7)]),
+                    ("sun", &[Component::Weekday(7)]),
+                ],
+            ),
+            Pattern::new(
+                "en_monthDay",
+                "(?i)(?P<guard0>)(september|february|november|december|january|october|august|march|april|june|july|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\\s+([0-9]{1,2})(?:st|nd|rd|th)?(?:,?\\s+([0-9]{4}))?(?P<guard1>)",
+                &[
+                    ("guard0", true, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                    ("guard1", false, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                ],
+                &[],
+            ),
+            Pattern::new(
+                "en_month",
+                "(?i)(?P<guard0>)(september|february|november|december|january|october|august|march|april|june|july|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)(?P<guard1>)",
+                &[
+                    ("guard0", true, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                    ("guard1", false, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]"),
+                ],
+                &[
+                    ("january", &[Component::Month(1)]),
+                    ("jan", &[Component::Month(1)]),
+                    ("february", &[Component::Month(2)]),
+                    ("feb", &[Component::Month(2)]),
+                    ("march", &[Component::Month(3)]),
+                    ("mar", &[Component::Month(3)]),
+                    ("april", &[Component::Month(4)]),
+                    ("apr", &[Component::Month(4)]),
+                    ("may", &[Component::Month(5)]),
+                    ("june", &[Component::Month(6)]),
+                    ("jun", &[Component::Month(6)]),
+                    ("july", &[Component::Month(7)]),
+                    ("jul", &[Component::Month(7)]),
+                    ("august", &[Component::Month(8)]),
+                    ("aug", &[Component::Month(8)]),
+                    ("september", &[Component::Month(9)]),
+                    ("sep", &[Component::Month(9)]),
+                    ("october", &[Component::Month(10)]),
+                    ("oct", &[Component::Month(10)]),
+                    ("november", &[Component::Month(11)]),
+                    ("nov", &[Component::Month(11)]),
+                    ("december", &[Component::Month(12)]),
+                    ("dec", &[Component::Month(12)]),
+                ],
+            ),
+            Pattern::new(
+                "en_ordinalDay",
+                "(?i)(?:the\\s+)?([0-9]{1,2})(?:st|nd|rd|th)(?P<guard0>)",
+                &[("guard0", false, "[a-z]")],
+                &[],
+            ),
+            Pattern::new(
+                "en_slashDate",
+                "([0-9]{1,4})[/-]([0-9]{1,2})[/-]([0-9]{1,4})",
+                &[],
+                &[],
+            ),
+            Pattern::new(
+                "en_timeAmPm",
+                "(?i)([0-9]{1,2})(?::([0-9]{2}))?\\s*(am|pm)(?P<guard0>)",
+                &[("guard0", false, "[a-z]")],
+                &[],
+            ),
+            Pattern::new("en_colonTime", "([0-9]{1,2}):([0-9]{2})", &[], &[]),
+        ],
+    )
+}
