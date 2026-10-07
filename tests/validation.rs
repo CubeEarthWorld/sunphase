@@ -69,7 +69,9 @@ fn calendar_roundtrips_and_offsets() {
 #[test]
 fn generic_patterns_and_bounded_compilation() {
     assert!(Pattern::custom("a{1001}", |_, _| None).is_ok());
-    assert!(Pattern::custom(r"(?i:a)(?-i:b)\p{Greek}+", |_, _| None).is_ok());
+    assert!(Pattern::custom(r"(?i:a)(?-i:b)", |_, _| None).is_ok());
+    #[cfg(feature = "unicode-properties")]
+    assert!(Pattern::custom(r"\p{Greek}+", |_, _| None).is_ok());
     assert!(Pattern::custom(&"a".repeat(65537), |_, _| None).is_err());
     assert!(
         Pattern::custom(&format!("{}a{}", "(".repeat(65), ")".repeat(65)), |_, _| {

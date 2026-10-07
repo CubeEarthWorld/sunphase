@@ -23,6 +23,10 @@ After running `cargo fetch --locked` once, `cargo test --offline --locked` works
 without network access. Applications built with Sunphase require no Rust or Cargo
 installation on the end user's machine.
 
+For smaller binaries that need only built-ins and basic custom patterns, set
+`default-features = false`. All seven languages, Unicode case folding and
+`\d`, `\s`, `\w` remain available; optional Unicode property tables are omitted.
+
 ## Quick start
 
 ```rust

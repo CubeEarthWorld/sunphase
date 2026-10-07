@@ -10,7 +10,11 @@ include = ["Cargo.toml", "Cargo.lock", "src/**", "tests/**", "examples/**", "doc
 
 [dependencies]
 chrono = { version = "0.4.45", default-features = false, features = ["std"] }
-regex = { version = "1.13.1", default-features = false, features = ["std", "perf", "unicode"] }
+regex = { version = "1.13.1", default-features = false, features = ["std", "perf", "unicode-case", "unicode-perl"] }
+
+[features]
+default = ["unicode-properties"]
+unicode-properties = ["regex/unicode"]
 
 [profile.release]
 lto = true

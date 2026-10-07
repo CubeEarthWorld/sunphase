@@ -37,6 +37,10 @@ and scoped flags. `\d`, `\s` and `\w` are Unicode-aware; use `[0-9]` for ASCII
 numbers. Lookaround and backreferences are unsupported; reject unwanted
 context in the builder instead.
 
+Unicode property tables are enabled by the default `unicode-properties`
+feature. Disable default features for smaller binaries if custom patterns
+do not need those tables; all built-in languages remain supported.
+
 Compilation is limited to 64 KiB source, nesting depth 64 and 8 MiB compiled
 regex size. The maintained engine performs searches without exponential
 backtracking. Patterns and calendars are shared by every language.

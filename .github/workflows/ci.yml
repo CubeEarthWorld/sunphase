@@ -20,6 +20,7 @@ jobs:
       - run: cargo fetch --locked
       - run: cargo test --offline --locked
       - run: cargo run --offline --locked --example usage
+      - run: cargo test --offline --locked --no-default-features
       - run: cargo tree --offline --locked
       - run: cargo build --offline --locked
       - run: cargo clippy --all-targets --locked -- -D warnings
