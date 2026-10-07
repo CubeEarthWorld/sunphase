@@ -49,6 +49,22 @@ fn unicode_spans_are_original_utf8() {
             .any(|r| &input[r.start..r.end] == "明日１０時３０分")
     );
     assert!(results.iter().any(|r| &input[r.start..r.end] == "来月"));
+    // Earlier normalized digits must not shift later matches into UTF-8 code points.
+    let input = "９😀 ３日後；😀 １２日後；終";
+    let mut spans: Vec<_> = p
+        .parse(input, &o)
+        .unwrap()
+        .into_iter()
+        .map(|r| {
+            assert!(input.is_char_boundary(r.start) && input.is_char_boundary(r.end));
+            &input[r.start..r.end]
+        })
+        .collect();
+    spans.sort_unstable();
+    assert_eq!(spans, ["１２日後", "３日後"]);
+    let expected = p.parse(input, &o).unwrap();
+    o.languages = &["ja", "ja", "universal", "universal"];
+    assert_eq!(p.parse(input, &o).unwrap(), expected);
 }
 #[test]
 fn add_language_without_changing_engine() {

@@ -54,12 +54,20 @@ fn civil(day: i64) -> (i32, u32, u32) {
         d as u32,
     )
 }
+pub(crate) fn month_days(y: i32, m: u32) -> u32 {
+    match m {
+        4 | 6 | 9 | 11 => 30,
+        2 if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) => 29,
+        2 => 28,
+        _ => 31,
+    }
+}
 impl NaiveDate {
     pub fn from_ymd_opt(y: i32, m: u32, d: u32) -> Option<Self> {
         if !(-262142..=262142).contains(&y)
             || !(1..=12).contains(&m)
             || d == 0
-            || d > super::resolve::month_days(y, m)
+            || d > month_days(y, m)
         {
             return None;
         }

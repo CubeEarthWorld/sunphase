@@ -1,17 +1,5 @@
 use super::*;
-pub(crate) fn month_days(y: i32, m: u32) -> u32 {
-    match m {
-        4 | 6 | 9 | 11 => 30,
-        2 => {
-            if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) {
-                29
-            } else {
-                28
-            }
-        }
-        _ => 31,
-    }
-}
+use calendar::month_days;
 fn date(y: i32, m: i32, d: i32, h: i32, min: i32) -> Option<NaiveDateTime> {
     NaiveDate::from_ymd_opt(y, m.try_into().ok()?, d.try_into().ok()?)?.and_hms_opt(
         h.try_into().ok()?,

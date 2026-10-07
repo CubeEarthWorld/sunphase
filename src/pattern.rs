@@ -482,8 +482,15 @@ impl Regex {
     pub fn capture_names(&self) -> impl Iterator<Item = Option<&str>> {
         self.names.iter().map(|n| n.as_deref())
     }
-    fn add(&self, list: &mut Vec<Thread>, mut t: Thread, at: usize, len: usize, seen: &mut [bool]) {
-        let mut pending = vec![];
+    fn add(
+        &self,
+        list: &mut Vec<Thread>,
+        mut t: Thread,
+        at: usize,
+        len: usize,
+        seen: &mut [bool],
+        pending: &mut Vec<Thread>,
+    ) {
         loop {
             if !seen[t.pc] {
                 seen[t.pc] = true;
@@ -526,6 +533,7 @@ impl Regex {
         let mut current = Vec::with_capacity(self.code.len());
         let mut next = Vec::with_capacity(self.code.len());
         let mut seen = vec![false; self.code.len()];
+        let mut pending = Vec::new();
         let blank = Rc::new(vec![usize::MAX; self.names.len() * 2]);
         let mut found = None;
         for (pos, ch) in text[at..]
@@ -555,6 +563,7 @@ impl Regex {
                     pos,
                     text.len(),
                     &mut seen,
+                    &mut pending,
                 );
             }
             if current.is_empty() {
@@ -580,6 +589,7 @@ impl Regex {
                             pos + ch.unwrap().len_utf8(),
                             text.len(),
                             &mut seen,
+                            &mut pending,
                         ),
                     _ => {}
                 }

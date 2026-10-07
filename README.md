@@ -3,7 +3,7 @@
 [English](README.md) · [日本語](README.jp.md) · [中文](README.zh.md)
 
 A general-purpose, extensible date/time parser written entirely with Rust's
-standard library. **Zero dependencies**, including tests and benchmarks.
+standard library. **Zero dependencies**, including tests.
 No extra crates, runtime, timezone database, or language-specific installation.
 English, Japanese, Chinese, Spanish, Hindi, Korean, Russian, and universal dates.
 
@@ -175,7 +175,6 @@ without a host clock; convenience `parse` returns `ClockUnavailable` on Wasm.
 cargo run --offline --locked --example usage
 cargo test --offline --locked
 cargo clippy --offline --all-targets --locked -- -D warnings
-cargo run --offline --release --locked --example benchmark
 cargo check --offline --locked --target wasm32-unknown-unknown
 cargo tree --offline --locked
 ```

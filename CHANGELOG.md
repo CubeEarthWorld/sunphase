@@ -12,3 +12,7 @@
 - Fix Korean 그제/그끄제 offsets; recognize Sino-Korean numeral strings.
 - Original UTF-8 spans survive emoji and full-width digits.
 - Native and Wasm support with parsing, calendar and input-boundary tests.
+
+- Reuse NFA branch workspace and skip duplicate language selections.
+- Restore full-width digit spans using indexed normalization offsets.
+- Keep calendar validation independent of language resolution.

@@ -150,18 +150,16 @@ impl Language {
             })
     }
 }
-static BUILTINS: LazyLock<Vec<LazyLock<Language>>> = LazyLock::new(|| {
-    vec![
-        LazyLock::new(languages::en::language),
-        LazyLock::new(languages::ja::language),
-        LazyLock::new(languages::zh::language),
-        LazyLock::new(languages::es::language),
-        LazyLock::new(languages::hi::language),
-        LazyLock::new(languages::ko::language),
-        LazyLock::new(languages::ru::language),
-        LazyLock::new(languages::universal::language),
-    ]
-});
+static BUILTINS: [LazyLock<Language>; 8] = [
+    LazyLock::new(languages::en::language),
+    LazyLock::new(languages::ja::language),
+    LazyLock::new(languages::zh::language),
+    LazyLock::new(languages::es::language),
+    LazyLock::new(languages::hi::language),
+    LazyLock::new(languages::ko::language),
+    LazyLock::new(languages::ru::language),
+    LazyLock::new(languages::universal::language),
+];
 /// Parser with caller-owned languages; built-ins compile lazily once.
 #[derive(Default)]
 pub struct Parser {
@@ -268,14 +266,26 @@ impl Parser {
         if text.is_empty() {
             return Ok(vec![]);
         }
-        let normalized = normalize(text);
+        let (normalized, wide_digits) = normalize(text);
         let codes = if options.languages.is_empty() {
             &["en", "ja", "zh"][..]
         } else {
             options.languages
         };
         let mut candidates = Vec::new();
-        for code in codes.iter().copied().chain(std::iter::once("universal")) {
+        for (index, code) in codes
+            .iter()
+            .copied()
+            .chain(std::iter::once("universal"))
+            .enumerate()
+        {
+            if codes
+                .iter()
+                .position(|&c| c == code)
+                .is_some_and(|first| first < index)
+            {
+                continue;
+            }
             let language = self.languages.iter().find(|l| l.code == code).or_else(|| {
                 let index = ["en", "ja", "zh", "es", "hi", "ko", "ru", "universal"]
                     .iter()
@@ -370,15 +380,13 @@ impl Parser {
         let mut results = Vec::new();
         for mut m in selected {
             // Normalization changes UTF-8 widths. Return spans into the original.
-            if matches!(normalized, Cow::Owned(_)) {
-                m.start = original_offset(text, &normalized, m.start);
-                m.end = original_offset(text, &normalized, m.end);
-            }
+            m.start += 2 * wide_digits.partition_point(|&at| at < m.start);
+            m.end += 2 * wide_digits.partition_point(|&at| at < m.end);
             let days = if options.range {
                 m.range_days.or(match m.range_type {
                     Some("week") => Some(7),
                     Some("month") => {
-                        Some(resolve::month_days(m.date.year(), m.date.month()) as i32)
+                        Some(calendar::month_days(m.date.year(), m.date.month()) as i32)
                     }
                     _ => None,
                 })
@@ -412,28 +420,22 @@ impl Parser {
         Ok(results)
     }
 }
-fn normalize(text: &str) -> Cow<'_, str> {
-    if !text.chars().any(|c| ('０'..='９').contains(&c)) {
-        return Cow::Borrowed(text);
+fn normalize(text: &str) -> (Cow<'_, str>, Vec<usize>) {
+    let Some(first) = text.find(|c| ('０'..='９').contains(&c)) else {
+        return (Cow::Borrowed(text), Vec::new());
+    };
+    let mut normalized = String::with_capacity(text.len());
+    normalized.push_str(&text[..first]);
+    let mut wide_digits = Vec::new();
+    for c in text[first..].chars() {
+        if ('０'..='９').contains(&c) {
+            wide_digits.push(normalized.len());
+            normalized.push(char::from_u32(c as u32 - 0xfee0).unwrap());
+        } else {
+            normalized.push(c);
+        }
     }
-    Cow::Owned(
-        text.chars()
-            .map(|c| {
-                if ('０'..='９').contains(&c) {
-                    char::from_u32(c as u32 - 0xfee0).unwrap()
-                } else {
-                    c
-                }
-            })
-            .collect(),
-    )
-}
-fn original_offset(original: &str, normalized: &str, at: usize) -> usize {
-    let count = normalized[..at].chars().count();
-    original
-        .char_indices()
-        .nth(count)
-        .map_or(original.len(), |(i, _)| i)
+    (Cow::Owned(normalized), wide_digits)
 }
 fn number(s: &str) -> Option<i32> {
     if s.is_empty() {

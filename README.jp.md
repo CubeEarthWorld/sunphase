@@ -140,7 +140,6 @@ without a host clock; convenience `parse` returns `ClockUnavailable` on Wasm.
 cargo run --offline --locked --example usage
 cargo test --offline --locked
 cargo clippy --offline --all-targets --locked -- -D warnings
-cargo run --offline --release --locked --example benchmark
 cargo check --offline --locked --target wasm32-unknown-unknown
 cargo tree --offline --locked
 ```
