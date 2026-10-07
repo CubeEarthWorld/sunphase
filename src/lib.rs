@@ -1,9 +1,13 @@
+#![doc = include_str!("../README.md")]
 //! Multilingual component recognition, composition and calendar resolution.
 //! Compile a [`Parser`] once and reuse it. Dates are timezone-free wall clocks;
 //! ISO offsets are converted to UTC. Result offsets are UTF-8 byte offsets.
-pub use chrono::{DateTime, NaiveDateTime};
-use chrono::{Datelike, Duration, NaiveDate};
-use regex::{Captures, Regex, RegexBuilder};
+mod calendar;
+mod pattern;
+use calendar::Duration;
+pub use calendar::{DateError, DateTime, NaiveDate, NaiveDateTime};
+use pattern::Regex;
+pub use pattern::{Capture, Captures, PatternError};
 use std::{borrow::Cow, sync::LazyLock};
 pub mod languages;
 mod resolve;
@@ -94,7 +98,7 @@ impl Pattern {
     }
     /// Add a component recognizer. Rust regex syntax deliberately excludes
     /// backtracking/lookaround. Use the builder to reject unwanted captures.
-    pub fn custom(source: &str, builder: Builder) -> Result<Self, regex::Error> {
+    pub fn custom(source: &str, builder: Builder) -> Result<Self, PatternError> {
         Ok(Self {
             name: "custom",
             regex: Regex::new(source)?,
@@ -118,10 +122,7 @@ impl Pattern {
     }
 }
 fn compile(s: &str) -> Regex {
-    RegexBuilder::new(s)
-        .dfa_size_limit(256 * 1024)
-        .build()
-        .expect("built-in pattern")
+    Regex::new(s).expect("built-in pattern")
 }
 pub struct Language {
     pub code: &'static str,
@@ -195,6 +196,7 @@ pub struct Match {
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Error {
+    ClockUnavailable,
     InvalidWeekStart,
     DateOutOfRange,
     RangeTooLarge,
@@ -205,6 +207,19 @@ impl std::fmt::Display for Error {
     }
 }
 impl std::error::Error for Error {}
+
+/// Parse with today's UTC clock and the default languages (en, ja, zh).
+/// For local time, a historical clock, or Wasm, use [`parse_with`].
+pub fn parse(text: &str) -> Result<Vec<Match>, Error> {
+    parse_with(
+        text,
+        &Options::new(DateTime::now_utc().ok_or(Error::ClockUnavailable)?),
+    )
+}
+/// Parse with explicit options. Built-ins are initialized once and reused.
+pub fn parse_with(text: &str, options: &Options<'_>) -> Result<Vec<Match>, Error> {
+    Parser::default().parse(text, options)
+}
 #[derive(Debug)]
 struct Expression {
     start: usize,
@@ -626,11 +641,25 @@ fn build(
         }
         "iso" => {
             let s = get(0)?.replace(' ', "T");
-            let dt = chrono::DateTime::parse_from_rfc3339(&s)
-                .map(|d| d.naive_utc())
-                .ok()
-                .or_else(|| NaiveDateTime::parse_from_str(&s, "%Y-%m-%dT%H:%M:%S%.f").ok())?;
+            let dt = DateTime::parse(&s).ok()?;
             vec![Instant(dt)]
+        }
+        "rfc" => {
+            let mut parts = get(0)?.split_whitespace();
+            parts.next()?;
+            let m = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+            ]
+            .iter()
+            .position(|m| Some(*m) == parts.clone().next())?
+                + 1;
+            parts.next()?;
+            let day: u32 = parts.next()?.parse().ok()?;
+            let year: i32 = parts.next()?.parse().ok()?;
+            let clock = parts.next()?;
+            let zone = parts.next()?.strip_prefix("GMT")?;
+            let s = format!("{year:04}-{m:02}-{day:02}T{clock}{zone}");
+            vec![Instant(DateTime::parse(&s).ok()?)]
         }
         _ => return None,
     })

@@ -10,6 +10,9 @@ jobs:
           components: rustfmt, clippy
           targets: wasm32-unknown-unknown
       - run: cargo fmt --check
-      - run: cargo test --locked
+      - run: cargo test --offline --locked
+      - run: cargo run --offline --locked --example usage
+      - run: cargo tree --offline --locked
+      - run: rustc --edition 2024 --crate-type lib --crate-name sunphase src/lib.rs
       - run: cargo clippy --all-targets --locked -- -D warnings
       - run: cargo check --locked --target wasm32-unknown-unknown

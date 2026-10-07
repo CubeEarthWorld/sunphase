@@ -1,25 +1,25 @@
 # Dart AOT → Rust release 比較（2026-10-07）
 
 同じWindows x64マシン（AMD Ryzen 7 5700G）、Dart 3.13.4 AOTとRust 1.98.1 release。
-旧版は48dbb87、Rustはこのリリースの実装。入力・基準日時・言語・反復数を揃え、
+旧版は48dbb87、Rustは外部クレートなし・標準ライブラリのみの最終実装。入力・基準日時・言語・反復数を揃え、
 各ケースを250msウォームアップして5回測定。表は中央値。ケースごとのチェックサムはすべて一致。
 コンパイル時間・初回の正規表現コンパイル・ワーカー転送時間は測定区間に含めていない。
 
 | ケース | Dart μs/回 | Rust μs/回 | 倍率 |
 |---|---:|---:|---:|
-| parse_short_default | 128.10 | 6.73 | 19.0× |
-| parse_seven_languages | 84.20 | 4.49 | 18.8× |
-| parse_month_anchor | 149.13 | 4.87 | 30.6× |
-| parse_range | 241.79 | 4.57 | 52.9× |
-| parse_long_point | 22312.04 | 269.04 | 82.9× |
-| parse_long_range | 22045.88 | 281.10 | 78.4× |
-| parse_long_no_match | 2626.85 | 56.80 | 46.2× |
+| parse_short_default | 128.10 | 45.01 | 2.8× |
+| parse_seven_languages | 84.20 | 28.02 | 3.0× |
+| parse_month_anchor | 149.13 | 42.95 | 3.5× |
+| parse_range | 241.79 | 18.04 | 13.4× |
+| parse_long_point | 22312.04 | 5249.66 | 4.3× |
+| parse_long_range | 22045.88 | 5258.35 | 4.2× |
+| parse_long_no_match | 2626.85 | 1459.92 | 1.8× |
 
-全ケース実行後のプロセスRSS中央値：Dart 17.00 MiB、Rust 11.49 MiB
-（32.4%減）。両者ともWindowsのWorking Setを読む。
+全ケース実行後のプロセスRSS中央値：Dart 17.00 MiB、Rust 5.02 MiB
+（70.5%減）。両者ともWindowsのWorking Setを読む。
 これは独立プロセス全体の比較であり、Zenist Todo全体のメモリ削減率ではない。
 Rustはネイティブ実行、DartはAOT VMを含むため、RSS差を解析器単体の割り当て量とは扱わない。
-Zenist Todoの非同期往復は別途アプリ側で測定する。
+Zenist Todoの非同期往復は別途アプリ側で測定する。本体・テスト・ベンチマークのCargo依存はゼロ。Cargoを使わないrustc単独ビルドも検証済み。
 
 ## 再現
 

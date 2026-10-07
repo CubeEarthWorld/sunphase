@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use sunphase::NaiveDate;
 use sunphase::{Component, Error, Language, Options, Parser, Pattern};
 fn options() -> Options<'static> {
     Options::new(

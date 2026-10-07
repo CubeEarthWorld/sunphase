@@ -1,5 +1,6 @@
-use chrono::{Datelike, NaiveDate};
-use serde_json::{Value, json};
+use sunphase::NaiveDate;
+#[path = "../benchmark/workloads.rs"]
+mod data;
 use std::{
     hint::black_box,
     time::{Duration, Instant},
@@ -47,7 +48,6 @@ fn memory() -> (usize, usize) {
     (0, 0)
 }
 fn main() {
-    let data: Value = serde_json::from_str(include_str!("../benchmark/workloads.json")).unwrap();
     let parser = Parser::default();
     let reference = NaiveDate::from_ymd_opt(2025, 2, 8)
         .unwrap()
@@ -67,12 +67,10 @@ fn main() {
             let mut o = Options::new(reference);
             let single = [codes[i % 7]];
             let input = match name {
-                "parse_short_default" => data["short"][i % data["short"].as_array().unwrap().len()]
-                    .as_str()
-                    .unwrap(),
+                "parse_short_default" => data::SHORT[i % data::SHORT.len()],
                 "parse_seven_languages" => {
                     o.languages = &single;
-                    data["languages"][single[0]][(i / 7) % 3].as_str().unwrap()
+                    data::LANGUAGES[i % 7][(i / 7) % 3]
                 }
                 "parse_month_anchor" => {
                     o.languages = &["en"];
@@ -80,13 +78,13 @@ fn main() {
                 }
                 "parse_range" => {
                     o.range = true;
-                    data["range"][i % 5].as_str().unwrap()
+                    data::RANGE[i % 5]
                 }
                 "parse_long_point" | "parse_long_range" => {
                     o.range = name == "parse_long_range";
-                    data["long"].as_str().unwrap()
+                    data::LONG
                 }
-                _ => data["no_match"].as_str().unwrap(),
+                _ => data::NO_MATCH,
             };
             let results = black_box(parser.parse(black_box(input), &o).unwrap());
             results.len()
@@ -109,8 +107,8 @@ fn main() {
         let elapsed = timer.elapsed().as_micros();
         let (rss, peak) = memory();
         println!(
-            "{}",
-            json!({"case":name,"iterations":count,"elapsed_us":elapsed,"us_per_op":elapsed as f64/count as f64,"checksum":checksum,"rss_bytes":rss,"max_rss_bytes":peak})
+            "{{\"case\":\"{name}\",\"iterations\":{count},\"elapsed_us\":{elapsed},\"us_per_op\":{},\"checksum\":{checksum},\"rss_bytes\":{rss},\"max_rss_bytes\":{peak}}}",
+            elapsed as f64 / count as f64
         );
     }
 }
