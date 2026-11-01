@@ -1,4 +1,6 @@
 # Unreleased
+- Remove redundant candidate storage, field validation and ISO normalization;
+  keep built-in glue anchoring in the shared language constructor.
 - Resolve calendar-week weekdays against `week_start` for past weeks too.
   For example, on 2025-02-08, `先週火曜14時` is 2025-01-28 at 14:00;
   unqualified `last Tuesday` still means the most recent Tuesday.

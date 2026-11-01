@@ -2,7 +2,7 @@ use crate::{Component, Language, Pattern};
 pub fn language() -> Language {
     Language::new(
         "ja",
-        "(?i)^(?:[\\s、,]|の|に|は)+$",
+        "(?:[\\s、,]|の|に|は)+",
         vec![
             Pattern::new("ja_special", "野獣先輩", &[], &[]),
             Pattern::new(

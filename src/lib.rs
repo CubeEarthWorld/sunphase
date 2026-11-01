@@ -414,9 +414,9 @@ impl Parser {
                 m.start,
             )
         });
-        let mut selected: Vec<Match> = Vec::new();
+        let mut results = Vec::new();
         let mut spans = BTreeMap::new();
-        for (m, _) in candidates {
+        for (mut m, _) in candidates {
             if spans
                 .range(..m.end)
                 .next_back()
@@ -425,13 +425,6 @@ impl Parser {
                 continue;
             }
             spans.insert(m.start, m.end);
-            selected.push(m);
-            if !options.range {
-                break;
-            }
-        }
-        let mut results = Vec::new();
-        for mut m in selected {
             // Normalization changes UTF-8 widths. Return spans into the original.
             m.start += 2 * wide_digits.partition_point(|&at| at < m.start);
             m.end += 2 * wide_digits.partition_point(|&at| at < m.end);
@@ -452,11 +445,8 @@ impl Parser {
                 .checked_add_signed(offset)
                 .ok_or(Error::DateOutOfRange)?;
             if let Some(days) = days {
-                if !(0..=36600).contains(&days) {
+                if !(1..=36600).contains(&days) {
                     return Err(Error::RangeTooLarge);
-                }
-                if days == 0 {
-                    continue;
                 }
                 if !expand {
                     m.date
@@ -479,6 +469,9 @@ impl Parser {
                 }
             } else {
                 results.push(m);
+            }
+            if !options.range {
+                break;
             }
         }
         Ok(results)
@@ -564,7 +557,6 @@ fn build(
         Some(value) => number(value).map(Some),
         None => Some(None),
     };
-    let valid = |v: Option<i32>, max| v.filter(|n| *n >= 1 && *n <= max);
     let offset = |value: i32, unit: &str| match unit {
         "day" | "days" | "日" | "天" | "दिन" | "일" => RelativeDay(value),
         "year" | "years" | "年" | "साल" | "년" => YearOffset(value),
@@ -587,8 +579,8 @@ fn build(
     Some(match kind {
         "colonTime" => vec![Time(n(1)?, Some(n(2)?), None)],
         "year" => vec![Year(n(1)?)],
-        "month" => vec![Month(valid(n(1), 12)?)],
-        "day" | "ordinalDay" | "elDia" | "dayOnly" => vec![Day(valid(n(1), 31)?)],
+        "month" => vec![Month(n(1)?)],
+        "day" | "ordinalDay" | "elDia" | "dayOnly" => vec![Day(n(1)?)],
         "time" | "baje" => vec![Time(n(1)?, minute()?, None)],
         "timeAmPm" => vec![Time(n(1)?, minute()?, Some(word(3) == "pm"))],
         "withinDays" => vec![Within(n(1)?)],
@@ -651,9 +643,9 @@ fn build(
         }
         "monthDay" | "dayMonth" => {
             let (month, day) = if kind == "monthDay" {
-                (lang.word("_month", &word(1))?, valid(n(2), 31)?)
+                (lang.word("_month", &word(1))?, n(2)?)
             } else {
-                (lang.word("_month", &word(2))?, valid(n(1), 31)?)
+                (lang.word("_month", &word(2))?, n(1)?)
             };
             let mut cs = vec![Month(month), Day(day)];
             if let Some(y) = n(3) {
@@ -677,11 +669,7 @@ fn build(
                     n(2)?,
                 )
             };
-            vec![
-                Year(y),
-                Month(valid(Some(m), 12)?),
-                Day(valid(Some(d), 31)?),
-            ]
+            vec![Year(y), Month(m), Day(d)]
         }
         "estaNoche" => vec![RelativeDay(0), Meridiem(true)],
         "meridiem" if lang.code == "es" => vec![Meridiem(!word(1).starts_with("ma"))],
@@ -709,11 +697,7 @@ fn build(
             }
             vec![Instant(d)]
         }
-        "iso" => {
-            let s = get(0)?.replace(' ', "T");
-            let dt = DateTime::parse(&s).ok()?;
-            vec![Instant(dt)]
-        }
+        "iso" => vec![Instant(DateTime::parse(get(0)?).ok()?)],
         "rfc" => {
             let mut parts = get(0)?.split_whitespace();
             parts.next()?;

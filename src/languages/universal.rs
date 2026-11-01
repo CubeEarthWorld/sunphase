@@ -2,7 +2,7 @@ use crate::{Language, Pattern};
 pub fn language() -> Language {
     Language::new(
         "universal",
-        "(?i)^[\\s,]+$",
+        "[\\s,]+",
         vec![
             Pattern::new(
                 "universal_iso",

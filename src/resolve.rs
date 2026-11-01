@@ -67,9 +67,6 @@ pub(super) fn resolve(e: &Expression, o: &Options<'_>) -> Result<Option<Match>, 
             h = 0;
         }
     }
-    if !(0..24).contains(&h) || !(0..60).contains(&min) {
-        return Ok(None);
-    }
     let clock = |d: NaiveDateTime| d.date().and_hms_opt(h as u32, min as u32, 0);
     let wd = reference.weekday().number_from_monday() as i32;
     let next = |target: i32| {
@@ -87,10 +84,7 @@ pub(super) fn resolve(e: &Expression, o: &Options<'_>) -> Result<Option<Match>, 
     let result = if let Some(d) = instant {
         Some(d)
     } else if let Some(n) = within {
-        range_days = n.checked_add(1);
-        if range_days.is_none() {
-            return Err(Error::RangeTooLarge);
-        }
+        range_days = Some(n.checked_add(1).ok_or(Error::RangeTooLarge)?);
         Some(midnight)
     } else if let Some((ord, target, m)) = nth {
         let compute = |y| -> Option<NaiveDateTime> {

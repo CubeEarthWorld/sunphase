@@ -2,7 +2,7 @@ use crate::{Component, Language, Pattern};
 pub fn language() -> Language {
     Language::new(
         "hi",
-        "(?i)^(?:[\\s,]|को|के|की)+$",
+        "(?:[\\s,]|को|के|की)+",
         vec![
             Pattern::new(
                 "hi_relativeDay",

@@ -2,7 +2,7 @@ use crate::{Component, Language, Pattern};
 pub fn language() -> Language {
     Language::new(
         "zh",
-        "(?i)^(?:[\\s、,]|的)+$",
+        "(?:[\\s、,]|的)+",
         vec![
             Pattern::new(
                 "zh_relativeDay",
