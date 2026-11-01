@@ -1,4 +1,4 @@
-// Captured original Dart expectations. Compiled fixtures need no JSON crate.
+// Original Dart fixtures, with calendar-week corrections tested in edge_cases.rs.
 type Expected = (
     usize,
     &'static str,
@@ -796,7 +796,7 @@ pub const CASES: &[Case] = &[
         false,
         7,
         0,
-        &[(0, "先週火曜14時", "2025-02-04T14:00:00.000", None, None)],
+        &[(0, "先週火曜14時", "2025-01-28T14:00:00.000", None, None)],
     ),
     (
         "来年3月21日14時",
@@ -1905,7 +1905,7 @@ pub const CASES: &[Case] = &[
         false,
         7,
         0,
-        &[(0, "先週月曜日", "2025-02-03T00:00:00.000", None, None)],
+        &[(0, "先週月曜日", "2025-01-27T00:00:00.000", None, None)],
     ),
     (
         "先週金曜日",
@@ -1914,7 +1914,7 @@ pub const CASES: &[Case] = &[
         false,
         7,
         0,
-        &[(0, "先週金曜日", "2025-02-07T00:00:00.000", None, None)],
+        &[(0, "先週金曜日", "2025-01-31T00:00:00.000", None, None)],
     ),
     (
         "明々後日16時",

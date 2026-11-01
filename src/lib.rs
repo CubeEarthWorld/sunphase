@@ -7,7 +7,7 @@ use calendar::Duration;
 pub use calendar::{DateError, DateTime, NaiveDate, NaiveDateTime};
 pub use regex::{Captures, Error as PatternError, Match as Capture};
 use regex::{Regex, RegexBuilder};
-use std::{borrow::Cow, sync::LazyLock};
+use std::{borrow::Cow, collections::BTreeMap, sync::LazyLock};
 pub mod languages;
 mod resolve;
 
@@ -141,7 +141,7 @@ impl Language {
     pub fn new(code: &'static str, glue: &str, patterns: Vec<Pattern>) -> Self {
         Self {
             code,
-            glue: compile(glue),
+            glue: compile(&format!(r"\A(?:{glue})\z")),
             patterns,
         }
     }
@@ -316,50 +316,74 @@ impl Parser {
                 Some(&*BUILTINS[index])
             });
             let Some(lang) = language else { continue };
-            let mut tokens = Vec::new();
-            for (order, p) in lang.patterns.iter().enumerate() {
-                let mut at = 0;
-                while at < normalized.len() {
-                    let Some(c) = p.regex.captures_at(&normalized, at) else {
-                        break;
-                    };
-                    let m = c.get(0).unwrap();
-                    let Some(ch) = normalized[m.start()..].chars().next() else {
-                        break;
-                    };
-                    at = m.start() + ch.len_utf8();
-                    if m.is_empty() {
-                        continue;
-                    }
-                    if normalized.as_bytes()[m.start()].is_ascii_digit()
-                        && normalized[..m.start()]
-                            .chars()
-                            .next_back()
-                            .is_some_and(|ch| ch.is_ascii_digit())
-                    {
-                        continue;
-                    }
-                    if !p.accepts(&c, &normalized) {
-                        continue;
-                    }
-                    let cs = if let Some(b) = p.builder {
-                        b(&c, options.reference)
-                    } else {
-                        build(lang, p, &c, options.reference)
-                    };
-                    if let Some(cs) = cs.filter(|cs| !cs.is_empty() && cs.iter().all(|c| c.valid()))
-                    {
-                        tokens.push((Expression::new(m.start(), m.end(), cs), order));
-                    }
-                }
-            }
-            tokens.sort_by_key(|(t, o)| (t.start, std::cmp::Reverse(t.end), *o));
+            let mut tokens: Vec<(Option<Expression>, usize)> =
+                lang.patterns.iter().map(|_| (None, 0)).collect();
             let mut last_end = 0;
             let mut current: Option<Expression> = None;
-            for (t, _) in tokens {
-                if t.start < last_end {
-                    continue;
+            loop {
+                // Keep one candidate per pattern; skip spans already covered by a chosen token.
+                for ((token, at), p) in tokens.iter_mut().zip(&lang.patterns) {
+                    if token.as_ref().is_some_and(|t| t.start >= last_end) {
+                        continue;
+                    }
+                    *token = None;
+                    *at = (*at).max(last_end);
+                    while *at < normalized.len() {
+                        let Some(c) = p.regex.captures_at(&normalized, *at) else {
+                            *at = normalized.len();
+                            break;
+                        };
+                        let m = c.get(0).unwrap();
+                        let Some(ch) = normalized[m.start()..].chars().next() else {
+                            *at = normalized.len();
+                            break;
+                        };
+                        *at = m.start()
+                            + if ch.is_ascii_digit() {
+                                normalized[m.start()..]
+                                    .bytes()
+                                    .take_while(|b| b.is_ascii_digit())
+                                    .count()
+                            } else {
+                                ch.len_utf8()
+                            };
+                        if m.is_empty() {
+                            continue;
+                        }
+                        if normalized.as_bytes()[m.start()].is_ascii_digit()
+                            && normalized[..m.start()]
+                                .chars()
+                                .next_back()
+                                .is_some_and(|ch| ch.is_ascii_digit())
+                        {
+                            continue;
+                        }
+                        if !p.accepts(&c, &normalized) {
+                            continue;
+                        }
+                        let cs = if let Some(b) = p.builder {
+                            b(&c, options.reference)
+                        } else {
+                            build(lang, p, &c, options.reference)
+                        };
+                        if let Some(cs) =
+                            cs.filter(|cs| !cs.is_empty() && cs.iter().all(|c| c.valid()))
+                        {
+                            *token = Some(Expression::new(m.start(), m.end(), cs));
+                            break;
+                        }
+                    }
                 }
+                let Some(index) = tokens
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, (t, _))| Some((i, t.as_ref()?)))
+                    .min_by_key(|(i, t)| (t.start, std::cmp::Reverse(t.end), *i))
+                    .map(|(i, _)| i)
+                else {
+                    break;
+                };
+                let t = tokens[index].0.take().unwrap();
                 last_end = t.end;
                 if let Some(e) = current.as_mut() {
                     let gap = &normalized[e.end..t.start];
@@ -391,10 +415,16 @@ impl Parser {
             )
         });
         let mut selected: Vec<Match> = Vec::new();
+        let mut spans = BTreeMap::new();
         for (m, _) in candidates {
-            if selected.iter().any(|k| m.start < k.end && k.start < m.end) {
+            if spans
+                .range(..m.end)
+                .next_back()
+                .is_some_and(|(_, &end)| m.start < end)
+            {
                 continue;
             }
+            spans.insert(m.start, m.end);
             selected.push(m);
             if !options.range {
                 break;
@@ -530,6 +560,10 @@ fn build(
         return Some(cs.to_vec());
     }
     let kind = p.name.split_once('_')?.1;
+    let minute = || match get(2) {
+        Some(value) => number(value).map(Some),
+        None => Some(None),
+    };
     let valid = |v: Option<i32>, max| v.filter(|n| *n >= 1 && *n <= max);
     let offset = |value: i32, unit: &str| match unit {
         "day" | "days" | "日" | "天" | "दिन" | "일" => RelativeDay(value),
@@ -555,8 +589,8 @@ fn build(
         "year" => vec![Year(n(1)?)],
         "month" => vec![Month(valid(n(1), 12)?)],
         "day" | "ordinalDay" | "elDia" | "dayOnly" => vec![Day(valid(n(1), 31)?)],
-        "time" | "baje" => vec![Time(n(1)?, get(2).and_then(number), None)],
-        "timeAmPm" => vec![Time(n(1)?, get(2).and_then(number), Some(word(3) == "pm"))],
+        "time" | "baje" => vec![Time(n(1)?, minute()?, None)],
+        "timeAmPm" => vec![Time(n(1)?, minute()?, Some(word(3) == "pm"))],
         "withinDays" => vec![Within(n(1)?)],
         "in" | "en" | "desdeAhora" | "offsetAhead" => vec![offset(n(1)?, &word(2))],
         "ago" | "atras" | "offsetAgo" => vec![offset(-n(1)?, &word(2))],

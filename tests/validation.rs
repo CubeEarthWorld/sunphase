@@ -147,3 +147,72 @@ fn nested_repetitions_remain_linear_and_prioritized() {
     );
     assert_eq!(parser.parse("aaaaab", &options).unwrap()[0].date.day(), 9);
 }
+
+#[test]
+fn overlapping_tokens_keep_priority_and_retry_after_rejection() {
+    let parser = Parser {
+        languages: vec![sunphase::Language::new(
+            "demo",
+            r"^$",
+            vec![
+                Pattern::custom("", |_, _| Some(vec![Component::RelativeDay(99)])).unwrap(),
+                Pattern::custom("abc", |_, _| Some(vec![Component::RelativeDay(1)])).unwrap(),
+                Pattern::custom("cdef|ef", |_, _| {
+                    Some(vec![Component::Time(15, None, None)])
+                })
+                .unwrap(),
+                Pattern::custom("a+", |c, _| {
+                    (c.get(0)?.len() <= 3).then_some(vec![Component::RelativeDay(2)])
+                })
+                .unwrap(),
+            ],
+        )],
+    };
+    let mut o = Options::new(DateTime::parse("2025-02-08T11:05:00").unwrap());
+    o.languages = &["demo"];
+    o.range = true;
+    let text = "abcdef";
+    let results = parser.parse_ranges(text, &o).unwrap();
+    assert_eq!(results.len(), 2);
+    assert_eq!(&text[results[0].start..results[0].end], "abc");
+    assert_eq!(&text[results[1].start..results[1].end], "ef");
+    let results = parser.parse_ranges("aaaaa", &o).unwrap();
+    assert_eq!(results.len(), 1);
+    assert_eq!((results[0].start, results[0].end), (2, 5));
+    assert_eq!(results[0].date.day(), 10);
+}
+
+#[test]
+fn long_accepted_matches_and_many_disjoint_matches() {
+    let parser = Parser {
+        languages: vec![sunphase::Language::new(
+            "demo",
+            r"^$",
+            vec![Pattern::custom("a+", |_, _| Some(vec![Component::RelativeDay(1)])).unwrap()],
+        )],
+    };
+    let mut o = Options::new(DateTime::parse("2025-02-08T11:05:00").unwrap());
+    o.languages = &["demo"];
+    o.range = true;
+    let text = "a".repeat(20_000);
+    let results = parser.parse_ranges(&text, &o).unwrap();
+    assert_eq!(results.len(), 1);
+    assert_eq!((results[0].start, results[0].end), (0, text.len()));
+
+    o.languages = &["en"];
+    let text = "tomorrow;".repeat(5_000);
+    let results = Parser::default().parse_ranges(&text, &o).unwrap();
+    assert_eq!(results.len(), 5_000);
+    for (i, result) in results.iter().enumerate() {
+        assert_eq!((result.start, result.end), (i * 9, i * 9 + 8));
+        assert_eq!(result.date.day(), 9);
+    }
+    o.languages = &["ja"];
+    let text = format!("{}日後", "9".repeat(20_000));
+    assert!(
+        Parser::default()
+            .parse_ranges(&text, &o)
+            .unwrap()
+            .is_empty()
+    );
+}

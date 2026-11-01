@@ -184,3 +184,99 @@ fn calendar_composition_preserves_the_requested_weekday() {
     }
     assert!(parser.parse("Monday February 11", &o).unwrap().is_empty());
 }
+
+#[test]
+fn previous_calendar_week_respects_the_week_start() {
+    let parser = Parser::default();
+    let mut o = options();
+    o.reference = "2025-02-12T11:05:00".parse().unwrap();
+    for week_start in [1, 7] {
+        o.week_start = week_start;
+        for (language, text) in [
+            ("en", "last week Monday"),
+            ("ja", "先週月曜日"),
+            ("zh", "上周一"),
+            ("es", "semana pasada lunes"),
+            ("hi", "पिछले सप्ताह सोमवार"),
+            ("ko", "지난 주 월요일"),
+            ("ru", "прошлой неделе понедельник"),
+        ] {
+            assert_eq!(
+                parser
+                    .parse(
+                        text,
+                        &Options {
+                            languages: &[language],
+                            ..o.clone()
+                        }
+                    )
+                    .unwrap()[0]
+                    .date
+                    .to_string(),
+                "2025-02-03 00:00:00",
+                "{text}, week_start={week_start}"
+            );
+        }
+    }
+    o.languages = &["en"];
+    for (week_start, expected) in [(1, "2025-02-09 00:00:00"), (7, "2025-02-02 00:00:00")] {
+        o.week_start = week_start;
+        assert_eq!(
+            parser.parse("last week Sunday", &o).unwrap()[0]
+                .date
+                .to_string(),
+            expected
+        );
+    }
+    assert_eq!(
+        parser.parse("last Monday", &o).unwrap()[0].date.to_string(),
+        "2025-02-10 00:00:00"
+    );
+}
+
+#[test]
+fn overflowing_minutes_are_rejected() {
+    let parser = Parser::default();
+    for (language, text) in [
+        ("ja", "3時999999999999999999999分"),
+        ("zh", "三点999999999999999999999分"),
+        ("ko", "삼시999999999999999999999분"),
+    ] {
+        let o = Options {
+            languages: &[language],
+            ..options()
+        };
+        assert!(parser.parse(text, &o).unwrap().is_empty(), "{text}");
+    }
+}
+
+#[test]
+fn custom_glue_must_match_the_entire_gap() {
+    let parser = Parser {
+        languages: vec![Language::new(
+            "demo",
+            r"\s+",
+            vec![
+                Pattern::custom("tomorrow", |_, _| Some(vec![Component::RelativeDay(1)])).unwrap(),
+                Pattern::custom("3pm", |_, _| {
+                    Some(vec![Component::Time(3, None, Some(true))])
+                })
+                .unwrap(),
+            ],
+        )],
+    };
+    let mut o = options();
+    o.languages = &["demo"];
+    o.range = true;
+    let text = "tomorrow unrelated 3pm";
+    let results = parser.parse(text, &o).unwrap();
+    assert_eq!(results.len(), 2);
+    assert!(
+        results
+            .iter()
+            .all(|m| !text[m.start..m.end].contains("unrelated"))
+    );
+    let combined = parser.parse("tomorrow 3pm", &o).unwrap();
+    assert_eq!(combined.len(), 1);
+    assert_eq!(combined[0].date.to_string(), "2025-02-09 15:00:00");
+}

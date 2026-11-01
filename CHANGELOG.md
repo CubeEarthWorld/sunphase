@@ -1,3 +1,13 @@
+# Unreleased
+- Resolve calendar-week weekdays against `week_start` for past weeks too.
+  For example, on 2025-02-08, `先週火曜14時` is 2025-01-28 at 14:00;
+  unqualified `last Tuesday` still means the most recent Tuesday.
+- Reject overflowing minutes instead of treating them as omitted.
+- Require custom-language glue to match the entire gap between tokens.
+- Keep one pending token per pattern and index selected spans to avoid
+  redundant overlapping searches and quadratic range overlap checks.
+- Remove the unused JSON copy of all 250 compiled Rust test cases.
+
 # 1.0.0 (2026-10-07)
 
 - Multilingual natural-language date and time parsing in Rust.

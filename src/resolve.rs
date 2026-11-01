@@ -129,7 +129,7 @@ pub(super) fn resolve(e: &Expression, o: &Options<'_>) -> Result<Option<Match>, 
         clock(shift(midnight, i64::from(n))?)
     } else if let Some((offset, calendar)) = week {
         if let Some(target) = weekday {
-            let base = if calendar && offset >= 0 {
+            let base = if calendar {
                 shift(
                     week_start(offset)?,
                     i64::from((target - i32::from(o.week_start)).rem_euclid(7)),
