@@ -1,4 +1,4 @@
-# Unreleased
+# 1.0.1 (2026-11-01)
 - Remove redundant candidate storage, field validation and ISO normalization;
   keep built-in glue anchoring in the shared language constructor.
 - Resolve calendar-week weekdays against `week_start` for past weeks too.

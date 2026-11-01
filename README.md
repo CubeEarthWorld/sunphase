@@ -14,7 +14,7 @@ Requires Rust 1.88 or newer.
 
 ```toml
 [dependencies]
-sunphase = { git = "https://github.com/CubeEarthWorld/sunphase", tag = "v1.0.0" }
+sunphase = { git = "https://github.com/CubeEarthWorld/sunphase", tag = "v1.0.1" }
 ```
 
 Cargo is Rust's standard build/package tool, normally included with Rust.
