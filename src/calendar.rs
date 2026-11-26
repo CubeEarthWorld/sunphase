@@ -126,8 +126,9 @@ impl NaiveDateTime {
     pub fn to_iso8601(self) -> String {
         self.to_string().replacen(' ', "T", 1)
     }
+    /// Format as RFC 3339 with a `+00:00` offset (valid RFC 3339 for years `0000..=9999`).
     pub fn to_rfc3339(self) -> String {
-        format!("{}+00:00", self.to_iso8601())
+        self.0.and_utc().to_rfc3339()
     }
 }
 impl FromStr for NaiveDateTime {

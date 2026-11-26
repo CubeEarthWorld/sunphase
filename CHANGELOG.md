@@ -1,3 +1,10 @@
+# 1.2.0 (2026-11-26)
+- Harden `Pattern::accepts` against non-participating optional guard groups.
+- Use `checked_neg` for negated numeric offsets in `build()`.
+- Delegate `NaiveDateTime::to_rfc3339` directly to Chrono's formatter and
+  document its UTC `+00:00` / `0000..=9999` year contract.
+- Preserve first-match tie-breaking in `!options.range` mode.
+
 # 1.1.0 (2026-11-26)
 - Share compiled guard and `colonTime` regexes across built-in languages,
   reducing cold initialization memory allocations.

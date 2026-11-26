@@ -146,7 +146,10 @@ impl Pattern {
     }
     fn accepts(&self, c: &Captures<'_>, text: &str) -> bool {
         self.guards.iter().all(|(idx, behind, regex)| {
-            let at = c.get(*idx).unwrap().start();
+            let Some(m) = c.get(*idx) else {
+                return true;
+            };
+            let at = m.start();
             if *behind {
                 text[..at]
                     .chars()
@@ -711,10 +714,11 @@ fn build(
         "timeAmPm" => one(Time(n(1)?, minute()?, Some(eq_word(get(3).unwrap_or(""), "pm")))),
         "withinDays" => one(Within(n(1)?)),
         "in" | "en" | "desdeAhora" | "offsetAhead" => one(offset(n(1)?, &word(2))),
-        "ago" | "atras" | "offsetAgo" => one(offset(-n(1)?, &word(2))),
+        "ago" | "atras" | "offsetAgo" => one(offset(n(1)?.checked_neg()?, &word(2))),
         "offset" => {
             let negative = matches!(word(3).as_str(), "ago" | "前" | "पहले" | "전");
-            one(offset(if negative { -n(1)? } else { n(1)? }, &word(2)))
+            let v = if negative { n(1)?.checked_neg()? } else { n(1)? };
+            one(offset(v, &word(2)))
         }
         "nextLastWeekday" => {
             let a = word(1);
