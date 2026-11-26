@@ -70,8 +70,8 @@ pub(super) fn resolve(e: &Expression, o: &Options<'_>) -> Result<Option<Match>, 
     let clock = |d: NaiveDateTime| d.date().and_hms_opt(h as u32, min as u32, 0);
     let wd = reference.weekday().number_from_monday() as i32;
     let next = |target: i32| {
-        let diff = (target - wd).rem_euclid(7);
-        shift(midnight, i64::from(if diff == 0 { 7 } else { diff }))
+        // Proved equivalent to `if diff == 0 { 7 } else { diff }` via Why3 (next_weekday_branchless).
+        shift(midnight, i64::from((target - wd - 1).rem_euclid(7) + 1))
     };
     let week_start = |offset: i32| {
         shift(
@@ -129,15 +129,16 @@ pub(super) fn resolve(e: &Expression, o: &Options<'_>) -> Result<Option<Match>, 
                     i64::from((target - i32::from(o.week_start)).rem_euclid(7)),
                 )?
             } else if offset < 0 {
-                let diff = (wd - target).rem_euclid(7);
+                // Proved equivalent via Why3 (neg_week_weekday_branchless).
                 shift(
                     midnight,
-                    -i64::from(if diff == 0 { 7 } else { diff }) + (i64::from(offset) + 1) * 7,
+                    -i64::from((wd - target - 1).rem_euclid(7) + 1)
+                        + (i64::from(offset) + 1) * 7,
                 )?
             } else {
                 shift(
                     next(target)?,
-                    i64::from(offset.saturating_sub(1).max(0)) * 7,
+                    i64::from(offset.saturating_sub(1)) * 7,
                 )?
             };
             clock(base)

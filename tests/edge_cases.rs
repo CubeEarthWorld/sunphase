@@ -280,3 +280,17 @@ fn custom_glue_must_match_the_entire_gap() {
     assert_eq!(combined.len(), 1);
     assert_eq!(combined[0].date.to_string(), "2025-02-09 15:00:00");
 }
+
+#[test]
+fn uppercase_trailing_guards_reject_attached_letters() {
+    let p = Parser::default();
+    let mut o = options();
+    o.languages = &["en"];
+    for text in ["3pmPST", "1stDay"] {
+        assert!(p.parse(text, &o).unwrap().is_empty(), "{text}");
+    }
+    o.languages = &["es"];
+    assert!(p.parse("12 de mayoA", &o).unwrap().is_empty());
+    o.languages = &["ru"];
+    assert!(p.parse("12 маяА", &o).unwrap().is_empty());
+}

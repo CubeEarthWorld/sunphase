@@ -1,3 +1,16 @@
+# 1.1.0 (2026-11-26)
+- Share compiled guard and `colonTime` regexes across built-in languages,
+  reducing cold initialization memory allocations.
+- Replace per-token heap `Vec<Component>` and range `BTreeMap` allocations with
+  inline component storage and stack-allocated overlap checks; skip sorting and
+  overlap checks when `range = false` or at most one candidate exists.
+- Precompute pattern capture indices and avoid unnecessary lowercase string
+  allocations during word lookup.
+- Simplify weekday offset arithmetic and `Expression::accepts` bitmask logic
+  with equivalence verified in Why3 (Z3 4.13.3).
+- Reject uppercase trailing letters in `en_ordinalDay`, `en_timeAmPm`,
+  `es_dayMonth`, and `ru_dayMonth` guards.
+
 # 1.0.1 (2026-11-01)
 - Remove redundant candidate storage, field validation and ISO normalization;
   keep built-in glue anchoring in the shared language constructor.

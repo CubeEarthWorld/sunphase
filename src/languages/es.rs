@@ -125,7 +125,7 @@ pub fn language() -> Language {
             Pattern::new(
                 "es_dayMonth",
                 "(?i)(?:el\\s+)?(?:d[ií]a\\s+)?([0-9]{1,2})\\s+de\\s+(septiembre|setiembre|noviembre|diciembre|febrero|octubre|agosto|enero|marzo|abril|junio|julio|mayo)(?P<guard0>)(?:\\s+de\\s+([0-9]{4}))?",
-                &[("guard0", false, "[a-záéíóúñ]")],
+                &[("guard0", false, "[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]")],
                 &[],
             ),
             Pattern::new(

@@ -143,7 +143,7 @@ pub fn language() -> Language {
             Pattern::new(
                 "en_ordinalDay",
                 "(?i)(?:the\\s+)?([0-9]{1,2})(?:st|nd|rd|th)(?P<guard0>)",
-                &[("guard0", false, "[a-z]")],
+                &[("guard0", false, "[a-zA-Z]")],
                 &[],
             ),
             Pattern::new(
@@ -155,7 +155,7 @@ pub fn language() -> Language {
             Pattern::new(
                 "en_timeAmPm",
                 "(?i)([0-9]{1,2})(?::([0-9]{2}))?\\s*(am|pm)(?P<guard0>)",
-                &[("guard0", false, "[a-z]")],
+                &[("guard0", false, "[a-zA-Z]")],
                 &[],
             ),
             Pattern::new("en_colonTime", "([0-9]{1,2}):([0-9]{2})", &[], &[]),

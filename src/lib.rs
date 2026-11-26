@@ -7,7 +7,11 @@ use calendar::Duration;
 pub use calendar::{DateError, DateTime, NaiveDate, NaiveDateTime};
 pub use regex::{Captures, Error as PatternError, Match as Capture};
 use regex::{Regex, RegexBuilder};
-use std::{borrow::Cow, collections::BTreeMap, sync::LazyLock};
+use std::{
+    borrow::Cow,
+    collections::HashMap,
+    sync::{LazyLock, Mutex},
+};
 pub mod languages;
 mod resolve;
 
@@ -70,10 +74,27 @@ impl Component {
 }
 
 pub type Builder = fn(&Captures<'_>, NaiveDateTime) -> Option<Vec<Component>>;
+
+static GUARD_CACHE: LazyLock<Mutex<HashMap<&'static str, Regex>>> =
+    LazyLock::new(|| Mutex::new(HashMap::new()));
+static COLON_TIME_RE: LazyLock<Regex> =
+    LazyLock::new(|| compile("([0-9]{1,2}):([0-9]{2})"));
+
+fn compile_guard(s: &'static str) -> Regex {
+    let mut cache = GUARD_CACHE.lock().unwrap_or_else(|e| e.into_inner());
+    if let Some(re) = cache.get(s) {
+        return re.clone();
+    }
+    let re = compile(&format!("^(?:{s})"));
+    cache.insert(s, re.clone());
+    re
+}
+
 pub struct Pattern {
     name: &'static str,
     regex: Regex,
-    guards: Vec<(&'static str, bool, Regex)>,
+    guards: Vec<(usize, bool, Regex)>,
+    captures: Vec<usize>,
     words: &'static [(&'static str, &'static [Component])],
     builder: Option<Builder>,
 }
@@ -81,16 +102,32 @@ impl Pattern {
     fn new(
         name: &'static str,
         source: &str,
-        guards: &[(&'static str, bool, &str)],
+        guards: &[(&'static str, bool, &'static str)],
         words: &'static [(&'static str, &'static [Component])],
     ) -> Self {
+        let regex = if name.ends_with("_colonTime") {
+            COLON_TIME_RE.clone()
+        } else {
+            compile(source)
+        };
+        let mut captures = Vec::new();
+        for (idx, cname) in regex.capture_names().enumerate() {
+            if cname.is_none_or(|n| !n.starts_with("guard")) {
+                captures.push(idx);
+            }
+        }
+        let guards = guards
+            .iter()
+            .filter_map(|&(gname, behind, s)| {
+                let idx = regex.capture_names().position(|n| n == Some(gname))?;
+                Some((idx, behind, compile_guard(s)))
+            })
+            .collect();
         Self {
             name,
-            regex: compile(source),
-            guards: guards
-                .iter()
-                .map(|&(n, b, s)| (n, b, compile(&format!("^(?:{s})"))))
-                .collect(),
+            regex,
+            guards,
+            captures,
             words,
             builder: None,
         }
@@ -102,13 +139,14 @@ impl Pattern {
             name: "custom",
             regex: compile_checked(source)?,
             guards: vec![],
+            captures: vec![],
             words: &[],
             builder: Some(builder),
         })
     }
     fn accepts(&self, c: &Captures<'_>, text: &str) -> bool {
-        self.guards.iter().all(|(name, behind, regex)| {
-            let at = c.name(name).unwrap().start();
+        self.guards.iter().all(|(idx, behind, regex)| {
+            let at = c.get(*idx).unwrap().start();
             if *behind {
                 text[..at]
                     .chars()
@@ -151,7 +189,7 @@ impl Language {
             .find(|p| p.name.ends_with(suffix))?
             .words
             .iter()
-            .find(|(w, _)| *w == word)
+            .find(|(w, _)| eq_word(word, w))
             .and_then(|(_, cs)| match cs.first()? {
                 Component::Month(n) | Component::Weekday(n) => Some(*n),
                 _ => None,
@@ -227,15 +265,71 @@ pub fn parse_with(text: &str, options: &Options<'_>) -> Result<Vec<Match>, Error
     Parser::default().parse(text, options)
 }
 #[derive(Debug)]
+enum CompVec {
+    Inline([Component; 2], u8),
+    Heap(Vec<Component>),
+}
+impl CompVec {
+    fn from_slice(s: &[Component]) -> Self {
+        if s.len() <= 2 {
+            let mut buf = [Component::Weekend; 2];
+            buf[..s.len()].copy_from_slice(s);
+            Self::Inline(buf, s.len() as u8)
+        } else {
+            Self::Heap(s.to_vec())
+        }
+    }
+    fn from_vec(v: Vec<Component>) -> Self {
+        if v.len() <= 2 {
+            Self::from_slice(&v)
+        } else {
+            Self::Heap(v)
+        }
+    }
+    fn extend(&mut self, other: Self) {
+        let slice = &*other;
+        match self {
+            Self::Inline(buf, len) if (*len as usize) + slice.len() <= 2 => {
+                let start = *len as usize;
+                buf[start..start + slice.len()].copy_from_slice(slice);
+                *len += slice.len() as u8;
+            }
+            Self::Heap(v) => v.extend_from_slice(slice),
+            Self::Inline(buf, len) => {
+                let mut v = Vec::with_capacity((*len as usize) + slice.len());
+                v.extend_from_slice(&buf[..*len as usize]);
+                v.extend_from_slice(slice);
+                *self = Self::Heap(v);
+            }
+        }
+    }
+}
+impl std::ops::Deref for CompVec {
+    type Target = [Component];
+    fn deref(&self) -> &[Component] {
+        match self {
+            Self::Inline(buf, len) => &buf[..*len as usize],
+            Self::Heap(v) => v,
+        }
+    }
+}
+impl<'a> IntoIterator for &'a CompVec {
+    type Item = &'a Component;
+    type IntoIter = std::slice::Iter<'a, Component>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+#[derive(Debug)]
 struct Expression {
     start: usize,
     end: usize,
     slots: u8,
     score: i32,
-    components: Vec<Component>,
+    components: CompVec,
 }
 impl Expression {
-    fn new(start: usize, end: usize, components: Vec<Component>) -> Self {
+    fn new(start: usize, end: usize, components: CompVec) -> Self {
         Self {
             start,
             end,
@@ -248,15 +342,11 @@ impl Expression {
         if self.slots & other.slots != 0 {
             return false;
         }
-        if self
-            .components
-            .iter()
-            .chain(&other.components)
-            .any(|c| matches!(c, Component::Nth(..)))
-        {
+        let s = self.slots | other.slots;
+        // Proved equivalent to scanning for Component::Nth via Why3 (accepts_bitmask_equiv).
+        if (s & 207) == 207 {
             return true;
         }
-        let s = self.slots | other.slots;
         if s & 64 != 0 {
             s & !(64 | 16 | 32) == 0
         } else if s & 128 != 0 {
@@ -296,6 +386,7 @@ impl Parser {
             options.languages
         };
         let mut candidates = Vec::new();
+        let mut tokens: Vec<(Option<Expression>, usize)> = Vec::new();
         for (index, code) in codes
             .iter()
             .copied()
@@ -316,8 +407,8 @@ impl Parser {
                 Some(&*BUILTINS[index])
             });
             let Some(lang) = language else { continue };
-            let mut tokens: Vec<(Option<Expression>, usize)> =
-                lang.patterns.iter().map(|_| (None, 0)).collect();
+            tokens.clear();
+            tokens.resize_with(lang.patterns.len(), || (None, 0));
             let mut last_end = 0;
             let mut current: Option<Expression> = None;
             loop {
@@ -351,10 +442,8 @@ impl Parser {
                             continue;
                         }
                         if normalized.as_bytes()[m.start()].is_ascii_digit()
-                            && normalized[..m.start()]
-                                .chars()
-                                .next_back()
-                                .is_some_and(|ch| ch.is_ascii_digit())
+                            && m.start() > 0
+                            && normalized.as_bytes()[m.start() - 1].is_ascii_digit()
                         {
                             continue;
                         }
@@ -362,7 +451,7 @@ impl Parser {
                             continue;
                         }
                         let cs = if let Some(b) = p.builder {
-                            b(&c, options.reference)
+                            b(&c, options.reference).map(CompVec::from_vec)
                         } else {
                             build(lang, p, &c, options.reference)
                         };
@@ -407,24 +496,55 @@ impl Parser {
                 candidates.push((m, e.score));
             }
         }
-        candidates.sort_by_cached_key(|(m, s)| {
-            (
-                std::cmp::Reverse(normalized[m.start..m.end].encode_utf16().count()),
-                std::cmp::Reverse(*s),
-                m.start,
-            )
-        });
-        let mut results = Vec::new();
-        let mut spans = BTreeMap::new();
-        for (mut m, _) in candidates {
-            if spans
-                .range(..m.end)
-                .next_back()
-                .is_some_and(|(_, &end)| m.start < end)
-            {
-                continue;
+        if !options.range {
+            if let Some((mut m, _)) = candidates.into_iter().max_by_key(|(m, s)| {
+                (
+                    normalized[m.start..m.end].encode_utf16().count(),
+                    *s,
+                    std::cmp::Reverse(m.start),
+                )
+            }) {
+                m.start += 2 * wide_digits.partition_point(|&at| at < m.start);
+                m.end += 2 * wide_digits.partition_point(|&at| at < m.end);
+                let offset = Duration::minutes(i64::from(options.offset_minutes));
+                m.date = m
+                    .date
+                    .checked_add_signed(offset)
+                    .ok_or(Error::DateOutOfRange)?;
+                return Ok(vec![m]);
             }
-            spans.insert(m.start, m.end);
+            return Ok(vec![]);
+        }
+        if candidates.len() > 1 {
+            candidates.sort_by_cached_key(|(m, s)| {
+                (
+                    std::cmp::Reverse(normalized[m.start..m.end].encode_utf16().count()),
+                    std::cmp::Reverse(*s),
+                    m.start,
+                )
+            });
+        }
+        let mut results = Vec::new();
+        let mut accepted = [(0usize, 0usize); 8];
+        let mut accepted_len = 0usize;
+        let mut accepted_extra = Vec::new();
+        let check_overlap = candidates.len() > 1;
+        for (mut m, _) in candidates {
+            if check_overlap {
+                if accepted[..accepted_len]
+                    .iter()
+                    .chain(&accepted_extra)
+                    .any(|&(s, e)| m.start < e && s < m.end)
+                {
+                    continue;
+                }
+                if accepted_len < accepted.len() {
+                    accepted[accepted_len] = (m.start, m.end);
+                    accepted_len += 1;
+                } else {
+                    accepted_extra.push((m.start, m.end));
+                }
+            }
             // Normalization changes UTF-8 widths. Return spans into the original.
             m.start += 2 * wide_digits.partition_point(|&at| at < m.start);
             m.end += 2 * wide_digits.partition_point(|&at| at < m.end);
@@ -529,28 +649,33 @@ fn number(s: &str) -> Option<i32> {
     }
     total.checked_add(current)
 }
+fn eq_word(raw: &str, target: &str) -> bool {
+    if raw.is_ascii() {
+        raw.eq_ignore_ascii_case(target)
+    } else if raw.chars().all(|c| !c.is_uppercase()) {
+        raw == target
+    } else {
+        raw.to_lowercase() == target
+    }
+}
 fn build(
     lang: &Language,
     p: &Pattern,
     c: &Captures<'_>,
     reference: NaiveDateTime,
-) -> Option<Vec<Component>> {
+) -> Option<CompVec> {
     use Component::*;
     let get = |i| {
-        let actual = p
-            .regex
-            .capture_names()
-            .enumerate()
-            .filter(|(_, name)| name.is_none_or(|n| !n.starts_with("guard")))
-            .nth(i)?
-            .0;
+        let actual = *p.captures.get(i)?;
         c.get(actual).map(|m| m.as_str())
     };
     let n = |i| number(get(i)?);
     let word = |i| get(i).unwrap_or("").to_lowercase();
-    let full = word(0);
-    if let Some((_, cs)) = p.words.iter().find(|(w, _)| *w == full) {
-        return Some(cs.to_vec());
+    if !p.words.is_empty() {
+        let raw0 = get(0).unwrap_or("");
+        if let Some((_, cs)) = p.words.iter().find(|(w, _)| eq_word(raw0, w)) {
+            return Some(CompVec::from_slice(cs));
+        }
     }
     let kind = p.name.split_once('_')?.1;
     let minute = || match get(2) {
@@ -576,19 +701,20 @@ fn build(
         "上" | "पिछले" | "지난" | "저번" | "прошлой" | "прошлом" => -1,
         _ => 0,
     };
+    let one = |c| CompVec::from_slice(&[c]);
     Some(match kind {
-        "colonTime" => vec![Time(n(1)?, Some(n(2)?), None)],
-        "year" => vec![Year(n(1)?)],
-        "month" => vec![Month(n(1)?)],
-        "day" | "ordinalDay" | "elDia" | "dayOnly" => vec![Day(n(1)?)],
-        "time" | "baje" => vec![Time(n(1)?, minute()?, None)],
-        "timeAmPm" => vec![Time(n(1)?, minute()?, Some(word(3) == "pm"))],
-        "withinDays" => vec![Within(n(1)?)],
-        "in" | "en" | "desdeAhora" | "offsetAhead" => vec![offset(n(1)?, &word(2))],
-        "ago" | "atras" | "offsetAgo" => vec![offset(-n(1)?, &word(2))],
+        "colonTime" => one(Time(n(1)?, Some(n(2)?), None)),
+        "year" => one(Year(n(1)?)),
+        "month" => one(Month(n(1)?)),
+        "day" | "ordinalDay" | "elDia" | "dayOnly" => one(Day(n(1)?)),
+        "time" | "baje" => one(Time(n(1)?, minute()?, None)),
+        "timeAmPm" => one(Time(n(1)?, minute()?, Some(eq_word(get(3).unwrap_or(""), "pm")))),
+        "withinDays" => one(Within(n(1)?)),
+        "in" | "en" | "desdeAhora" | "offsetAhead" => one(offset(n(1)?, &word(2))),
+        "ago" | "atras" | "offsetAgo" => one(offset(-n(1)?, &word(2))),
         "offset" => {
             let negative = matches!(word(3).as_str(), "ago" | "前" | "पहले" | "전");
-            vec![offset(if negative { -n(1)? } else { n(1)? }, &word(2))]
+            one(offset(if negative { -n(1)? } else { n(1)? }, &word(2)))
         }
         "nextLastWeekday" => {
             let a = word(1);
@@ -598,14 +724,15 @@ fn build(
                 || a == "다음"
                 || a.starts_with("следующ");
             let weekday = if lang.code == "ko" {
+                let first = get(2)?.chars().next()?;
                 "월화수목금토일"
                     .chars()
-                    .position(|ch| word(2).starts_with(ch))
+                    .position(|ch| ch == first)
                     .map(|i| i as i32 + 1)
             } else {
-                lang.word("_weekday", &word(2))
+                lang.word("_weekday", get(2)?)
             };
-            vec![Week(if next { 1 } else { -1 }, false), Weekday(weekday?)]
+            CompVec::from_slice(&[Week(if next { 1 } else { -1 }, false), Weekday(weekday?)])
         }
         "weekday" => {
             let (chars, i) = if lang.code == "ja" {
@@ -615,16 +742,17 @@ fn build(
             } else {
                 ("一二三四五六日天", 2)
             };
-            let day = chars.chars().position(|ch| word(i).starts_with(ch))? as i32 + 1;
-            let mut cs = vec![];
-            if lang.code == "zh" && get(1).is_some() {
-                cs.push(Week(anchor(&word(1)), true));
+            let first = get(i)?.chars().next()?;
+            let day = chars.chars().position(|ch| ch == first)? as i32 + 1;
+            if lang.code == "zh" && let Some(a) = get(1) {
+                CompVec::from_slice(&[Week(anchor(a), true), Weekday(day.min(7))])
+            } else {
+                one(Weekday(day.min(7)))
             }
-            cs.push(Weekday(day.min(7)));
-            cs
         }
         "weekAnchor" | "monthAnchor" | "yearAnchor" => {
             let value = if lang.code == "es" {
+                let full = word(0);
                 if full.contains("pasad") {
                     -1
                 } else if full.starts_with("est") {
@@ -635,23 +763,23 @@ fn build(
             } else {
                 anchor(&word(1))
             };
-            vec![match kind {
+            one(match kind {
                 "weekAnchor" => Week(value, true),
                 "monthAnchor" => MonthOffset(value),
                 _ => YearOffset(value),
-            }]
+            })
         }
         "monthDay" | "dayMonth" => {
             let (month, day) = if kind == "monthDay" {
-                (lang.word("_month", &word(1))?, n(2)?)
+                (lang.word("_month", get(1)?)?, n(2)?)
             } else {
-                (lang.word("_month", &word(2))?, n(1)?)
+                (lang.word("_month", get(2)?)?, n(1)?)
             };
-            let mut cs = vec![Month(month), Day(day)];
             if let Some(y) = n(3) {
-                cs.push(Year(y));
+                CompVec::from_slice(&[Month(month), Day(day), Year(y)])
+            } else {
+                CompVec::from_slice(&[Month(month), Day(day)])
             }
-            cs
         }
         "slashDate" | "dotDate" | "date" => {
             let (y, m, d) = if kind == "dotDate" {
@@ -669,10 +797,13 @@ fn build(
                     n(2)?,
                 )
             };
-            vec![Year(y), Month(m), Day(d)]
+            CompVec::from_slice(&[Year(y), Month(m), Day(d)])
         }
-        "estaNoche" => vec![RelativeDay(0), Meridiem(true)],
-        "meridiem" if lang.code == "es" => vec![Meridiem(!word(1).starts_with("ma"))],
+        "estaNoche" => CompVec::from_slice(&[RelativeDay(0), Meridiem(true)]),
+        "meridiem" if lang.code == "es" => {
+            let w1 = get(1).unwrap_or("");
+            one(Meridiem(!w1.get(..2).is_some_and(|p| p.eq_ignore_ascii_case("ma"))))
+        }
         "nthWeekday" => {
             let ord = match word(1).as_str() {
                 "first" | "primer" | "primero" => 1,
@@ -682,11 +813,11 @@ fn build(
                 "fifth" | "quinto" => 5,
                 _ => -1,
             };
-            vec![Nth(
+            one(Nth(
                 ord,
-                lang.word("_weekday", &word(2))?,
-                lang.word("_month", &word(3))?,
-            )]
+                lang.word("_weekday", get(2)?)?,
+                lang.word("_month", get(3)?)?,
+            ))
         }
         "special" => {
             let mut d =
@@ -695,9 +826,9 @@ fn build(
                 d = NaiveDate::from_ymd_opt(reference.year() + 1, 8, 10)?
                     .and_hms_opt(11, 45, 14)?;
             }
-            vec![Instant(d)]
+            one(Instant(d))
         }
-        "iso" => vec![Instant(DateTime::parse(get(0)?).ok()?)],
+        "iso" => one(Instant(DateTime::parse(get(0)?).ok()?)),
         "rfc" => {
             let mut parts = get(0)?.split_whitespace();
             parts.next()?;
@@ -713,7 +844,7 @@ fn build(
             let clock = parts.next()?;
             let zone = parts.next()?.strip_prefix("GMT")?;
             let s = format!("{year:04}-{m:02}-{day:02}T{clock}{zone}");
-            vec![Instant(DateTime::parse(&s).ok()?)]
+            one(Instant(DateTime::parse(&s).ok()?))
         }
         _ => return None,
     })
