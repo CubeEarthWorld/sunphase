@@ -497,11 +497,11 @@ impl Parser {
             }
         }
         if !options.range {
-            if let Some((mut m, _)) = candidates.into_iter().max_by_key(|(m, s)| {
+            if let Some((mut m, _)) = candidates.into_iter().min_by_key(|(m, s)| {
                 (
-                    normalized[m.start..m.end].encode_utf16().count(),
-                    *s,
-                    std::cmp::Reverse(m.start),
+                    std::cmp::Reverse(normalized[m.start..m.end].encode_utf16().count()),
+                    std::cmp::Reverse(*s),
+                    m.start,
                 )
             }) {
                 m.start += 2 * wide_digits.partition_point(|&at| at < m.start);
