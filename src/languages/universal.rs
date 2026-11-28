@@ -18,8 +18,11 @@ pub fn language() -> Language {
             ),
             Pattern::new(
                 "universal_date",
-                "([0-9]{4})[-/]([0-9]{1,2})[-/]([0-9]{1,2})",
-                &[],
+                "(?P<guard0>)([0-9]{4})[-/]([0-9]{1,2})[-/]([0-9]{1,2})(?P<guard1>)",
+                &[
+                    ("guard0", true, "[0-9a-zA-Z./-]"),
+                    ("guard1", false, "[0-9a-zA-Z/-]|\\.[0-9]"),
+                ],
                 &[],
             ),
             Pattern::new("universal_colonTime", "([0-9]{1,2}):([0-9]{2})", &[], &[]),

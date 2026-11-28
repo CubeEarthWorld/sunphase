@@ -77,8 +77,7 @@ pub type Builder = fn(&Captures<'_>, NaiveDateTime) -> Option<Vec<Component>>;
 
 static GUARD_CACHE: LazyLock<Mutex<HashMap<&'static str, Regex>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
-static COLON_TIME_RE: LazyLock<Regex> =
-    LazyLock::new(|| compile("([0-9]{1,2}):([0-9]{2})"));
+static COLON_TIME_RE: LazyLock<Regex> = LazyLock::new(|| compile("([0-9]{1,2}):([0-9]{2})"));
 
 fn compile_guard(s: &'static str) -> Regex {
     let mut cache = GUARD_CACHE.lock().unwrap_or_else(|e| e.into_inner());
@@ -99,7 +98,7 @@ pub struct Pattern {
     builder: Option<Builder>,
 }
 impl Pattern {
-    fn new(
+    pub(crate) fn new(
         name: &'static str,
         source: &str,
         guards: &[(&'static str, bool, &'static str)],
@@ -116,13 +115,7 @@ impl Pattern {
                 captures.push(idx);
             }
         }
-        let guards = guards
-            .iter()
-            .filter_map(|&(gname, behind, s)| {
-                let idx = regex.capture_names().position(|n| n == Some(gname))?;
-                Some((idx, behind, compile_guard(s)))
-            })
-            .collect();
+        let guards = compile_guards(&regex, guards);
         Self {
             name,
             regex,
@@ -130,6 +123,23 @@ impl Pattern {
             captures,
             words,
             builder: None,
+        }
+    }
+    pub(crate) fn with_builder(
+        name: &'static str,
+        source: &str,
+        guards: &[(&'static str, bool, &'static str)],
+        builder: Builder,
+    ) -> Self {
+        let regex = compile(source);
+        let guards = compile_guards(&regex, guards);
+        Self {
+            name,
+            regex,
+            guards,
+            captures: Vec::new(),
+            words: &[],
+            builder: Some(builder),
         }
     }
     /// Add a component recognizer. Rust regex syntax deliberately excludes
@@ -160,6 +170,18 @@ impl Pattern {
             }
         })
     }
+}
+fn compile_guards(
+    regex: &Regex,
+    guards: &[(&'static str, bool, &'static str)],
+) -> Vec<(usize, bool, Regex)> {
+    guards
+        .iter()
+        .filter_map(|&(gname, behind, s)| {
+            let idx = regex.capture_names().position(|n| n == Some(gname))?;
+            Some((idx, behind, compile_guard(s)))
+        })
+        .collect()
 }
 fn compile(s: &str) -> Regex {
     compile_checked(s).expect("valid language pattern")
@@ -199,7 +221,31 @@ impl Language {
             })
     }
 }
-static BUILTINS: [LazyLock<Language>; 8] = [
+const BUILTIN_CODES: [&str; 22] = [
+    "en",
+    "ja",
+    "zh",
+    "es",
+    "hi",
+    "ko",
+    "ru",
+    "ar",
+    "fr",
+    "bn",
+    "pt",
+    "id",
+    "ur",
+    "de",
+    "pcm",
+    "arz",
+    "mr",
+    "vi",
+    "te",
+    "sw",
+    "ha",
+    "universal",
+];
+static BUILTINS: [LazyLock<Language>; 22] = [
     LazyLock::new(languages::en::language),
     LazyLock::new(languages::ja::language),
     LazyLock::new(languages::zh::language),
@@ -207,6 +253,20 @@ static BUILTINS: [LazyLock<Language>; 8] = [
     LazyLock::new(languages::hi::language),
     LazyLock::new(languages::ko::language),
     LazyLock::new(languages::ru::language),
+    LazyLock::new(languages::ar::language),
+    LazyLock::new(languages::fr::language),
+    LazyLock::new(languages::bn::language),
+    LazyLock::new(languages::pt::language),
+    LazyLock::new(languages::id::language),
+    LazyLock::new(languages::ur::language),
+    LazyLock::new(languages::de::language),
+    LazyLock::new(languages::pcm::language),
+    LazyLock::new(languages::arz::language),
+    LazyLock::new(languages::mr::language),
+    LazyLock::new(languages::vi::language),
+    LazyLock::new(languages::te::language),
+    LazyLock::new(languages::sw::language),
+    LazyLock::new(languages::ha::language),
     LazyLock::new(languages::universal::language),
 ];
 /// Parser with caller-owned languages; built-ins compile lazily once.
@@ -382,7 +442,7 @@ impl Parser {
         if text.is_empty() {
             return Ok(vec![]);
         }
-        let (normalized, wide_digits) = normalize(text);
+        let (normalized, digit_deltas) = normalize(text);
         let codes = if options.languages.is_empty() {
             &["en", "ja", "zh"][..]
         } else {
@@ -404,9 +464,7 @@ impl Parser {
                 continue;
             }
             let language = self.languages.iter().find(|l| l.code == code).or_else(|| {
-                let index = ["en", "ja", "zh", "es", "hi", "ko", "ru", "universal"]
-                    .iter()
-                    .position(|&c| c == code)?;
+                let index = BUILTIN_CODES.iter().position(|&c| c == code)?;
                 Some(&*BUILTINS[index])
             });
             let Some(lang) = language else { continue };
@@ -507,8 +565,8 @@ impl Parser {
                     m.start,
                 )
             }) {
-                m.start += 2 * wide_digits.partition_point(|&at| at < m.start);
-                m.end += 2 * wide_digits.partition_point(|&at| at < m.end);
+                m.start = remap_span(m.start, &digit_deltas);
+                m.end = remap_span(m.end, &digit_deltas);
                 let offset = Duration::minutes(i64::from(options.offset_minutes));
                 m.date = m
                     .date
@@ -549,8 +607,8 @@ impl Parser {
                 }
             }
             // Normalization changes UTF-8 widths. Return spans into the original.
-            m.start += 2 * wide_digits.partition_point(|&at| at < m.start);
-            m.end += 2 * wide_digits.partition_point(|&at| at < m.end);
+            m.start = remap_span(m.start, &digit_deltas);
+            m.end = remap_span(m.end, &digit_deltas);
             let days = if options.range {
                 m.range_days.or(match m.range_type {
                     Some("week") => Some(7),
@@ -600,24 +658,42 @@ impl Parser {
         Ok(results)
     }
 }
-fn normalize(text: &str) -> (Cow<'_, str>, Vec<usize>) {
-    let Some(first) = text.find(|c| ('０'..='９').contains(&c)) else {
+fn normalize_digit(c: char) -> Option<char> {
+    let offset = match c {
+        '０'..='９' => c as u32 - '０' as u32,
+        '٠'..='٩' => c as u32 - '٠' as u32,
+        '۰'..='۹' => c as u32 - '۰' as u32,
+        '०'..='९' => c as u32 - '०' as u32,
+        '০'..='৯' => c as u32 - '০' as u32,
+        '౦'..='౯' => c as u32 - '౦' as u32,
+        _ => return None,
+    };
+    char::from_u32('0' as u32 + offset)
+}
+fn remap_span(pos: usize, deltas: &[(usize, usize)]) -> usize {
+    let i = deltas.partition_point(|&(at, _)| at < pos);
+    if i == 0 { pos } else { pos + deltas[i - 1].1 }
+}
+fn normalize(text: &str) -> (Cow<'_, str>, Vec<(usize, usize)>) {
+    let Some(first) = text.find(|c| normalize_digit(c).is_some()) else {
         return (Cow::Borrowed(text), Vec::new());
     };
     let mut normalized = String::with_capacity(text.len());
     normalized.push_str(&text[..first]);
-    let mut wide_digits = Vec::new();
+    let mut deltas = Vec::new();
+    let mut total_delta = 0usize;
     for c in text[first..].chars() {
-        if ('０'..='９').contains(&c) {
-            wide_digits.push(normalized.len());
-            normalized.push(char::from_u32(c as u32 - 0xfee0).unwrap());
+        if let Some(ascii) = normalize_digit(c) {
+            total_delta += c.len_utf8() - 1;
+            deltas.push((normalized.len(), total_delta));
+            normalized.push(ascii);
         } else {
             normalized.push(c);
         }
     }
-    (Cow::Owned(normalized), wide_digits)
+    (Cow::Owned(normalized), deltas)
 }
-fn number(s: &str) -> Option<i32> {
+pub(crate) fn number(s: &str) -> Option<i32> {
     if s.is_empty() {
         return None;
     }
@@ -652,7 +728,7 @@ fn number(s: &str) -> Option<i32> {
     }
     total.checked_add(current)
 }
-fn eq_word(raw: &str, target: &str) -> bool {
+pub(crate) fn eq_word(raw: &str, target: &str) -> bool {
     if raw.is_ascii() {
         raw.eq_ignore_ascii_case(target)
     } else if raw.chars().all(|c| !c.is_uppercase()) {
@@ -711,13 +787,21 @@ fn build(
         "month" => one(Month(n(1)?)),
         "day" | "ordinalDay" | "elDia" | "dayOnly" => one(Day(n(1)?)),
         "time" | "baje" => one(Time(n(1)?, minute()?, None)),
-        "timeAmPm" => one(Time(n(1)?, minute()?, Some(eq_word(get(3).unwrap_or(""), "pm")))),
+        "timeAmPm" => one(Time(
+            n(1)?,
+            minute()?,
+            Some(eq_word(get(3).unwrap_or(""), "pm")),
+        )),
         "withinDays" => one(Within(n(1)?)),
         "in" | "en" | "desdeAhora" | "offsetAhead" => one(offset(n(1)?, &word(2))),
         "ago" | "atras" | "offsetAgo" => one(offset(n(1)?.checked_neg()?, &word(2))),
         "offset" => {
             let negative = matches!(word(3).as_str(), "ago" | "前" | "पहले" | "전");
-            let v = if negative { n(1)?.checked_neg()? } else { n(1)? };
+            let v = if negative {
+                n(1)?.checked_neg()?
+            } else {
+                n(1)?
+            };
             one(offset(v, &word(2)))
         }
         "nextLastWeekday" => {
@@ -748,7 +832,9 @@ fn build(
             };
             let first = get(i)?.chars().next()?;
             let day = chars.chars().position(|ch| ch == first)? as i32 + 1;
-            if lang.code == "zh" && let Some(a) = get(1) {
+            if lang.code == "zh"
+                && let Some(a) = get(1)
+            {
                 CompVec::from_slice(&[Week(anchor(a), true), Weekday(day.min(7))])
             } else {
                 one(Weekday(day.min(7)))
@@ -806,7 +892,9 @@ fn build(
         "estaNoche" => CompVec::from_slice(&[RelativeDay(0), Meridiem(true)]),
         "meridiem" if lang.code == "es" => {
             let w1 = get(1).unwrap_or("");
-            one(Meridiem(!w1.get(..2).is_some_and(|p| p.eq_ignore_ascii_case("ma"))))
+            one(Meridiem(
+                !w1.get(..2).is_some_and(|p| p.eq_ignore_ascii_case("ma")),
+            ))
         }
         "nthWeekday" => {
             let ord = match word(1).as_str() {

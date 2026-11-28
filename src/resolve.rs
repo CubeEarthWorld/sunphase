@@ -132,14 +132,10 @@ pub(super) fn resolve(e: &Expression, o: &Options<'_>) -> Result<Option<Match>, 
                 // Proved equivalent via Why3 (neg_week_weekday_branchless).
                 shift(
                     midnight,
-                    -i64::from((wd - target - 1).rem_euclid(7) + 1)
-                        + (i64::from(offset) + 1) * 7,
+                    -i64::from((wd - target - 1).rem_euclid(7) + 1) + (i64::from(offset) + 1) * 7,
                 )?
             } else {
-                shift(
-                    next(target)?,
-                    i64::from(offset.saturating_sub(1)) * 7,
-                )?
+                shift(next(target)?, i64::from(offset.saturating_sub(1)) * 7)?
             };
             clock(base)
         } else if calendar {
